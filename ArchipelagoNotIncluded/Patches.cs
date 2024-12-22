@@ -34,6 +34,8 @@ namespace ArchipelagoNotIncluded
                 {
                     try
                     {
+                        if (jsonFile.Name == "DefaultItemList.json")
+                            continue;
                         string json = File.ReadAllText(jsonFile.FullName);
                         info = JsonConvert.DeserializeObject<APSeedInfo>(json);
                         break;
