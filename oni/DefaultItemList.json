@@ -1,0 +1,2666 @@
+[
+    {
+        "name": "Algae Terrarium",
+        "internal_name": "AlgaeHabitat",
+        "research_level": "basic",
+        "tech": "Basic Farming",
+        "internal_tech": "FarmingTech",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Planter Box",
+        "internal_name": "PlanterBox",
+        "research_level": "basic",
+        "tech": "Basic Farming",
+        "internal_tech": "FarmingTech",
+        "ap_classification": "Progression"
+    },
+    {
+        "name": "Ration Box",
+        "internal_name": "RationBox",
+        "research_level": "basic",
+        "tech": "Basic Farming",
+        "internal_tech": "FarmingTech",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Compost",
+        "internal_name": "Compost",
+        "research_level": "basic",
+        "tech": "Basic Farming",
+        "internal_tech": "FarmingTech",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Electric Grill",
+        "internal_name": "CookingStation",
+        "research_level": "basic",
+        "tech": "Meal Preparation",
+        "internal_tech": "FineDining",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Egg Cracker",
+        "internal_name": "EggCracker",
+        "research_level": "basic",
+        "tech": "Meal Preparation",
+        "internal_tech": "FineDining",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Mess Table",
+        "internal_name": "DiningTable",
+        "research_level": "basic",
+        "tech": "Meal Preparation",
+        "internal_tech": "FineDining",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Farm Tile",
+        "internal_name": "FarmTile",
+        "research_level": "basic",
+        "tech": "Meal Preparation",
+        "internal_tech": "FineDining",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Farm Station",
+        "internal_name": "FarmStation",
+        "research_level": "advanced",
+        "tech": "Agriculture",
+        "internal_tech": "Agriculture",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Fertilizer Synthesis",
+        "internal_name": "FertilizerMaker",
+        "research_level": "advanced",
+        "tech": "Agriculture",
+        "internal_tech": "Agriculture",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Refrigerator",
+        "internal_name": "Refrigerator",
+        "research_level": "advanced",
+        "tech": "Agriculture",
+        "internal_tech": "Agriculture",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Hydroponic Farm",
+        "internal_name": "HydroponicFarm",
+        "research_level": "advanced",
+        "tech": "Agriculture",
+        "internal_tech": "Agriculture",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Park Sign",
+        "internal_name": "ParkSign",
+        "research_level": "advanced",
+        "tech": "Agriculture",
+        "internal_tech": "Agriculture",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Radiation Lamp",
+        "internal_name": "RadiationLight",
+        "research_level": "advanced",
+        "tech": "Agriculture",
+        "internal_tech": "Agriculture",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Juicer",
+        "internal_name": "Juicer",
+        "research_level": "advanced",
+        "tech": "Food Repurposing",
+        "internal_tech": "FoodRepurposing",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Spice Grinder",
+        "internal_name": "SpiceGrinder",
+        "research_level": "advanced",
+        "tech": "Food Repurposing",
+        "internal_tech": "FoodRepurposing",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Plant Pulverizer",
+        "internal_name": "MilkPress",
+        "research_level": "advanced",
+        "tech": "Food Repurposing",
+        "internal_tech": "FoodRepurposing",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Botanical Analyzer",
+        "internal_name": "GeneticAnalysisStation",
+        "research_level": "radbolt",
+        "tech": "Bioengineering",
+        "internal_tech": "Bioengineering",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Grooming Station",
+        "internal_name": "RanchStation",
+        "research_level": "advanced",
+        "tech": "Ranching",
+        "internal_tech": "Ranching",
+        "ap_classification": "Progression"
+    },
+    {
+        "name": "Shearing Station",
+        "internal_name": "ShearingStation",
+        "research_level": "advanced",
+        "tech": "Ranching",
+        "internal_tech": "Ranching",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Critter Feeder",
+        "internal_name": "CreatureFeeder",
+        "research_level": "advanced",
+        "tech": "Ranching",
+        "internal_tech": "Ranching",
+        "ap_classification": "Progression"
+    },
+    {
+        "name": "Fish Release",
+        "internal_name": "FishDeliveryPoint",
+        "research_level": "advanced",
+        "tech": "Ranching",
+        "internal_tech": "Ranching",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Fish Feeder",
+        "internal_name": "FishFeeder",
+        "research_level": "advanced",
+        "tech": "Ranching",
+        "internal_tech": "Ranching",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Critter Pick-Up",
+        "internal_name": "CritterPickUp",
+        "research_level": "advanced",
+        "tech": "Ranching",
+        "internal_tech": "Ranching",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Critter Drop-Off",
+        "internal_name": "CritterDropOff",
+        "research_level": "advanced",
+        "tech": "Ranching",
+        "internal_tech": "Ranching",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Airborne Critter Trap",
+        "internal_name": "CreatureAirTrap",
+        "research_level": "advanced",
+        "tech": "Animal Control",
+        "internal_tech": "AnimalControl",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Critter Trap",
+        "internal_name": "CreatureGroundTrap",
+        "research_level": "advanced",
+        "tech": "Animal Control",
+        "internal_tech": "AnimalControl",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Fish Trap",
+        "internal_name": "WaterTrap",
+        "research_level": "advanced",
+        "tech": "Animal Control",
+        "internal_tech": "AnimalControl",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Incubator",
+        "internal_name": "EggIncubator",
+        "research_level": "advanced",
+        "tech": "Animal Control",
+        "internal_tech": "AnimalControl",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Critter Sensor",
+        "internal_name": "LogicCritterCountSensor",
+        "research_level": "advanced",
+        "tech": "Animal Control",
+        "internal_tech": "AnimalControl",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Critter Condo",
+        "internal_name": "CritterCondo",
+        "research_level": "radbolt",
+        "tech": "Creature Comforts",
+        "internal_tech": "AnimalComfort",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Water Fort",
+        "internal_name": "UnderwaterCritterCondo",
+        "research_level": "radbolt",
+        "tech": "Creature Comforts",
+        "internal_tech": "AnimalComfort",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Airborne Critter Condo",
+        "internal_name": "AirBorneCritterCondo",
+        "research_level": "radbolt",
+        "tech": "Creature Comforts",
+        "internal_tech": "AnimalComfort",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Gas Range",
+        "internal_name": "GourmetCookingStation",
+        "research_level": "radbolt",
+        "tech": "Gourmet Meal Preparation",
+        "internal_tech": "FinerDining",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Dehydrator",
+        "internal_name": "FoodDehydrator",
+        "research_level": "radbolt",
+        "tech": "Gourmet Meal Preparation",
+        "internal_tech": "FinerDining",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Rehydrator",
+        "internal_name": "FoodRehydrator",
+        "research_level": "radbolt",
+        "tech": "Gourmet Meal Preparation",
+        "internal_tech": "FinerDining",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Deep Fryer",
+        "internal_name": "Deepfryer",
+        "research_level": "radbolt",
+        "tech": "Gourmet Meal Preparation",
+        "internal_tech": "FinerDining",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Sugar Engine",
+        "internal_name": "SugarEngine",
+        "research_level": "advanced",
+        "tech": "Advanced Combustion",
+        "internal_tech": "SpaceCombustion",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Small Solid Oxidizer Tank",
+        "internal_name": "SmallOxidizerTank",
+        "research_level": "advanced",
+        "tech": "Advanced Combustion",
+        "internal_tech": "SpaceCombustion",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Critter Fountain",
+        "internal_name": "MilkFeeder",
+        "research_level": "orbital",
+        "tech": "Brackene Flow",
+        "internal_tech": "DairyOperation",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Brackwax Gleaner",
+        "internal_name": "MilkFatSeparator",
+        "research_level": "orbital",
+        "tech": "Brackene Flow",
+        "internal_tech": "DairyOperation",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Milking Station",
+        "internal_name": "MilkingStation",
+        "research_level": "orbital",
+        "tech": "Brackene Flow",
+        "internal_tech": "DairyOperation",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Natural Gas Generator",
+        "internal_name": "MethaneGenerator",
+        "research_level": "advanced",
+        "tech": "Fossil Fuels",
+        "internal_tech": "ImprovedCombustion",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Oil Refinery",
+        "internal_name": "OilRefinery",
+        "research_level": "advanced",
+        "tech": "Fossil Fuels",
+        "internal_tech": "ImprovedCombustion",
+        "ap_classification": "Progression"
+    },
+    {
+        "name": "Petroleum Generator",
+        "internal_name": "PetroleumGenerator",
+        "research_level": "advanced",
+        "tech": "Fossil Fuels",
+        "internal_tech": "ImprovedCombustion",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Polymer Press",
+        "internal_name": "Polymerizer",
+        "research_level": "advanced",
+        "tech": "Plastic Manufacturing",
+        "internal_tech": "Plastics",
+        "ap_classification": "Progression"
+    },
+    {
+        "name": "Oil Well",
+        "internal_name": "OilWellCap",
+        "research_level": "advanced",
+        "tech": "Plastic Manufacturing",
+        "internal_tech": "Plastics",
+        "ap_classification": "Progression"
+    },
+    {
+        "name": "Mini Liquid Pump",
+        "internal_name": "LiquidMiniPump",
+        "research_level": "radbolt",
+        "tech": "Valve Miniaturization",
+        "internal_tech": "ValveMiniaturization",
+        "ap_classification": "Progression"
+    },
+    {
+        "name": "Mini gas Pump",
+        "internal_name": "GasMiniPump",
+        "research_level": "radbolt",
+        "tech": "Valve Miniaturization",
+        "internal_tech": "ValveMiniaturization",
+        "ap_classification": "Progression"
+    },
+    {
+        "name": "Small Petroleum Engine",
+        "internal_name": "KeroseneEngineClusterSmall",
+        "research_level": "orbital",
+        "tech": "Hydrocarbon Propulsion",
+        "internal_tech": "HydrocarbonPropulsion",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Mission Control Station",
+        "internal_name": "MissionControlCluster",
+        "research_level": "orbital",
+        "tech": "Hydrocarbon Propulsion",
+        "internal_tech": "HydrocarbonPropulsion",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Petroleum Engine",
+        "internal_name": "KeroseneEngineCluster",
+        "research_level": "orbital",
+        "tech": "Improved Hydrocarbon Propulsion",
+        "internal_tech": "BetterHydroCarbonPropulsion",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Jumbo Battery",
+        "internal_name": "BatteryMedium",
+        "research_level": "basic",
+        "tech": "Power Regulation",
+        "internal_tech": "PowerRegulation",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Switch",
+        "internal_name": "Switch",
+        "research_level": "basic",
+        "tech": "Power Regulation",
+        "internal_tech": "PowerRegulation",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Wire Bridge",
+        "internal_name": "WireBridge",
+        "research_level": "basic",
+        "tech": "Power Regulation",
+        "internal_tech": "PowerRegulation",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Coal Generator",
+        "internal_name": "Generator",
+        "research_level": "basic",
+        "tech": "Internal Combustion",
+        "internal_tech": "Combustion",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Wood Burner",
+        "internal_name": "WoodGasGenerator",
+        "research_level": "basic",
+        "tech": "Internal Combustion",
+        "internal_tech": "Combustion",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Smart Battery",
+        "internal_name": "BatterySmart",
+        "research_level": "advanced",
+        "tech": "Sound Amplifiers",
+        "internal_tech": "Acoustics",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Jukebot",
+        "internal_name": "Phonobox",
+        "research_level": "advanced",
+        "tech": "Sound Amplifiers",
+        "internal_tech": "Acoustics",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Power Control Station",
+        "internal_name": "PowerControlStation",
+        "research_level": "advanced",
+        "tech": "Sound Amplifiers",
+        "internal_tech": "Acoustics",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Battery Module",
+        "internal_name": "BatteryModule",
+        "research_level": "radbolt",
+        "tech": "Space Power",
+        "internal_tech": "SpacePower",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Solar Panel Module",
+        "internal_name": "SolarPanelModule",
+        "research_level": "radbolt",
+        "tech": "Space Power",
+        "internal_tech": "SpacePower",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Power Outlet Fitting",
+        "internal_name": "RocketInteriorPowerPlug",
+        "research_level": "radbolt",
+        "tech": "Space Power",
+        "internal_tech": "SpacePower",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Heavi-Watt Wire",
+        "internal_name": "HighWattageWire",
+        "research_level": "advanced",
+        "tech": "Advanced Power Regulation",
+        "internal_tech": "AdvancedPowerRegulation",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Heavi-Watt Joint Plate",
+        "internal_name": "WireBridgeHighWattage",
+        "research_level": "advanced",
+        "tech": "Advanced Power Regulation",
+        "internal_tech": "AdvancedPowerRegulation",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Hydrogen Generator",
+        "internal_name": "HydrogenGenerator",
+        "research_level": "advanced",
+        "tech": "Advanced Power Regulation",
+        "internal_tech": "AdvancedPowerRegulation",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Power Shutoff",
+        "internal_name": "LogicPowerRelay",
+        "research_level": "advanced",
+        "tech": "Advanced Power Regulation",
+        "internal_tech": "AdvancedPowerRegulation",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Power Transformer",
+        "internal_name": "PowerTransformerSmall",
+        "research_level": "advanced",
+        "tech": "Advanced Power Regulation",
+        "internal_tech": "AdvancedPowerRegulation",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Wattage Sensor",
+        "internal_name": "LogicWattageSensor",
+        "research_level": "advanced",
+        "tech": "Advanced Power Regulation",
+        "internal_tech": "AdvancedPowerRegulation",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Conductive Wire",
+        "internal_name": "WireRefined",
+        "research_level": "advanced",
+        "tech": "Low-Resistence Conductors",
+        "internal_tech": "PrettyGoodConductors",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Conductive Wire Bridge",
+        "internal_name": "WireRefinedBridge",
+        "research_level": "advanced",
+        "tech": "Low-Resistence Conductors",
+        "internal_tech": "PrettyGoodConductors",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Heavi-Watt Conductive Wire",
+        "internal_name": "WireRefinedHighWattage",
+        "research_level": "advanced",
+        "tech": "Low-Resistence Conductors",
+        "internal_tech": "PrettyGoodConductors",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Heavi-Watt Conductive Joint Plate",
+        "internal_name": "WireRefinedBridgeHighWattage",
+        "research_level": "advanced",
+        "tech": "Low-Resistence Conductors",
+        "internal_tech": "PrettyGoodConductors",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Large Power Transformer",
+        "internal_name": "PowerTransformer",
+        "research_level": "advanced",
+        "tech": "Low-Resistence Conductors",
+        "internal_tech": "PrettyGoodConductors",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Steam Turbine",
+        "internal_name": "SteamTurbine2",
+        "research_level": "radbolt",
+        "tech": "Renewable Energy",
+        "internal_tech": "RenewableEnergy",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Solar Panel",
+        "internal_name": "SolarPanel",
+        "research_level": "radbolt",
+        "tech": "Renewable Energy",
+        "internal_tech": "RenewableEnergy",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Sauna",
+        "internal_name": "Sauna",
+        "research_level": "radbolt",
+        "tech": "Renewable Energy",
+        "internal_tech": "RenewableEnergy",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Steam Engine",
+        "internal_name": "SteamEngineCluster",
+        "research_level": "radbolt",
+        "tech": "Renewable Energy",
+        "internal_tech": "RenewableEnergy",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Solid Filter",
+        "internal_name": "SolidFilter",
+        "research_level": "orbital",
+        "tech": "Solid Management",
+        "internal_tech": "SolidManagement",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Conveyor Rail Thermo Sensor",
+        "internal_name": "SolidConduitTemperatureSensor",
+        "research_level": "orbital",
+        "tech": "Solid Management",
+        "internal_tech": "SolidManagement",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Conveyor Rail Element Sensor",
+        "internal_name": "SolidConduitElementSensor",
+        "research_level": "orbital",
+        "tech": "Solid Management",
+        "internal_tech": "SolidManagement",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Conveyor Rail Germ Sensor",
+        "internal_name": "SolidConduitDiseaseSensor",
+        "research_level": "orbital",
+        "tech": "Solid Management",
+        "internal_tech": "SolidManagement",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Storage Tile",
+        "internal_name": "StorageTile",
+        "research_level": "orbital",
+        "tech": "Solid Management",
+        "internal_tech": "SolidManagement",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Large Cargo Bay",
+        "internal_name": "CargoBayCluster",
+        "research_level": "orbital",
+        "tech": "Solid Management",
+        "internal_tech": "SolidManagement",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Auto-Sweeper",
+        "internal_name": "SolidTransferArm",
+        "research_level": "advanced",
+        "tech": "Smart Storage",
+        "internal_tech": "SmartStorage",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Smart Storage Bin",
+        "internal_name": "StorageLockerSmart",
+        "research_level": "advanced",
+        "tech": "Smart Storage",
+        "internal_tech": "SmartStorage",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Automatic Dispenser",
+        "internal_name": "ObjectDispenser",
+        "research_level": "advanced",
+        "tech": "Smart Storage",
+        "internal_tech": "SmartStorage",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Conveyor Loader",
+        "internal_name": "SolidConduitInbox",
+        "research_level": "advanced",
+        "tech": "Solid Transport",
+        "internal_tech": "SolidTransport",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Conveyor Rail",
+        "internal_name": "SolidConduit",
+        "research_level": "advanced",
+        "tech": "Solid Transport",
+        "internal_tech": "SolidTransport",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Conveyor Bridge",
+        "internal_name": "SolidConduitBridge",
+        "research_level": "advanced",
+        "tech": "Solid Transport",
+        "internal_tech": "SolidTransport",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Conveyor Chute",
+        "internal_name": "SolidVent",
+        "research_level": "advanced",
+        "tech": "Solid Transport",
+        "internal_tech": "SolidTransport",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Conveyor Shutoff",
+        "internal_name": "SolidLogicValve",
+        "research_level": "radbolt",
+        "tech": "Solid Control",
+        "internal_tech": "SolidSpace",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Conveyor Receptacle",
+        "internal_name": "SolidConduitOutbox",
+        "research_level": "radbolt",
+        "tech": "Solid Control",
+        "internal_tech": "SolidSpace",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Conveyor Meter",
+        "internal_name": "SolidLimitValve",
+        "research_level": "radbolt",
+        "tech": "Solid Control",
+        "internal_tech": "SolidSpace",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Cargo Bay",
+        "internal_name": "SolidCargoBaySmall",
+        "research_level": "radbolt",
+        "tech": "Solid Control",
+        "internal_tech": "SolidSpace",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Conveyor Receptacle Fitting",
+        "internal_name": "RocketInteriorSolidInput",
+        "research_level": "radbolt",
+        "tech": "Solid Control",
+        "internal_tech": "SolidSpace",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Conveyor Loader Fitting",
+        "internal_name": "RocketInteriorSolidOutput",
+        "research_level": "radbolt",
+        "tech": "Solid Control",
+        "internal_tech": "SolidSpace",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Rocket Port",
+        "internal_name": "ModularLaunchpadPortSolid",
+        "research_level": "radbolt",
+        "tech": "Solid Control",
+        "internal_tech": "SolidSpace",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Solid Rocket Port Unloader",
+        "internal_name": "ModularLaunchpadPortSolidUnloader",
+        "research_level": "radbolt",
+        "tech": "Solid Control",
+        "internal_tech": "SolidSpace",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Interplanetary Launcher",
+        "internal_name": "RailGun",
+        "research_level": "orbital",
+        "tech": "High Velocity Transport",
+        "internal_tech": "HighVelocityTransport",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Targeting Beacon",
+        "internal_name": "LandingBeacon",
+        "research_level": "orbital",
+        "tech": "High Velocity Transport",
+        "internal_tech": "HighVelocityTransport",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Drillcone",
+        "internal_name": "NoseconeHarvest",
+        "research_level": "orbital",
+        "tech": "High Velocity Destruction",
+        "internal_tech": "HighVelocityDestruction",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Rock Crusher",
+        "internal_name": "RockCrusher",
+        "research_level": "basic",
+        "tech": "Brute-Force Refinement",
+        "internal_tech": "BasicRefinement",
+        "ap_classification": "Progression"
+    },
+    {
+        "name": "Kiln",
+        "internal_name": "Kiln",
+        "research_level": "basic",
+        "tech": "Brute-Force Refinement",
+        "internal_tech": "BasicRefinement",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Fire Pole",
+        "internal_name": "FirePole",
+        "research_level": "advanced",
+        "tech": "Refined Renovations",
+        "internal_tech": "RefinedObjects",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Tempshift Plate",
+        "internal_name": "ThermalBlock",
+        "research_level": "advanced",
+        "tech": "Refined Renovations",
+        "internal_tech": "RefinedObjects",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Ladder Bed",
+        "internal_name": "LadderBed",
+        "research_level": "advanced",
+        "tech": "Refined Renovations",
+        "internal_tech": "RefinedObjects",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Rocket Port Extension",
+        "internal_name": "ModularLaunchpadPortBridge",
+        "research_level": "advanced",
+        "tech": "Refined Renovations",
+        "internal_tech": "RefinedObjects",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Metal Refinery",
+        "internal_name": "MetalRefinery",
+        "research_level": "advanced",
+        "tech": "Smelting",
+        "internal_tech": "Smelting",
+        "ap_classification": "Progression"
+    },
+    {
+        "name": "Metal Tile",
+        "internal_name": "MetalTile",
+        "research_level": "advanced",
+        "tech": "Smelting",
+        "internal_tech": "Smelting",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Glass Forge",
+        "internal_name": "GlassForge",
+        "research_level": "radbolt",
+        "tech": "Superheated Forging",
+        "internal_tech": "HighTempForging",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Bunker Tile",
+        "internal_name": "BunkerTile",
+        "research_level": "radbolt",
+        "tech": "Superheated Forging",
+        "internal_tech": "HighTempForging",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Bunker Door",
+        "internal_name": "BunkerDoor",
+        "research_level": "radbolt",
+        "tech": "Superheated Forging",
+        "internal_tech": "HighTempForging",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Geotuner",
+        "internal_name": "GeoTuner",
+        "research_level": "radbolt",
+        "tech": "Superheated Forging",
+        "internal_tech": "HighTempForging",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Gantry",
+        "internal_name": "Gantry",
+        "research_level": "radbolt",
+        "tech": "Superheated Forging",
+        "internal_tech": "HighTempForging",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Diamond Press",
+        "internal_name": "DiamondPress",
+        "research_level": "orbital",
+        "tech": "Pressurized Forging",
+        "internal_tech": "HighPressureForging",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Sweepy's Dock",
+        "internal_name": "SweepBotStation",
+        "research_level": "advanced",
+        "tech": "Artificial Friends",
+        "internal_tech": "ArtificialFriends",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Rover's Module",
+        "internal_name": "ScoutModule",
+        "research_level": "advanced",
+        "tech": "Artificial Friends",
+        "internal_tech": "ArtificialFriends",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Robo-Miner",
+        "internal_name": "AutoMiner",
+        "research_level": "advanced",
+        "tech": "Robotic Tools",
+        "internal_tech": "RoboticTools",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Payload Opener",
+        "internal_name": "RailGunPayloadOpener",
+        "research_level": "advanced",
+        "tech": "Robotic Tools",
+        "internal_tech": "RoboticTools",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Hydrogen Engine",
+        "internal_name": "HydrogenEngineCluster",
+        "research_level": "orbital",
+        "tech": "CryoFuel Propulsion",
+        "internal_tech": "CryoFuelPropulsion",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Liquid Oxidizer Tank",
+        "internal_name": "OxidizerTankLiquidCluster",
+        "research_level": "orbital",
+        "tech": "CryoFuel Propulsion",
+        "internal_tech": "CryoFuelPropulsion",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Water Cooler",
+        "internal_name": "WaterCooler",
+        "research_level": "basic",
+        "tech": "Employment",
+        "internal_tech": "Jobs",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Crafting Station",
+        "internal_name": "CraftingTable",
+        "research_level": "basic",
+        "tech": "Employment",
+        "internal_tech": "Jobs",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Wood Heater",
+        "internal_name": "Campfire",
+        "research_level": "basic",
+        "tech": "Employment",
+        "internal_tech": "Jobs",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Super Computer",
+        "internal_name": "AdvancedResearchCenter",
+        "research_level": "basic",
+        "tech": "Advanced Research",
+        "internal_tech": "AdvancedResearch",
+        "ap_classification": "Progression"
+    },
+    {
+        "name": "Skill Scrubber",
+        "internal_name": "ResetSkillsStation",
+        "research_level": "basic",
+        "tech": "Advanced Research",
+        "internal_tech": "AdvancedResearch",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Telescope",
+        "internal_name": "ClusterTelescope",
+        "research_level": "basic",
+        "tech": "Advanced Research",
+        "internal_tech": "AdvancedResearch",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Mini-Pod",
+        "internal_name": "ExobaseHeadquarters",
+        "research_level": "basic",
+        "tech": "Advanced Research",
+        "internal_tech": "AdvancedResearch",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Rocket Platform",
+        "internal_name": "LaunchPad",
+        "research_level": "advanced",
+        "tech": "Space Program",
+        "internal_tech": "SpaceProgram",
+        "ap_classification": "Progression"
+    },
+    {
+        "name": "Solo Spacefarer Nosecone",
+        "internal_name": "HabitatModuleSmall",
+        "research_level": "advanced",
+        "tech": "Space Program",
+        "internal_tech": "SpaceProgram",
+        "ap_classification": "Progression"
+    },
+    {
+        "name": "Orbital Cargo Module",
+        "internal_name": "OrbitalCargoModule",
+        "research_level": "advanced",
+        "tech": "Space Program",
+        "internal_tech": "SpaceProgram",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Rocket Control Station",
+        "internal_name": "RocketControlStation",
+        "research_level": "advanced",
+        "tech": "Space Program",
+        "internal_tech": "SpaceProgram",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Trailblazer Module",
+        "internal_name": "PioneerModule",
+        "research_level": "advanced",
+        "tech": "Crash Plan",
+        "internal_tech": "CrashPlan",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Orbital Data Collection Lab",
+        "internal_name": "OrbitalResearchCenter",
+        "research_level": "advanced",
+        "tech": "Crash Plan",
+        "internal_tech": "CrashPlan",
+        "ap_classification": "Progression"
+    },
+    {
+        "name": "Virtual Planetarium",
+        "internal_name": "DLC1CosmicResearchCenter",
+        "research_level": "advanced",
+        "tech": "Crash Plan",
+        "internal_tech": "CrashPlan",
+        "ap_classification": "Progression"
+    },
+    {
+        "name": "Basic Nosecone",
+        "internal_name": "NoseconeBasic",
+        "research_level": "advanced",
+        "tech": "Durable Life Support",
+        "internal_tech": "DurableLifeSupport",
+        "ap_classification": "Progression"
+    },
+    {
+        "name": "Spacefarer Module",
+        "internal_name": "HabitatModuleMedium",
+        "research_level": "advanced",
+        "tech": "Durable Life Support",
+        "internal_tech": "DurableLifeSupport",
+        "ap_classification": "Progression"
+    },
+    {
+        "name": "Artifact Analysis Station",
+        "internal_name": "ArtifactAnalysisStation",
+        "research_level": "basic",
+        "tech": "Durable Life Support",
+        "internal_tech": "DurableLifeSupport",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Artifact Transport Module",
+        "internal_name": "ArtifactCargoBay",
+        "research_level": "advanced",
+        "tech": "Durable Life Support",
+        "internal_tech": "DurableLifeSupport",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Critter Cargo Bay",
+        "internal_name": "SpecialCargoBayCluster",
+        "research_level": "advanced",
+        "tech": "Durable Life Support",
+        "internal_tech": "DurableLifeSupport",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Hammer",
+        "internal_name": "LogicHammer",
+        "research_level": "advanced",
+        "tech": "Notification Systems",
+        "internal_tech": "NotificationSystems",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Automated Notifier",
+        "internal_name": "LogicAlarm",
+        "research_level": "advanced",
+        "tech": "Notification Systems",
+        "internal_tech": "NotificationSystems",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Party Line Phone",
+        "internal_name": "Telephone",
+        "research_level": "advanced",
+        "tech": "Notification Systems",
+        "internal_tech": "NotificationSystems",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Space Scanner",
+        "internal_name": "CometDetector",
+        "research_level": "advanced",
+        "tech": "Celestial Detection",
+        "internal_tech": "SkyDetectors",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Enclosed Telescope",
+        "internal_name": "ClusterTelescopeEnclosed",
+        "research_level": "advanced",
+        "tech": "Celestial Detection",
+        "internal_tech": "SkyDetectors",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Materials Study Terminal",
+        "internal_name": "NuclearResearchCenter",
+        "research_level": "advanced",
+        "tech": "Materials Science Research",
+        "internal_tech": "NuclearResearch",
+        "ap_classification": "Progression"
+    },
+    {
+        "name": "Manual Radbolt Generator",
+        "internal_name": "ManualHighEnergyParticleSpawner",
+        "research_level": "advanced",
+        "tech": "Materials Science Research",
+        "internal_tech": "NuclearResearch",
+        "ap_classification": "Progression"
+    },
+    {
+        "name": "Radbolt Generator",
+        "internal_name": "HighEnergyParticleSpawner",
+        "research_level": "advanced",
+        "tech": "More Materials Science Research",
+        "internal_tech": "AdvancedNuclearResearch",
+        "ap_classification": "Progression"
+    },
+    {
+        "name": "Radbolt Reflector",
+        "internal_name": "HighEnergyParticleRedirector",
+        "research_level": "advanced",
+        "tech": "More Materials Science Research",
+        "internal_tech": "AdvancedNuclearResearch",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Radbolt Chamber",
+        "internal_name": "HEPBattery",
+        "research_level": "radbolt",
+        "tech": "Radbolt Containment",
+        "internal_tech": "NuclearStorage",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Research Reactor",
+        "internal_name": "NuclearReactor",
+        "research_level": "orbital",
+        "tech": "Radiation Refinement",
+        "internal_tech": "NuclearRefinement",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Uranium Centrifuge",
+        "internal_name": "UraniumCentrifuge",
+        "research_level": "orbital",
+        "tech": "Radiation Refinement",
+        "internal_tech": "NuclearRefinement",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Radbolt Joint Plate",
+        "internal_name": "HEPBridgeTile",
+        "research_level": "orbital",
+        "tech": "Radiation Refinement",
+        "internal_tech": "NuclearRefinement",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Radbolt Engine",
+        "internal_name": "HEPEngine",
+        "research_level": "orbital",
+        "tech": "Radbolt Propulsion",
+        "internal_tech": "NuclearPropulsion",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Apothecary",
+        "internal_name": "Apothecary",
+        "research_level": "basic",
+        "tech": "Pharmacology",
+        "internal_tech": "MedicineI",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Sick Bay",
+        "internal_name": "DoctorStation",
+        "research_level": "basic",
+        "tech": "Medical Equipment",
+        "internal_tech": "MedicineII",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Hand Sanitizer",
+        "internal_name": "HandSanitizer",
+        "research_level": "basic",
+        "tech": "Medical Equipment",
+        "internal_tech": "MedicineII",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Gas Pipe Germ Sensor",
+        "internal_name": "GasConduitDiseaseSensor",
+        "research_level": "advanced",
+        "tech": "Pathogen Diagnostics",
+        "internal_tech": "MedicineIII",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Liquid Pipe Germ Sensor",
+        "internal_name": "LiquidConduitDiseaseSensor",
+        "research_level": "advanced",
+        "tech": "Pathogen Diagnostics",
+        "internal_tech": "MedicineIII",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Germ Sensor",
+        "internal_name": "LogicDiseaseSensor",
+        "research_level": "advanced",
+        "tech": "Pathogen Diagnostics",
+        "internal_tech": "MedicineIII",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Disease Clinic",
+        "internal_name": "AdvancedDoctorStation",
+        "research_level": "advanced",
+        "tech": "Micro-Targeted Medicine",
+        "internal_tech": "MedicineIV",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Hot Tub",
+        "internal_name": "HotTub",
+        "research_level": "advanced",
+        "tech": "Micro-Targeted Medicine",
+        "internal_tech": "MedicineIV",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Radiation Sensor",
+        "internal_name": "LogicRadiationSensor",
+        "research_level": "advanced",
+        "tech": "Micro-Targeted Medicine",
+        "internal_tech": "MedicineIV",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Lead Suit",
+        "internal_name": "LeadSuit",
+        "research_level": "radbolt",
+        "tech": "Radiation Protection",
+        "internal_tech": "RadiationProtection",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Lead Suit Checkpoint",
+        "internal_name": "LeadSuitMarker",
+        "research_level": "radbolt",
+        "tech": "Radiation Protection",
+        "internal_tech": "RadiationProtection",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Lead Suit Dock",
+        "internal_name": "LeadSuitLocker",
+        "research_level": "radbolt",
+        "tech": "Radiation Protection",
+        "internal_tech": "RadiationProtection",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Radbolt Sensor",
+        "internal_name": "LogicHEPSensor",
+        "research_level": "radbolt",
+        "tech": "Radiation Protection",
+        "internal_tech": "RadiationProtection",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Electrolyzer",
+        "internal_name": "Electrolyzer",
+        "research_level": "basic",
+        "tech": "Air Systems",
+        "internal_tech": "ImprovedOxygen",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Rust Deoxidier",
+        "internal_name": "RustDeoxidizer",
+        "research_level": "basic",
+        "tech": "Air Systems",
+        "internal_tech": "ImprovedOxygen",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Ore Scrubber",
+        "internal_name": "OreScrubber",
+        "research_level": "advanced",
+        "tech": "Liquid-Based Refinement Processes",
+        "internal_tech": "LiquidFiltering",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Desalinator",
+        "internal_name": "Desalinator",
+        "research_level": "advanced",
+        "tech": "Liquid-Based Refinement Processes",
+        "internal_tech": "LiquidFiltering",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Liquid Pipe",
+        "internal_name": "LiquidConduit",
+        "research_level": "basic",
+        "tech": "Plumbing",
+        "internal_tech": "LiquidPiping",
+        "ap_classification": "Progression"
+    },
+    {
+        "name": "Liquid Bridge",
+        "internal_name": "LiquidConduitBridge",
+        "research_level": "basic",
+        "tech": "Plumbing",
+        "internal_tech": "LiquidPiping",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Liquid Pump",
+        "internal_name": "LiquidPump",
+        "research_level": "basic",
+        "tech": "Plumbing",
+        "internal_tech": "LiquidPiping",
+        "ap_classification": "Progression"
+    },
+    {
+        "name": "Liquid Vent",
+        "internal_name": "LiquidVent",
+        "research_level": "basic",
+        "tech": "Plumbing",
+        "internal_tech": "LiquidPiping",
+        "ap_classification": "Progression"
+    },
+    {
+        "name": "Lavatory",
+        "internal_name": "FlushToilet",
+        "research_level": "basic",
+        "tech": "Sanitation",
+        "internal_tech": "SanitationSciences",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Sink",
+        "internal_name": "WashSink",
+        "research_level": "basic",
+        "tech": "Sanitation",
+        "internal_tech": "SanitationSciences",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Shower",
+        "internal_name": "Shower",
+        "research_level": "basic",
+        "tech": "Sanitation",
+        "internal_tech": "SanitationSciences",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Mesh Tile",
+        "internal_name": "MeshTile",
+        "research_level": "basic",
+        "tech": "Sanitation",
+        "internal_tech": "SanitationSciences",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Mechanical Surfboard",
+        "internal_name": "MechanicalSurfboard",
+        "research_level": "advanced",
+        "tech": "Flow Redirection",
+        "internal_tech": "FlowRedirection",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Bottle Filler",
+        "internal_name": "LiquidBottler",
+        "research_level": "advanced",
+        "tech": "Flow Redirection",
+        "internal_tech": "FlowRedirection",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Liquid Rocket Port Loader",
+        "internal_name": "ModularLaunchpadPortLiquid",
+        "research_level": "advanced",
+        "tech": "Flow Redirection",
+        "internal_tech": "FlowRedirection",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Liquid Rocket Port Unloader",
+        "internal_name": "ModularLaunchpadPortLiquidUnloader",
+        "research_level": "advanced",
+        "tech": "Flow Redirection",
+        "internal_tech": "FlowRedirection",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Liquid Cargo Tank",
+        "internal_name": "LiquidCargoBaySmall",
+        "research_level": "advanced",
+        "tech": "Flow Redirection",
+        "internal_tech": "FlowRedirection",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Bottle Drainer",
+        "internal_name": "BottleEmptierConduitLiquid",
+        "research_level": "advanced",
+        "tech": "Liquid Distribution",
+        "internal_tech": "LiquidDistribution",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Liquid Spacefarer Input Port",
+        "internal_name": "RocketInteriorLiquidInput",
+        "research_level": "advanced",
+        "tech": "Liquid Distribution",
+        "internal_tech": "LiquidDistribution",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Liquid Spacefarer Output Port",
+        "internal_name": "RocketInteriorLiquidOutput",
+        "research_level": "advanced",
+        "tech": "Liquid Distribution",
+        "internal_tech": "LiquidDistribution",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Wall Toilet",
+        "internal_name": "WallToilet",
+        "research_level": "advanced",
+        "tech": "Liquid Distribution",
+        "internal_tech": "LiquidDistribution",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Decontamination Shower",
+        "internal_name": "DecontaminationShower",
+        "research_level": "radbolt",
+        "tech": "Advanced Sanitation",
+        "internal_tech": "AdvancedSanitation",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Gas Filter",
+        "internal_name": "GasFilter",
+        "research_level": "basic",
+        "tech": "Filtration",
+        "internal_tech": "AdvancedFiltration",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Liquid Filter",
+        "internal_name": "LiquidFilter",
+        "research_level": "basic",
+        "tech": "Filtration",
+        "internal_tech": "AdvancedFiltration",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Sludge Press",
+        "internal_name": "SludgePress",
+        "research_level": "basic",
+        "tech": "Filtration",
+        "internal_tech": "AdvancedFiltration",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Algae Distiller",
+        "internal_name": "AlgaeDistillery",
+        "research_level": "advanced",
+        "tech": "Distillation",
+        "internal_tech": "Distillation",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Ethanol Distiller",
+        "internal_name": "EthanolDistillery",
+        "research_level": "advanced",
+        "tech": "Distillation",
+        "internal_tech": "Distillation",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Water Seive",
+        "internal_name": "WaterPurifier",
+        "research_level": "advanced",
+        "tech": "Distillation",
+        "internal_tech": "Distillation",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Insulated Liquid Pipe",
+        "internal_name": "InsulatedLiquidConduit",
+        "research_level": "advanced",
+        "tech": "Improved Plumbing",
+        "internal_tech": "ImprovedLiquidPiping",
+        "ap_classification": "Progression"
+    },
+    {
+        "name": "Hydro Sensor",
+        "internal_name": "LogicPressureSensorLiquid",
+        "research_level": "advanced",
+        "tech": "Improved Plumbing",
+        "internal_tech": "ImprovedLiquidPiping",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Liquid Shutoff",
+        "internal_name": "LiquidLogicValve",
+        "research_level": "advanced",
+        "tech": "Improved Plumbing",
+        "internal_tech": "ImprovedLiquidPiping",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Liquid Reservoir",
+        "internal_name": "LiquidReservoir",
+        "research_level": "advanced",
+        "tech": "Improved Plumbing",
+        "internal_tech": "ImprovedLiquidPiping",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Radiant Liquid Pipe",
+        "internal_name": "LiquidConduitRadiant",
+        "research_level": "advanced",
+        "tech": "Liquid Tuning",
+        "internal_tech": "LiquidTemperature",
+        "ap_classification": "Progression"
+    },
+    {
+        "name": "Thermo Aquatuner",
+        "internal_name": "LiquidConditioner",
+        "research_level": "advanced",
+        "tech": "Liquid Tuning",
+        "internal_tech": "LiquidTemperature",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Liquid Pipe Thermo Sensor",
+        "internal_name": "LiquidConduitTemperatureSensor",
+        "research_level": "advanced",
+        "tech": "Liquid Tuning",
+        "internal_tech": "LiquidTemperature",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Liquid Pipe Element Sensor",
+        "internal_name": "LiquidConduitElementSensor",
+        "research_level": "advanced",
+        "tech": "Liquid Tuning",
+        "internal_tech": "LiquidTemperature",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Liquid Tepidizer",
+        "internal_name": "LiquidHeater",
+        "research_level": "advanced",
+        "tech": "Liquid Tuning",
+        "internal_tech": "LiquidTemperature",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Liquid Meter Valve",
+        "internal_name": "LiquidLimitValve",
+        "research_level": "advanced",
+        "tech": "Liquid Tuning",
+        "internal_tech": "LiquidTemperature",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Conduction Panel",
+        "internal_name": "ContactConductivePipeBridge",
+        "research_level": "advanced",
+        "tech": "Liquid Tuning",
+        "internal_tech": "LiquidTemperature",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Espresso Machine",
+        "internal_name": "EspressoMachine",
+        "research_level": "radbolt",
+        "tech": "Advanced Caffeination",
+        "internal_tech": "PrecisionPlumbing",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Large Liquid Fuel Tank",
+        "internal_name": "LiquidFuelTankCluster",
+        "research_level": "radbolt",
+        "tech": "Advanced Caffeination",
+        "internal_tech": "PrecisionPlumbing",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Mercury Ceiling Light",
+        "internal_name": "MercuryCeilingLight",
+        "research_level": "radbolt",
+        "tech": "Advanced Caffeination",
+        "internal_tech": "PrecisionPlumbing",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Jet Suit Pattern",
+        "internal_name": "JetSuit",
+        "research_level": "orbital",
+        "tech": "Jetpacks",
+        "internal_tech": "Jetpacks",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Jet Suit Checkpoint",
+        "internal_name": "JetSuitMarker",
+        "research_level": "orbital",
+        "tech": "Jetpacks",
+        "internal_tech": "Jetpacks",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Jet Suit Dock",
+        "internal_name": "JetSuitLocker",
+        "research_level": "orbital",
+        "tech": "Jetpacks",
+        "internal_tech": "Jetpacks",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Large Liquid Cargo Tank",
+        "internal_name": "LiquidCargoBayCluster",
+        "research_level": "orbital",
+        "tech": "Jetpacks",
+        "internal_tech": "Jetpacks",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Blastshot Maker",
+        "internal_name": "MissileFabricator",
+        "research_level": "orbital",
+        "tech": "Jetpacks",
+        "internal_tech": "Jetpacks",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Meteor Blaster",
+        "internal_name": "MissileLauncher",
+        "research_level": "orbital",
+        "tech": "Jetpacks",
+        "internal_tech": "Jetpacks",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Ice-E Fan",
+        "internal_name": "IceCooledFan",
+        "research_level": "advanced",
+        "tech": "Temperature Modulation",
+        "internal_tech": "TemperatureModulation",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Ice Maker",
+        "internal_name": "IceMachine",
+        "research_level": "advanced",
+        "tech": "Temperature Modulation",
+        "internal_tech": "TemperatureModulation",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Ice Liquefier",
+        "internal_name": "IceKettle",
+        "research_level": "advanced",
+        "tech": "Temperature Modulation",
+        "internal_tech": "TemperatureModulation",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Insulated Tile",
+        "internal_name": "InsulationTile",
+        "research_level": "advanced",
+        "tech": "Temperature Modulation",
+        "internal_tech": "TemperatureModulation",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Space Heater",
+        "internal_name": "SpaceHeater",
+        "research_level": "advanced",
+        "tech": "Temperature Modulation",
+        "internal_tech": "TemperatureModulation",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Thermo Regulator",
+        "internal_name": "AirConditioner",
+        "research_level": "advanced",
+        "tech": "HVAC",
+        "internal_tech": "HVAC",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Thermo Sensor",
+        "internal_name": "LogicTemperatureSensor",
+        "research_level": "advanced",
+        "tech": "HVAC",
+        "internal_tech": "HVAC",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Gas Pipe Thermo Sensor",
+        "internal_name": "GasConduitTemperatureSensor",
+        "research_level": "advanced",
+        "tech": "HVAC",
+        "internal_tech": "HVAC",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Gas Pipe Element Sensor",
+        "internal_name": "GasConduitElementSensor",
+        "research_level": "advanced",
+        "tech": "HVAC",
+        "internal_tech": "HVAC",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Radiant Gas Pipe",
+        "internal_name": "GasConduitRadiant",
+        "research_level": "advanced",
+        "tech": "HVAC",
+        "internal_tech": "HVAC",
+        "ap_classification": "Progression"
+    },
+    {
+        "name": "Gas Resevoir",
+        "internal_name": "GasReservoir",
+        "research_level": "advanced",
+        "tech": "HVAC",
+        "internal_tech": "HVAC",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Gas Meter Valve",
+        "internal_name": "GasLimitValve",
+        "research_level": "advanced",
+        "tech": "HVAC",
+        "internal_tech": "HVAC",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Oxylite Refinery",
+        "internal_name": "OxyliteRefinery",
+        "research_level": "radbolt",
+        "tech": "Catalytics",
+        "internal_tech": "Catalytics",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Bleach Stone Hopper",
+        "internal_name": "Chlorinator",
+        "research_level": "radbolt",
+        "tech": "Catalytics",
+        "internal_tech": "Catalytics",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Molecular Forge",
+        "internal_name": "SupermaterialRefinery",
+        "research_level": "radbolt",
+        "tech": "Catalytics",
+        "internal_tech": "Catalytics",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Soda Fountain",
+        "internal_name": "SodaFountain",
+        "research_level": "radbolt",
+        "tech": "Catalytics",
+        "internal_tech": "Catalytics",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Large Gas Cargo Canister",
+        "internal_name": "GasCargoBayCluster",
+        "research_level": "radbolt",
+        "tech": "Catalytics",
+        "internal_tech": "Catalytics",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Gas Pipe",
+        "internal_name": "GasConduit",
+        "research_level": "basic",
+        "tech": "Ventilation",
+        "internal_tech": "GasPiping",
+        "ap_classification": "Progression"
+    },
+    {
+        "name": "Gas Bridge",
+        "internal_name": "GasConduitBridge",
+        "research_level": "basic",
+        "tech": "Ventilation",
+        "internal_tech": "GasPiping",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Gas Pump",
+        "internal_name": "GasPump",
+        "research_level": "basic",
+        "tech": "Ventilation",
+        "internal_tech": "GasPiping",
+        "ap_classification": "Progression"
+    },
+    {
+        "name": "Gas Vent",
+        "internal_name": "GasVent",
+        "research_level": "basic",
+        "tech": "Ventilation",
+        "internal_tech": "GasPiping",
+        "ap_classification": "Progression"
+    },
+    {
+        "name": "Liquid Valve",
+        "internal_name": "LiquidValve",
+        "research_level": "basic",
+        "tech": "Pressure Management",
+        "internal_tech": "PressureManagement",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Gas Valve",
+        "internal_name": "GasValve",
+        "research_level": "basic",
+        "tech": "Pressure Management",
+        "internal_tech": "PressureManagement",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Airflow Tile",
+        "internal_name": "GasPermeableMembrane",
+        "research_level": "basic",
+        "tech": "Pressure Management",
+        "internal_tech": "PressureManagement",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Manual Airlock",
+        "internal_name": "ManualPressureDoor",
+        "research_level": "basic",
+        "tech": "Pressure Management",
+        "internal_tech": "PressureManagement",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Deoderizer",
+        "internal_name": "AirFilter",
+        "research_level": "advanced",
+        "tech": "Decontamination",
+        "internal_tech": "DirectedAirStreams",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Carbon Skimmer",
+        "internal_name": "CO2Scrubber",
+        "research_level": "advanced",
+        "tech": "Decontamination",
+        "internal_tech": "DirectedAirStreams",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Mechanized Airlock",
+        "internal_name": "PressureDoor",
+        "research_level": "advanced",
+        "tech": "Decontamination",
+        "internal_tech": "DirectedAirStreams",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Canister Filler",
+        "internal_name": "GasBottler",
+        "research_level": "basic",
+        "tech": "Portable Gases",
+        "internal_tech": "PortableGasses",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Canister Emptier",
+        "internal_name": "BottleEmptierGas",
+        "research_level": "basic",
+        "tech": "Portable Gases",
+        "internal_tech": "PortableGasses",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Oxygen Mask Station",
+        "internal_name": "OxygenMask",
+        "research_level": "basic",
+        "tech": "Portable Gases",
+        "internal_tech": "PortableGasses",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Oxygen Mask Dock",
+        "internal_name": "OxygenMaskLocker",
+        "research_level": "basic",
+        "tech": "Portable Gases",
+        "internal_tech": "PortableGasses",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Oxygen Mask Checkpoint",
+        "internal_name": "OxygenMaskMarker",
+        "research_level": "basic",
+        "tech": "Portable Gases",
+        "internal_tech": "PortableGasses",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Oxylite Sconce",
+        "internal_name": "Oxysconce",
+        "research_level": "basic",
+        "tech": "Portable Gases",
+        "internal_tech": "PortableGasses",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Carbon Dioxide Engine",
+        "internal_name": "CO2Engine",
+        "research_level": "advanced",
+        "tech": "Advanced Gas Flow",
+        "internal_tech": "SpaceGas",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Gas Rocket Port Loader",
+        "internal_name": "ModularLaunchpadPortGas",
+        "research_level": "advanced",
+        "tech": "Advanced Gas Flow",
+        "internal_tech": "SpaceGas",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Gas Rocket Port Unloader",
+        "internal_name": "ModularLaunchpadPortGasUnloader",
+        "research_level": "advanced",
+        "tech": "Advanced Gas Flow",
+        "internal_tech": "SpaceGas",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Gas Cargo Canister",
+        "internal_name": "GasCargoBaySmall",
+        "research_level": "advanced",
+        "tech": "Advanced Gas Flow",
+        "internal_tech": "SpaceGas",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Insulated Gas Pipe",
+        "internal_name": "InsulatedGasConduit",
+        "research_level": "advanced",
+        "tech": "Improved Ventilation",
+        "internal_tech": "ImprovedGasPiping",
+        "ap_classification": "Progression"
+    },
+    {
+        "name": "Atmo Sensor",
+        "internal_name": "LogicPressureSensorGas",
+        "research_level": "advanced",
+        "tech": "Improved Ventilation",
+        "internal_tech": "ImprovedGasPiping",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Gas Shutoff",
+        "internal_name": "GasLogicValve",
+        "research_level": "advanced",
+        "tech": "Improved Ventilation",
+        "internal_tech": "ImprovedGasPiping",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "High Pressure Gas Vent",
+        "internal_name": "GasVentHighPressure",
+        "research_level": "advanced",
+        "tech": "Improved Ventilation",
+        "internal_tech": "ImprovedGasPiping",
+        "ap_classification": "Progression"
+    },
+    {
+        "name": "Canister Drainer",
+        "internal_name": "BottleEmptierConduitGas",
+        "research_level": "advanced",
+        "tech": "Gas Distribution",
+        "internal_tech": "GasDistribution",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Gas Intake Fitting",
+        "internal_name": "RocketInteriorGasInput",
+        "research_level": "advanced",
+        "tech": "Gas Distribution",
+        "internal_tech": "GasDistribution",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Gas Output Fitting",
+        "internal_name": "RocketInteriorGasOutput",
+        "research_level": "advanced",
+        "tech": "Gas Distribution",
+        "internal_tech": "GasDistribution",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Large Solid Oxidizer Tank",
+        "internal_name": "OxidizerTankCluster",
+        "research_level": "advanced",
+        "tech": "Gas Distribution",
+        "internal_tech": "GasDistribution",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Atmo Suit",
+        "internal_name": "AtmoSuit",
+        "research_level": "advanced",
+        "tech": "Hazard Protection",
+        "internal_tech": "Suits",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Exosuit Forge",
+        "internal_name": "SuitFabricator",
+        "research_level": "advanced",
+        "tech": "Hazard Protection",
+        "internal_tech": "Suits",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Atmo Suit Checkpoint",
+        "internal_name": "SuitMarker",
+        "research_level": "advanced",
+        "tech": "Hazard Protection",
+        "internal_tech": "Suits",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Atmo Suit Dock",
+        "internal_name": "SuitLocker",
+        "research_level": "advanced",
+        "tech": "Hazard Protection",
+        "internal_tech": "Suits",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Transit Tube Access",
+        "internal_name": "TravelTubeEntrance",
+        "research_level": "radbolt",
+        "tech": "Transit Tubes",
+        "internal_tech": "TravelTubes",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Transit Tube",
+        "internal_name": "TravelTube",
+        "research_level": "radbolt",
+        "tech": "Transit Tubes",
+        "internal_tech": "TravelTubes",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Transit Tube Crossing",
+        "internal_name": "TravelTubeWallBridge",
+        "research_level": "radbolt",
+        "tech": "Transit Tubes",
+        "internal_tech": "TravelTubes",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Vertical Wind Tunnel",
+        "internal_name": "VerticalWindTunnel",
+        "research_level": "radbolt",
+        "tech": "Transit Tubes",
+        "internal_tech": "TravelTubes",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Flower Pot",
+        "internal_name": "FlowerVase",
+        "research_level": "basic",
+        "tech": "Interior Decor",
+        "internal_tech": "InteriorDecor",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Lamp",
+        "internal_name": "FloorLamp",
+        "research_level": "basic",
+        "tech": "Interior Decor",
+        "internal_tech": "InteriorDecor",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Ceiling Light",
+        "internal_name": "CeilingLight",
+        "research_level": "basic",
+        "tech": "Interior Decor",
+        "internal_tech": "InteriorDecor",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Wall Pot",
+        "internal_name": "FlowerVaseWall",
+        "research_level": "basic",
+        "tech": "Artistic Expression",
+        "internal_tech": "Artistry",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Hanging Pot",
+        "internal_name": "FlowerVaseHanging",
+        "research_level": "basic",
+        "tech": "Artistic Expression",
+        "internal_tech": "Artistry",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Corner Trim",
+        "internal_name": "CornerMoulding",
+        "research_level": "basic",
+        "tech": "Artistic Expression",
+        "internal_tech": "Artistry",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Ceiling Trim",
+        "internal_name": "CrownMoulding",
+        "research_level": "basic",
+        "tech": "Artistic Expression",
+        "internal_tech": "Artistry",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Pedestal",
+        "internal_name": "ItemPedestal",
+        "research_level": "basic",
+        "tech": "Artistic Expression",
+        "internal_tech": "Artistry",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Sculpting Block",
+        "internal_name": "SmallSculpture",
+        "research_level": "basic",
+        "tech": "Artistic Expression",
+        "internal_tech": "Artistry",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Ice Block",
+        "internal_name": "IceSculpture",
+        "research_level": "basic",
+        "tech": "Artistic Expression",
+        "internal_tech": "Artistry",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Textile Loom",
+        "internal_name": "ClothingFabricator",
+        "research_level": "advanced",
+        "tech": "Textile Production",
+        "internal_tech": "Clothing",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Carpeted Tile",
+        "internal_name": "CarpetTile",
+        "research_level": "advanced",
+        "tech": "Textile Production",
+        "internal_tech": "Clothing",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Drywall",
+        "internal_name": "ExteriorWall",
+        "research_level": "advanced",
+        "tech": "Textile Production",
+        "internal_tech": "Clothing",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Blank Canvas",
+        "internal_name": "Canvas",
+        "research_level": "advanced",
+        "tech": "Fine Art",
+        "internal_tech": "FineArt",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Large Sculpting Block",
+        "internal_name": "Sculpture",
+        "research_level": "advanced",
+        "tech": "Fine Art",
+        "internal_tech": "FineArt",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Comfy Bed",
+        "internal_name": "LuxuryBed",
+        "research_level": "advanced",
+        "tech": "Home Luxuries",
+        "internal_tech": "Luxury",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Plastic Ladder",
+        "internal_name": "LadderFast",
+        "research_level": "advanced",
+        "tech": "Home Luxuries",
+        "internal_tech": "Luxury",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Plastic Tile",
+        "internal_name": "PlasticTile",
+        "research_level": "advanced",
+        "tech": "Home Luxuries",
+        "internal_tech": "Luxury",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Clothing Refashionator",
+        "internal_name": "ClothingAlterationStation",
+        "research_level": "advanced",
+        "tech": "Home Luxuries",
+        "internal_tech": "Luxury",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Wood Tile",
+        "internal_name": "WoodTile",
+        "research_level": "advanced",
+        "tech": "Home Luxuries",
+        "internal_tech": "Luxury",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Landscape Canvas",
+        "internal_name": "CanvasWide",
+        "research_level": "advanced",
+        "tech": "High Culture",
+        "internal_tech": "RefractiveDecor",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Metal Block",
+        "internal_name": "MetalSculpture",
+        "research_level": "advanced",
+        "tech": "High Culture",
+        "internal_tech": "RefractiveDecor",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Wood Block",
+        "internal_name": "WoodSculpture",
+        "research_level": "advanced",
+        "tech": "High Culture",
+        "internal_tech": "RefractiveDecor",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Window Tile",
+        "internal_name": "GlassTile",
+        "research_level": "radbolt",
+        "tech": "Glass Blowing",
+        "internal_tech": "GlassFurnishings",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Aero Pot",
+        "internal_name": "FlowerVaseHangingFancy",
+        "research_level": "radbolt",
+        "tech": "Glass Blowing",
+        "internal_tech": "GlassFurnishings",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Sun Lamp",
+        "internal_name": "SunLamp",
+        "research_level": "radbolt",
+        "tech": "Glass Blowing",
+        "internal_tech": "GlassFurnishings",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Portrait Canvas",
+        "internal_name": "CanvasTall",
+        "research_level": "radbolt",
+        "tech": "Renaissance Art",
+        "internal_tech": "RenaissanceArt",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Marble Block",
+        "internal_name": "MarbleSculpture",
+        "research_level": "radbolt",
+        "tech": "Renaissance Art",
+        "internal_tech": "RenaissanceArt",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Beach Chair",
+        "internal_name": "BeachChair",
+        "research_level": "orbital",
+        "tech": "Environmental Appreciation",
+        "internal_tech": "EnvironmentalAppreciation",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Pixel Pack",
+        "internal_name": "PixelPack",
+        "research_level": "orbital",
+        "tech": "New Media",
+        "internal_tech": "Screens",
+        "ap_classification": "Filler"
+    },
+    {
+        "name": "Monument Base",
+        "internal_name": "MonumentBottom",
+        "research_level": "orbital",
+        "tech": "Monuments",
+        "internal_tech": "Monuments",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Monument Midsection",
+        "internal_name": "MonumentMiddle",
+        "research_level": "orbital",
+        "tech": "Monuments",
+        "internal_tech": "Monuments",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Monument top",
+        "internal_name": "MonumentTop",
+        "research_level": "orbital",
+        "tech": "Monuments",
+        "internal_tech": "Monuments",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Signal Switch",
+        "internal_name": "LogicSwitch",
+        "research_level": "basic",
+        "tech": "Smart Home",
+        "internal_tech": "LogicControl",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Automation Wire",
+        "internal_name": "LogicWire",
+        "research_level": "basic",
+        "tech": "Smart Home",
+        "internal_tech": "LogicControl",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Automation Wire Bridge",
+        "internal_name": "LogicWireBridge",
+        "research_level": "basic",
+        "tech": "Smart Home",
+        "internal_tech": "LogicControl",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Duplicant Motion Sensor",
+        "internal_name": "LogicDuplicantSensor",
+        "research_level": "basic",
+        "tech": "Smart Home",
+        "internal_tech": "LogicControl",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Weight Plate",
+        "internal_name": "FloorSwitch",
+        "research_level": "advanced",
+        "tech": "Generic Sensors",
+        "internal_tech": "GenericSensors",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Gas Element Sensor",
+        "internal_name": "LogicElementSensorGas",
+        "research_level": "advanced",
+        "tech": "Generic Sensors",
+        "internal_tech": "GenericSensors",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Liquid Element Sensor",
+        "internal_name": "LogicElementSensorLiquid",
+        "research_level": "advanced",
+        "tech": "Generic Sensors",
+        "internal_tech": "GenericSensors",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "NOT Gate",
+        "internal_name": "LogicGateNOT",
+        "research_level": "advanced",
+        "tech": "Generic Sensors",
+        "internal_tech": "GenericSensors",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Cycle Sensor",
+        "internal_name": "LogicTimeOfDaySensor",
+        "research_level": "advanced",
+        "tech": "Generic Sensors",
+        "internal_tech": "GenericSensors",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Timer Sensor",
+        "internal_name": "LogicTimerSensor",
+        "research_level": "advanced",
+        "tech": "Generic Sensors",
+        "internal_tech": "GenericSensors",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Light Sensor",
+        "internal_name": "LogicLightSensor",
+        "research_level": "advanced",
+        "tech": "Generic Sensors",
+        "internal_tech": "GenericSensors",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Starmap Location Sensor",
+        "internal_name": "LogicClusterLocationSensor",
+        "research_level": "advanced",
+        "tech": "Generic Sensors",
+        "internal_tech": "GenericSensors",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Automation Ribbon",
+        "internal_name": "LogicRibbon",
+        "research_level": "advanced",
+        "tech": "Parallel Automation",
+        "internal_tech": "ParallelAutomation",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Automation Ribbon Bridge",
+        "internal_name": "LogicRibbonBridge",
+        "research_level": "advanced",
+        "tech": "Parallel Automation",
+        "internal_tech": "ParallelAutomation",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Ribbon Writer",
+        "internal_name": "LogicRibbonWriter",
+        "research_level": "advanced",
+        "tech": "Parallel Automation",
+        "internal_tech": "ParallelAutomation",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Ribbon Reader",
+        "internal_name": "LogicRibbonReader",
+        "research_level": "advanced",
+        "tech": "Parallel Automation",
+        "internal_tech": "ParallelAutomation",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "AND Gate",
+        "internal_name": "LogicGateAND",
+        "research_level": "advanced",
+        "tech": "Advanced Automation",
+        "internal_tech": "LogicCircuits",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "OR Gate",
+        "internal_name": "LogicGateOR",
+        "research_level": "advanced",
+        "tech": "Advanced Automation",
+        "internal_tech": "LogicCircuits",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "BUFFER Gate",
+        "internal_name": "LogicGateBUFFER",
+        "research_level": "advanced",
+        "tech": "Advanced Automation",
+        "internal_tech": "LogicCircuits",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "FILTER Gate",
+        "internal_name": "LogicGateFILTER",
+        "research_level": "advanced",
+        "tech": "Advanced Automation",
+        "internal_tech": "LogicCircuits",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Signal Counter",
+        "internal_name": "LogicCounter",
+        "research_level": "radbolt",
+        "tech": "Computing",
+        "internal_tech": "DupeTrafficControl",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Memory Toggle",
+        "internal_name": "LogicMemory",
+        "research_level": "radbolt",
+        "tech": "Computing",
+        "internal_tech": "DupeTrafficControl",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "XOR Gate",
+        "internal_name": "LogicGateXOR",
+        "research_level": "radbolt",
+        "tech": "Computing",
+        "internal_tech": "DupeTrafficControl",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Arcade Cabinet",
+        "internal_name": "ArcadeMachine",
+        "research_level": "radbolt",
+        "tech": "Computing",
+        "internal_tech": "DupeTrafficControl",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Duplicant Checkpoint",
+        "internal_name": "Checkpoint",
+        "research_level": "radbolt",
+        "tech": "Computing",
+        "internal_tech": "DupeTrafficControl",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Cartographic Module",
+        "internal_name": "ScannerModule",
+        "research_level": "orbital",
+        "tech": "Sensitive Microimaging",
+        "internal_tech": "AdvancedScanners",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Automation Broadcaster",
+        "internal_name": "LogicInterasteroidSender",
+        "research_level": "orbital",
+        "tech": "Sensitive Microimaging",
+        "internal_tech": "AdvancedScanners",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Automation Receiver",
+        "internal_name": "LogicInterasteroidReceiver",
+        "research_level": "orbital",
+        "tech": "Sensitive Microimaging",
+        "internal_tech": "AdvancedScanners",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Signal Selector",
+        "internal_name": "LogicGateMultiplexer",
+        "research_level": "orbital",
+        "tech": "Multiplexing",
+        "internal_tech": "Multiplexing",
+        "ap_classification": "Useful"
+    },
+    {
+        "name": "Signal Distributor",
+        "internal_name": "LogicGateDemultiplexer",
+        "research_level": "orbital",
+        "tech": "Multiplexing",
+        "internal_tech": "Multiplexing",
+        "ap_classification": "Useful"
+    }
+]
