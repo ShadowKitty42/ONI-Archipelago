@@ -41,7 +41,7 @@ Required files can be found on the [Releases](https://github.com/ShadowKitty42/O
 ## Installing the Mod
 
 1. Download the `ArchipelagoNotIncluded.zip`
-2. Navigate to your ONI Mods Folder. On Windows, this is either `C:\Users\[YOUR NAME]\Documents\Klei\OxygenNotIncluded\mods` OR `C:\Users\[YOUR NAME]\OneDrive\Documents\Klei\OxygenNotIncluded\mods`
+2. Navigate to your ONI Mods Folder. On Windows, this is either<br/>`C:\Users\[YOUR NAME]\Documents\Klei\OxygenNotIncluded\mods` OR<br/>`C:\Users\[YOUR NAME]\OneDrive\Documents\Klei\OxygenNotIncluded\mods`
 3. If there is a folder called `Local`, open it. If not, make a new folder called `Local` and then open.
 4. Place the `ArchipelagoNotIncluded.zip` file in the `Local` folder and extract it. You should now have a folder called `ArchipelagoNotIncluded`.
 5. Open the new `ArchipelagoNotIncluded` folder. You should see `.dll` files and most importantly, `mod.yaml` and `mod_info.yaml`. If you do, everything has been done correctly.
