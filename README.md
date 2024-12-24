@@ -30,7 +30,7 @@ Ranching Dreckos for plastic or Hatches for Refined Metal is considered in-logic
 
 ## Seed Generation
 
-Install Archipelago if you haven't already. It can be found [here](https://github.com/ArchipelagoMW/Archipelago/releases).
+Install Archipelago if you haven't already. It can be found [here](https://github.com/ArchipelagoMW/Archipelago/releases).  
 Required files can be found on the [Releases](https://github.com/ShadowKitty42/ONI-Archipelago/releases) page.
 
 1. Place the `oni.apworld` file in your `libs/worlds/` directory in your Archipelago installation
