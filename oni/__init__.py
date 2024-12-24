@@ -125,8 +125,8 @@ class ONIWorld(World):
     regions_by_name = {}
     items_by_name = {}
 
-    ap_items = {}
-    ap_locations = {}
+    #ap_items = {}
+    #ap_locations = {}
     
     base_only = True
     spaced_out = False
@@ -244,7 +244,7 @@ class ONIWorld(World):
             region = Region(region_info.name, self.player, self.multiworld)
             regions_by_name[region_info.name] = region
             for location_name in region_info.locations:
-                self.ap_locations[location_name] = self.location_name_to_id.get(location_name, None)
+                #self.ap_locations[location_name] = self.location_name_to_id.get(location_name, None)
                 location = ONILocation(self.player, location_name, self.location_name_to_id.get(location_name, None), region)
                 region.locations.append(location)
             self.multiworld.regions.append(region)
@@ -287,7 +287,7 @@ class ONIWorld(World):
                 case ItemClassification.progression_skip_balancing:
                     progressionStr = "ProgressionSkipBalancing"
                     
-            self.ap_items[item.itemName] = APItem(self.item_name_to_id.get(item.itemName, None), progressionStr)
+            #self.ap_items[item.itemName] = APItem(self.item_name_to_id.get(item.itemName, None), progressionStr)
             self.multiworld.itempool.append(self.create_item(item.itemName))
 
     def set_rules(self) -> None:
@@ -335,7 +335,7 @@ class ONIWorld(World):
         with open(output_file_path, "w") as file:
             file.write(json_string)
 
-        ap_json = APJson(self.ap_items)
+        '''ap_json = APJson(self.ap_items)
         json_string = ap_json.to_json(indent=4)
         output_file_path = os.path.join(output_directory, f"oxygen not included_item_table.json")
         with open(output_file_path, "w") as file:
@@ -345,7 +345,7 @@ class ONIWorld(World):
         json_string = ap_location_json.to_json(indent=4)
         output_file_path = os.path.join(output_directory, f"oxygen not included_location_table.json")
         with open(output_file_path, "w") as file:
-            file.write(json_string)
+            file.write(json_string)'''
 
 
     def fill_slot_data(self) -> typing.Dict[str, Any]:  # json of WebHostLib.models.Slot
