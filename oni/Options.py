@@ -15,7 +15,21 @@ class Goal(Choice):
     option_space = 2
     default = 0
 
+class SpacedOut(Toggle):
+    """
+    Enable Spaced Out DLC
+    """
+    display_name = "Enable Spaced Out DLC"
+
+class Frosty(Toggle):
+    """
+    Enable Frosty DLC
+    """
+    display_name = "Enable Frosty DLC"
+
 
 @dataclass
 class ONIOptions(PerGameCommonOptions):
     goal: Goal
+    spaced_out: SpacedOut
+    frosty: Frosty

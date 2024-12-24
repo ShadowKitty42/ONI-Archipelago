@@ -18,10 +18,9 @@ from .Rules import *
 from .DefaultItem import DefaultItem
 
 def object_decoder(obj):
-    if '__type__' in obj and obj['__type__'] == 'DefaultItem':
-        return DefaultItem(obj['name'], obj['internal_name'], obj['use_internal_id'], obj['research_level'],
-                           obj['tech'], obj['internal_tech'], obj['ap_classification'], )
-    return obj
+    return DefaultItem(obj['name'], obj['internal_name'], obj['research_level'],
+                        obj['tech'], obj['internal_tech'], obj['ap_classification'], research_level_base="advanced",
+                        version="Base", tech_base="unknown", internal_tech_base="unknown")
 
 def item_decoder(objdict):
     return namedtuple('DefaultItem', objdict.keys())(*objdict.values())
@@ -54,28 +53,60 @@ class ONIWorld(World):
     print(default_item_list[0].name)
     file.close()
 
-    '''item_output = []
-    for item in all_items:
-        internal_name = display_name_to_internal_name[item.itemName]
-        progressionStr = "None"
-        match item.progression:
-            case ItemClassification.filler:
-                progressionStr = "Filler"
-            case ItemClassification.progression:
-                progressionStr = "Progression"
-            case ItemClassification.useful:
-                progressionStr = "Useful"
-            case ItemClassification.trap:
-                progressionStr = "Trap"
-            case ItemClassification.skip_balancing:
-                progressionStr = "SkipBalancing"
-            case ItemClassification.progression_skip_balancing:
-                progressionStr = "ProgressionSkipBalancing"
-        item_output.append(DefaultItem(item.itemName, internal_name, "basic", "unknown", "unknown", progressionStr))
-        json_string = json.dumps(item_output, default=lambda o: o.__dict__, indent=4)
-        output_file_path = os.path.join(__file__, f"..\item_list.json")
-        with open(output_file_path, "w") as file:
-            file.write(json_string)'''
+    '''spaced_out = [ "RadiationLight", "GeneticAnalysisStation", "SugarEngine", "SmallOxidizerTank", "KeroseneEngineClusterSmall", "MissionControlCluster",
+                  "KeroseneEngineCluster", "BatteryModule", "SolarPanelModule", "RocketInteriorPowerPlug", "SteamEngineCluster", "CargoBayCluster",
+                  "SolidCargoBaySmall", "RocketInteriorSolidInput", "RocketInteriorSolidOutput", "ModularLaunchpadPortSolid", "ModularLaunchpadPortSolidUnloader",
+                  "RailGun", "LandingBeacon", "NoseconeHarvest", "LadderBed", "ModularLaunchpadPortBridge", "DiamondPress", "ScoutModule", "RailGunPayloadOpener",
+                  "HydrogenEngineCluster", "OxidizerTankLiquidCluster", "ClusterTelescope", "ExobaseHeadquarters", "LaunchPad", "HabitatModuleSmall",
+                  "OrbitalCargoModule", "RocketControlStation", "PioneerModule", "OrbitalResearchCenter", "DLC1CosmicResearchCenter", "NoseconeBasic",
+                  "HabitatModuleMedium", "ArtifactAnalysisStation", "ArtifactCargoBay", "SpecialCargoBayCluster", "Telephone", "ClusterTelescopeEnclosed",
+                  "NuclearResearchCenter", "ManualHighEnergyParticleSpawner", "HighEnergyParticleSpawner", "HighEnergyParticleRedirector", "HEPBattery",
+                  "NuclearReactor", "UraniumCentrifuge", "HEPBridgeTile", "HEPEngine", "LogicRadiationSensor", "LeadSuit", "LeadSuitMarker", "LeadSuitLocker",
+                  "LogicHEPSensor", "ModularLaunchpadPortLiquid", "ModularLaunchpadPortLiquidUnloader", "LiquidCargoBaySmall", "RocketInteriorLiquidInput",
+                  "RocketInteriorLiquidOutput", "WallToilet", "DecontaminationShower", "SludgePress", "LiquidFuelTankCluster", "LiquidCargoBayCluster",
+                  "GasCargoBayCluster", "CO2Engine", "ModularLaunchpadPortGas", "ModularLaunchpadPortGasUnloader", "GasCargoBaySmall", "RocketInteriorGasInput",
+                  "RocketInteriorGasOutput", "OxidizerTankCluster", "LogicClusterLocationSensor", "ScannerModule", "LogicInterasteroidSender",
+                  "LogicInterasteroidReceiver"
+        ]
+    frosty = [ "Deepfryer", "Campfire", "MercuryCeilingLight", "IceKettle", "Oxysconce", "WoodTile", "WoodSculpture"
+        ]
+
+    for item in default_item_list:
+        if item.research_level == "basic":
+            item.research_level_base = "basic"
+        else:
+            item.research_level_base = "advanced"
+        item.tech_base = item.tech
+        item.internal_tech_base = item.internal_tech
+        if item.internal_name in spaced_out:
+            item.version = "SpacedOut"
+        if item.internal_name in frosty:
+            item.version = "Frosty"
+        if item.internal_name == "Gantry":
+            item.tech_base = "Introductory Rocketry"
+            item.internal_tech_base = "BasicRocketry"
+    default_item_list.append(DefaultItem("Virtual Planetarium", "CosmicResearchCenter", "advanced", "None", "None", "Progression", version = "BaseOnly", tech_base="Computing", internal_tech_base="DupeTrafficControl"))
+    default_item_list.append(DefaultItem("Telescope", "Telescope", "advanced", "None", "None", "Progression", version = "BaseOnly", tech_base="Celestial Detection", internal_tech_base="SkyDetectors"))
+    default_item_list.append(DefaultItem("Command Capsule", "CommandModule", "advanced", "None", "None", "Progression", version = "BaseOnly", tech_base="Introductory Rocketry", internal_tech_base="BasicRocketry"))
+    default_item_list.append(DefaultItem("Steam Engine", "SteamEngine", "advanced", "None", "None", "Progression", version = "BaseOnly", tech_base="Introductory Rocketry", internal_tech_base="BasicRocketry"))
+    default_item_list.append(DefaultItem("Research Module", "ResearchModule", "advanced", "None", "None", "Progression", version = "BaseOnly", tech_base="Introductory Rocketry", internal_tech_base="BasicRocketry"))
+    default_item_list.append(DefaultItem("Solid Fuel Thruster", "SolidBooster", "orbital", "None", "None", "Useful", version = "BaseOnly", tech_base="Solid Fuel Combustion", internal_tech_base="EnginesI"))
+    default_item_list.append(DefaultItem("Mission Control Station", "MissionControl", "orbital", "None", "None", "Useful", version = "BaseOnly", tech_base="Solid Fuel Combustion", internal_tech_base="EnginesI"))
+    default_item_list.append(DefaultItem("Petroleum Engine", "KeroseneEngine", "orbital", "None", "None", "Useful", version = "BaseOnly", tech_base="Hydrocarbon Combustion", internal_tech_base="EnginesII"))
+    default_item_list.append(DefaultItem("Liquid Fuel Tank", "LiquidFuelTank", "orbital", "None", "None", "Useful", version = "BaseOnly", tech_base="Hydrocarbon Combustion", internal_tech_base="EnginesII"))
+    default_item_list.append(DefaultItem("Solid Oxidizer Tank", "OxidizerTank", "orbital", "None", "None", "Useful", version = "BaseOnly", tech_base="Hydrocarbon Combustion", internal_tech_base="EnginesII"))
+    default_item_list.append(DefaultItem("Liquid Oxidizer Tank", "OxidizerTankLiquid", "orbital", "None", "None", "Useful", version = "BaseOnly", tech_base="Cryofuel Combustion", internal_tech_base="EnginesIII"))
+    default_item_list.append(DefaultItem("Hydrogen Engine", "HydrogenEngine", "orbital", "None", "None", "Useful", version = "BaseOnly", tech_base="Cryofuel Combustion", internal_tech_base="EnginesIII"))
+    default_item_list.append(DefaultItem("Cargo Bay", "CargoBay", "orbital", "None", "None", "Useful", version = "BaseOnly", tech_base="Solid Cargo", internal_tech_base="CargoI"))
+    default_item_list.append(DefaultItem("Liquid Cargo Bay", "LiquidCargoBay", "orbital", "None", "None", "Useful", version = "BaseOnly", tech_base="Liquid and Gas Cargo", internal_tech_base="CargoII"))
+    default_item_list.append(DefaultItem("Gas Cargo Canister", "GasCargoBay", "orbital", "None", "None", "Useful", version = "BaseOnly", tech_base="Liquid and Gas Cargo", internal_tech_base="CargoII"))
+    default_item_list.append(DefaultItem("Sight-Seeing Module", "TouristModule", "orbital", "None", "None", "Useful", version = "BaseOnly", tech_base="Unique Cargo", internal_tech_base="CargoIII"))
+    default_item_list.append(DefaultItem("Biological Cargo Bay", "SpecialCargoBay", "orbital", "None", "None", "Useful", version = "BaseOnly", tech_base="Unique Cargo", internal_tech_base="CargoIII"))
+
+    json_string = json.dumps(default_item_list, default=lambda o: o.__dict__, indent=4)
+    output_file_path = os.path.join(__file__, f"..\item_list.json")
+    with open(output_file_path, "w") as file:
+        file.write(json_string)'''
 
     science_dicts = {}
     location_name_to_internal = {}
@@ -85,79 +116,125 @@ class ONIWorld(World):
     advanced_locations = []
     radbolt_locations = []
     orbital_locations = []
-    for item in default_item_list:
-        internal_item_to_name[item.internal_name] = item.name
+    all_regions = []
+    all_locations = []
 
-        # Create list of Items
-        ap_class = ItemClassification.useful
-        print(item)
-        match item.ap_classification:
-            case "Filler":
-                ap_class = ItemClassification.filler
-            case "Progression":
-                ap_class = ItemClassification.progression
-            case "Useful":
-                ap_class = ItemClassification.useful
-            case "Trap":
-                ap_class = ItemClassification.trap
-            case "SkipBalancing":
-                ap_class = ItemClassification.skip_balancing
-            case "ProgressionSkipBalancing":
-                ap_class = ItemClassification.progression_skip_balancing
-        all_items.append(ItemData(item[0], ap_class))
-
-        # Add to correct list of locations
-        location_name = ""
-        match item.research_level:
-            case "basic":
-                count = len(list(filter(lambda location, item=item: item.tech in location, basic_locations))) + 1
-                location_name = f"{item.tech} - {count}"
-                basic_locations.append(location_name)
-            case "advanced":
-                count = len(list(filter(lambda location, item=item: item.tech in location, advanced_locations))) + 1
-                location_name = f"{item.tech} - {count}"
-                advanced_locations.append(location_name)
-            case "radbolt":
-                count = len(list(filter(lambda location, item=item: item.tech in location, radbolt_locations))) + 1
-                location_name = f"{item.tech} - {count}"
-                radbolt_locations.append(location_name)
-            case "orbital":
-                count = len(list(filter(lambda location, item=item: item.tech in location, orbital_locations))) + 1
-                location_name = f"{item.tech} - {count}"
-                orbital_locations.append(location_name)
-
-        # Create Location to Internal Mapping
-        if location_name not in location_name_to_internal:
-            location_name_to_internal[location_name] = item.internal_tech
-
-        # Populate Science Dict (to be used in generate_output)
-        if item.internal_tech not in science_dicts:
-            science_dicts[item.internal_tech] = []
-        
-    all_regions = [
-        RegionInfo("Menu", []),
-        RegionInfo(RegionNames.Basic, basic_locations),
-        RegionInfo(RegionNames.Advanced, advanced_locations),
-        RegionInfo(RegionNames.Nuclear, radbolt_locations),
-        RegionInfo(RegionNames.Space_DLC, orbital_locations)
-    ]
-    all_locations = basic_locations + advanced_locations + radbolt_locations + orbital_locations
-
-    item_name_to_id = {data.itemName: 0x257514000 + index for index, data in enumerate(all_items)}
-    location_name_to_id = {loc_name: 0x257514000 + index for index, loc_name in enumerate(all_locations)}
+    item_name_to_id = {}
+    location_name_to_id = {}
     
-    regions_by_name = {region.name: region for region in all_regions}
-    items_by_name = {item.itemName: item for item in all_items}
+    regions_by_name = {}
+    items_by_name = {}
 
     ap_items = {}
     ap_locations = {}
+    
+    base_only = True
+    spaced_out = False
+    frosty = False
 
     def generate_early(self) -> None:
         """
         Run before any general steps of the MultiWorld other than options. Useful for getting and adjusting option
         results and determining layouts for entrance rando etc. start inventory gets pushed after this step.
         """
-        pass
+
+        if self.options.spaced_out:
+            self.base_only = False
+            self.spaced_out = True
+        if self.options.frosty:
+            self.frosty = True
+
+        for item in self.default_item_list:
+            if self.base_only == False and item.version == "BaseOnly":
+                continue;
+            if self.spaced_out == False and item.version == "SpacedOut":
+                continue;
+            if self.frosty == False and item.version == "Frosty":
+                continue;
+
+            self.internal_item_to_name[item.internal_name] = item.name
+
+            # Create list of Items
+            ap_class = ItemClassification.useful
+            #print(item)
+            match item.ap_classification:
+                case "Filler":
+                    ap_class = ItemClassification.filler
+                case "Progression":
+                    ap_class = ItemClassification.progression
+                case "Useful":
+                    ap_class = ItemClassification.useful
+                case "Trap":
+                    ap_class = ItemClassification.trap
+                case "SkipBalancing":
+                    ap_class = ItemClassification.skip_balancing
+                case "ProgressionSkipBalancing":
+                    ap_class = ItemClassification.progression_skip_balancing
+            self.all_items.append(ItemData(item.name, ap_class))
+
+            # Add to correct list of locations
+            location_name = ""
+            research_level = ""
+            tech = ""
+            internal_tech = ""
+            if self.base_only == True:
+                research_level = item.research_level_base
+                tech = item.tech_base
+                internal_tech = item.internal_tech_base
+            else:
+                research_level = item.research_level
+                tech = item.tech
+                internal_tech = item.internal_tech
+            match research_level:
+                case "basic":
+                    count = len(list(filter(lambda location: tech in location, self.basic_locations))) + 1
+                    location_name = f"{tech} - {count}"
+                    self.basic_locations.append(location_name)
+                case "advanced":
+                    count = len(list(filter(lambda location: tech in location, self.advanced_locations))) + 1
+                    location_name = f"{tech} - {count}"
+                    self.advanced_locations.append(location_name)
+                case "radbolt":
+                    count = len(list(filter(lambda location: tech in location, self.radbolt_locations))) + 1
+                    location_name = f"{tech} - {count}"
+                    self.radbolt_locations.append(location_name)
+                case "orbital":
+                    count = len(list(filter(lambda location: tech in location, self.orbital_locations))) + 1
+                    location_name = f"{tech} - {count}"
+                    self.orbital_locations.append(location_name)
+
+            print(f"{research_level}, {tech}, {internal_tech}, {location_name}, {self.basic_locations.__len__() + self.advanced_locations.__len__() + self.radbolt_locations.__len__() + self.orbital_locations.__len__()}")
+            # Create Location to Internal Mapping
+            if location_name not in self.location_name_to_internal:
+                self.location_name_to_internal[location_name] = internal_tech
+
+            # Populate Science Dict (to be used in generate_output)
+            if internal_tech not in self.science_dicts:
+                self.science_dicts[internal_tech] = []
+        
+        if self.base_only == True:
+            self.all_regions = [
+                RegionInfo("Menu", []),
+                RegionInfo(RegionNames.Basic, self.basic_locations),
+                RegionInfo(RegionNames.Advanced, self.advanced_locations),
+                RegionInfo(RegionNames.Space_Base, self.orbital_locations)
+            ]
+            self.all_locations = self.basic_locations + self.advanced_locations + self.orbital_locations
+        else:
+            self.all_regions = [
+                RegionInfo("Menu", []),
+                RegionInfo(RegionNames.Basic, self.basic_locations),
+                RegionInfo(RegionNames.Advanced, self.advanced_locations),
+                RegionInfo(RegionNames.Nuclear, self.radbolt_locations),
+                RegionInfo(RegionNames.Space_DLC, self.orbital_locations)
+            ]
+            self.all_locations = self.basic_locations + self.advanced_locations + self.radbolt_locations + self.orbital_locations
+
+        self.item_name_to_id = {data.itemName: 0x257514000 + index for index, data in enumerate(self.all_items)}
+        self.location_name_to_id = {loc_name: 0x257514000 + index for index, loc_name in enumerate(self.all_locations)}
+    
+        self.regions_by_name = {region.name: region for region in self.all_regions}
+        self.items_by_name = {item.itemName: item for item in self.all_items}
 
     def create_regions(self) -> None:
         """Method for creating and connecting regions for the World."""
@@ -172,14 +249,22 @@ class ONIWorld(World):
                 region.locations.append(location)
             self.multiworld.regions.append(region)
 
-        regions_by_name["Menu"].connect(
-            regions_by_name[RegionNames.Basic], None, None)
-        regions_by_name[RegionNames.Basic].connect(
-            regions_by_name[RegionNames.Advanced], None, lambda state: can_advanced_research(self.player, self.internal_item_to_name, state))
-        regions_by_name[RegionNames.Advanced].connect(
-            regions_by_name[RegionNames.Nuclear], None, lambda state: can_nuclear_research(self.player, self.internal_item_to_name, state))
-        regions_by_name[RegionNames.Nuclear].connect(
-            regions_by_name[RegionNames.Space_DLC], None, lambda state: can_space_research(self.player, self.internal_item_to_name, state))
+        if self.base_only == True:
+            regions_by_name["Menu"].connect(
+                regions_by_name[RegionNames.Basic], None, None)
+            regions_by_name[RegionNames.Basic].connect(
+                regions_by_name[RegionNames.Advanced], None, lambda state: can_advanced_research(self.player, self.internal_item_to_name, state))
+            regions_by_name[RegionNames.Advanced].connect(
+                regions_by_name[RegionNames.Space_Base], None, lambda state: can_space_research_base(self.player, self.internal_item_to_name, state))
+        else:
+            regions_by_name["Menu"].connect(
+                regions_by_name[RegionNames.Basic], None, None)
+            regions_by_name[RegionNames.Basic].connect(
+                regions_by_name[RegionNames.Advanced], None, lambda state: can_advanced_research(self.player, self.internal_item_to_name, state))
+            regions_by_name[RegionNames.Advanced].connect(
+                regions_by_name[RegionNames.Nuclear], None, lambda state: can_nuclear_research(self.player, self.internal_item_to_name, state))
+            regions_by_name[RegionNames.Nuclear].connect(
+                regions_by_name[RegionNames.Space_DLC], None, lambda state: can_space_research(self.player, self.internal_item_to_name, state))
 
     def create_items(self) -> None:
         """
@@ -244,7 +329,7 @@ class ONIWorld(World):
             if ap_item is not None and ap_item.name in item_names:
                 self.science_dicts[tech_name].append([x for x in self.default_item_list if x.name == ap_item.name][0].internal_name)
 
-        mod_json = ModJson(str(self.multiworld.seed), self.multiworld.player_name[self.player], self.science_dicts)
+        mod_json = ModJson(str(self.multiworld.seed), self.multiworld.player_name[self.player], self.spaced_out, self.frosty, self.science_dicts)
         json_string = mod_json.to_json(indent=4)
         output_file_path = os.path.join(output_directory, f"{self.multiworld.get_out_file_name_base(self.player)}.json")
         with open(output_file_path, "w") as file:

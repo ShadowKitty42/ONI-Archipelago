@@ -7,6 +7,8 @@ namespace ArchipelagoNotIncluded
     {
         public string AP_seed { get; set; }
         public string AP_slotName { get; set; }
+        public bool spaced_out { get; set; }
+        public bool frosty { get; set; }
 
         public Dictionary<string, List<string>> technologies { get; set; }
     }

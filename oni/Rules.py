@@ -21,14 +21,34 @@ def can_space_research(player, item_list: Dict, state: CollectionState) -> bool:
     return state.has_all([item_list["DLC1CosmicResearchCenter"], item_list["OrbitalResearchCenter"]], player) and \
         can_reach_space(player, item_list, state) and can_make_plastic(player, item_list, state)
 
+def can_space_research_base(player, item_list: Dict, state: CollectionState) -> bool:
+    return state.has_all([item_list["CosmicResearchCenter"], item_list["ResearchModule"],
+                          item_list["Telescope"]], player) and can_reach_space_base(player, item_list, state)
+
 def can_survive_basic(player, item_list: Dict, state: CollectionState) -> bool:
     return state.has_any([item_list["PlanterBox"], item_list["FarmTile"]], player)
+
+def can_reach_space_base(player, item_list: Dict, state: CollectionState) -> bool:
+    # Command Capsule is non-negotiable
+    running_state = state.has_any([item_list["CommandModule"]], player)
+    # Has any engine and fuel tank
+    running_state = running_state and (state.has(item_list["SteamEngine"], player) or \
+        (state.has_any([item_list["KeroseneEngine"], item_list["HydrogenEngine"]], player) and \
+        state.has(item_list["LiquidFuelTank"], player) and \
+        state.has_any([item_list["OxidizerTank"], item_list["OxidizerTankLiquid"]], player)))
+    return running_state
 
 def can_reach_space(player, item_list: Dict, state: CollectionState) -> bool:
     # Launchpad is non-negotiable
     running_state = state.has_any([item_list["LaunchPad"]], player)
     # Has any engine and fuel tank
-    running_state = running_state and state.has_any([], player)
+    running_state = running_state and (state.has_any([item_list["CO2Engine"], item_list["HEPEngine"], 
+                                                      item_list["SteamEngineCluster"]], player) or \
+       (state.has_any([item_list["SugarEngine"], item_list["KeroseneEngineClusterSmall"]], player) and \
+       has_spacedout_oxidizer(player, item_list, state)) or \
+       (state.has_any([item_list["KeroseneEngineCluster"], item_list["HydrogenEngineCluster"]], player) and \
+       state.has(item_list["LiquidFuelTankCluster"], player) and has_spacedout_oxidizer(player, item_list, state)))
+
     # Has any crew module
     running_state = running_state and state.has_any(
         [item_list["HabitatModuleSmall"], item_list["HabitatModuleMedium"]], player)
@@ -37,6 +57,9 @@ def can_reach_space(player, item_list: Dict, state: CollectionState) -> bool:
         [item_list["NoseconeBasic"], item_list["NoseconeHarvest"], item_list["HabitatModuleSmall"]], player)
     return running_state
 
+def has_spacedout_oxidizer(player, item_list: Dict, state: CollectionState) -> bool:
+    return state.has_any([item_list["SmallOxidizerTank"], item_list["OxidizerTankLiquidCluster"],
+                          item_list["OxidizerTankCluster"]], player)
 
 def can_ranch(player, item_list: Dict, state: CollectionState) -> bool:
     return state.has_all(

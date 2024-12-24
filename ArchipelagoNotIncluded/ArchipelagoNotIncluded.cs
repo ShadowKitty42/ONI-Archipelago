@@ -25,7 +25,9 @@ namespace ArchipelagoNotIncluded
         public static ArchipelagoSession session = null;
         //public static ArchipelagoConnectionInfo apConnection = null;
         //public ArchipelagoState State { get; set; }
-        
+
+        public static APSeedInfo info = null;
+
         public static Dictionary<string, List<string>> Sciences = new Dictionary<string, List<string>>()
         {
             {"FarmingTech", new List<string>()
@@ -777,19 +779,15 @@ namespace ArchipelagoNotIncluded
         {
             PUtil.InitLibrary();
 
-            // Load Default Research
             DirectoryInfo modDirectory = new DirectoryInfo(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-            List<DefaultItem> info = new List<DefaultItem>();
-            Sciences = new Dictionary<string, List<string>>();
-            foreach (FileInfo jsonFile in modDirectory.EnumerateFiles("*.json"))
+            foreach (FileInfo jsonFile in modDirectory.EnumerateFiles("*.json").OrderByDescending(f => f.LastWriteTime))
             {
-                Debug.Log(jsonFile.FullName);
                 try
                 {
-                    if (jsonFile.Name != "DefaultItemList.json")
+                    if (jsonFile.Name == "DefaultItemList.json")
                         continue;
                     string json = File.ReadAllText(jsonFile.FullName);
-                    info = JsonConvert.DeserializeObject<List<DefaultItem>>(json);
+                    info = JsonConvert.DeserializeObject<APSeedInfo>(json);
                     break;
                 }
                 catch (Exception e)
@@ -799,9 +797,33 @@ namespace ArchipelagoNotIncluded
                     continue;
                 }
             }
-            foreach (DefaultItem item in info)
+            // Load Default Research
+            List<DefaultItem> ItemInfo = new List<DefaultItem>();
+            Sciences = new Dictionary<string, List<string>>();
+            foreach (FileInfo jsonFile in modDirectory.EnumerateFiles("*.json"))
             {
-                if (Sciences.Count > 0 && Sciences?.TryGetValue(item.internal_tech, out List<string> techList) == true)
+                Debug.Log(jsonFile.FullName);
+                try
+                {
+                    if (jsonFile.Name != "DefaultItemList.json")
+                        continue;
+                    string json = File.ReadAllText(jsonFile.FullName);
+                    ItemInfo = JsonConvert.DeserializeObject<List<DefaultItem>>(json);
+                    break;
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                    Debug.LogWarning($"Failed to parse JSON file {jsonFile.FullName}");
+                    continue;
+                }
+            }
+            foreach (DefaultItem item in ItemInfo)
+            {
+                Debug.Log(info.spaced_out);
+                Debug.Log(item.internal_tech + " " + item.internal_tech_base);
+                string InternalTech = info.spaced_out ? item.internal_tech : item.internal_tech_base;
+                if (Sciences.Count > 0 && Sciences?.TryGetValue(InternalTech, out List<string> techList) == true)
                 {
                     if (techList == null)
                         techList = new List<string>();
@@ -809,7 +831,7 @@ namespace ArchipelagoNotIncluded
                 }
                 else
                 {
-                    Sciences[item.internal_tech] = new List<string>
+                    Sciences[InternalTech] = new List<string>
                     {
                         item.internal_name
                     };

@@ -11,11 +11,15 @@ class ModJson:
     """
     AP_seed: str
     AP_slotName: str
+    spaced_out: bool
+    frosty: bool
     technologies: typing.Dict[str, typing.List[str]]
 
-    def __init__(self, seed, slot, tech):
+    def __init__(self, seed, slot, space, frost, tech):
         self.AP_seed = seed
         self.AP_slotName = slot
+        self.spaced_out = space
+        self.frosty = frost
         self.technologies = tech
 
     def to_json(self, indent):

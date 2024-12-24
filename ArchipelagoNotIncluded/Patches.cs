@@ -28,34 +28,15 @@ namespace ArchipelagoNotIncluded
         {
             public static bool Prefix(Techs __instance)
             {
-                DirectoryInfo modDirectory = new DirectoryInfo(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-                APSeedInfo info = null;
-                foreach (FileInfo jsonFile in modDirectory.EnumerateFiles("*.json").OrderByDescending(f => f.LastWriteTime))
-                {
-                    try
-                    {
-                        if (jsonFile.Name == "DefaultItemList.json")
-                            continue;
-                        string json = File.ReadAllText(jsonFile.FullName);
-                        info = JsonConvert.DeserializeObject<APSeedInfo>(json);
-                        break;
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogException(e);
-                        Debug.LogWarning($"Failed to parse JSON file {jsonFile.FullName}");
-                        continue;
-                    }
-                }
 
                 //If there is no info, run the normal tech init function
-                if (info == null)
+                if (ArchipelagoNotIncluded.info == null)
                 {
                     Debug.Log("No mod json could be loaded. Skipping mod override");
                     return true;
                 }
 
-                foreach (KeyValuePair<string, List<string>> pair in info.technologies)
+                foreach (KeyValuePair<string, List<string>> pair in ArchipelagoNotIncluded.info.technologies)
                 {
                     Debug.Log($"Generating research for {pair.Key}, ({pair.Value.Join(s => s, ",")})");
                     new Tech(pair.Key, pair.Value.ToList(), __instance);
@@ -63,9 +44,9 @@ namespace ArchipelagoNotIncluded
 
                 foreach (KeyValuePair<string, List<string>> pair in ArchipelagoNotIncluded.Sciences)
                 {
-                    if (!info.technologies.ContainsKey(pair.Key))
+                    if (!ArchipelagoNotIncluded.info.technologies.ContainsKey(pair.Key))
                     {
-                        Debug.Log($"Generating Default Research for {pair.Key}, ({pair.Value.Join(s => s, ",")})");
+                    Debug.Log($"Generating Default Research for {pair.Key}, ({pair.Value.Join(s => s, ",")})");
                         new Tech(pair.Key, pair.Value.ToList(), __instance);
                     }
                 }
@@ -76,8 +57,7 @@ namespace ArchipelagoNotIncluded
                 return false;
             }
         }
-
-        [HarmonyDebug]
+        /*
         [HarmonyPatch(typeof(Research))]
         [HarmonyPatch("CheckBuyResearch")]
         public static class Research_CheckBuyResearch_Patch
@@ -104,7 +84,7 @@ namespace ArchipelagoNotIncluded
                     yield return instruction;
                 }
 
-                /*var startIndex = -1;
+                var startIndex = -1;
                 var endIndex = -1;
 
                 List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
@@ -133,9 +113,9 @@ namespace ArchipelagoNotIncluded
                     codes.RemoveRange(startIndex + 1, endIndex - startIndex);
                 }
 
-                return codes.AsEnumerable();*/
+                return codes.AsEnumerable();
             }
-        }
+        }*/
 
         [HarmonyPatch(typeof(PlayerController))]
         [HarmonyPatch("Update")]
