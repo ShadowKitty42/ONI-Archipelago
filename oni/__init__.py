@@ -48,9 +48,9 @@ class ONIWorld(World):
     base_id = 0x257514000  # 0xYGEN___, clever! Thanks, Medic
     data_version = 0
 
-    file = open(os.path.join(__file__, f"..\DefaultItemList.json"))
+    file = open(os.path.join(__file__, f"..\data\DefaultItemList.json"))
     default_item_list = json.load(file, object_hook=item_decoder)
-    print(default_item_list[0].name)
+    #print(default_item_list[0].name)
     file.close()
 
     '''spaced_out = [ "RadiationLight", "GeneticAnalysisStation", "SugarEngine", "SmallOxidizerTank", "KeroseneEngineClusterSmall", "MissionControlCluster",
@@ -203,7 +203,7 @@ class ONIWorld(World):
                     location_name = f"{tech} - {count}"
                     self.orbital_locations.append(location_name)
 
-            print(f"{research_level}, {tech}, {internal_tech}, {location_name}, {self.basic_locations.__len__() + self.advanced_locations.__len__() + self.radbolt_locations.__len__() + self.orbital_locations.__len__()}")
+            #print(f"{research_level}, {tech}, {internal_tech}, {location_name}, {self.basic_locations.__len__() + self.advanced_locations.__len__() + self.radbolt_locations.__len__() + self.orbital_locations.__len__()}")
             # Create Location to Internal Mapping
             if location_name not in self.location_name_to_internal:
                 self.location_name_to_internal[location_name] = internal_tech

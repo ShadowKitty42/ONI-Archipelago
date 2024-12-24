@@ -33,10 +33,11 @@ Ranching Dreckos for plastic or Hatches for Refined Metal is considered in-logic
 Install Archipelago if you haven't already. It can be found [here](https://github.com/ArchipelagoMW/Archipelago/releases).  
 Required files can be found on the [Releases](https://github.com/ShadowKitty42/ONI-Archipelago/releases) page.
 
-1. Place the `oni.apworld` file in your `libs/worlds/` directory in your Archipelago installation
-2. Download the attached YAML and modify any options you deem necessary and place it in your Players directory in your Archipelago Installation. You can choose any combination of DLC listed in the YAML, just make sure when you start a new game that you choose the same combination. Currently Goals are not implemented.
-3. Run "Generate" either through the executable or the AP launcher.
-4. In your `Output` directory, extract the ZIP and find the `.json` file generated. This will be needed in "Installing the mod" below.
+1. Copy the `oni_world.zip` file into your `libs/worlds/` directory in your Archipelago installation
+2. Extract the `oni_world.zip` file and you should have a folder called `oni`
+3. Download the attached YAML and modify any options you deem necessary and place it in your Players directory in your Archipelago Installation. You can choose any combination of DLC listed in the YAML, just make sure when you start a new game that you choose the same combination. Currently Goals are not implemented.
+4. Run "Generate" either through the executable or the AP launcher.
+5. In your `Output` directory, extract the ZIP and find the `.json` file generated. This will be needed in "Installing the mod" below.
 
 ## Installing the Mod
 

@@ -62,7 +62,6 @@
   <ItemGroup>
     <Compile Include="APSeedInfo.cs" />
     <Compile Include="ArchipelagoNotIncluded.cs" />
-    <Compile Include="ArchipelagoNotIncludedClient.cs" />
     <Compile Include="ArchipelagoState.cs" />
     <Compile Include="DefaultItem.cs" />
     <Compile Include="Patches.cs" />
