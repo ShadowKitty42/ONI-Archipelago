@@ -5,7 +5,10 @@ from .Names import ItemNames
 
 
 class ONIItem(Item):
-    game: str = "Oxygen Not Included"
+    game = "Oxygen Not Included"
+    #def __init__(self, itemName, progression, version):
+    #    super().__init__(itemName, progression)
+    #    self.version = version
 
 
 class ItemData(typing.NamedTuple):

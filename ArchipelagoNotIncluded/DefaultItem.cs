@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ArchipelagoNotIncluded
 {
-    internal class DefaultItem
+    public class DefaultItem
     {
         public string name { get; set; }
         public string internal_name { get; set; }

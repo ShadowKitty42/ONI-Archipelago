@@ -9,24 +9,38 @@ using KMod;
 //using KaitoKid.ArchipelagoUtilities.Net.Interfaces;
 //using ArchipelagoNotIncluded.Serialization;
 using Archipelago.MultiClient.Net;
+using Archipelago.MultiClient.Net.Enums;
 using PeterHan.PLib.AVC;
 using PeterHan.PLib.Core;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Newtonsoft.Json;
 using System.IO;
 using System.Reflection;
+using Archipelago.MultiClient.Net.Helpers;
+using Archipelago.MultiClient.Net.Models;
+using static ArchipelagoNotIncluded.Patches;
 
 namespace ArchipelagoNotIncluded
 {
     public class ArchipelagoNotIncluded : UserMod2
     {
         //public KaitoKid.ArchipelagoUtilities.Net.Interfaces.ILogger logger;
+        private static bool patched = false;
 
-        public static ArchipelagoSession session = null;
+        private static int Counter = 0;
+        public static APNetworkMonitor netmon = null;
+        //public static ArchipelagoSession session = null;
+        public static int lastItem;
         //public static ArchipelagoConnectionInfo apConnection = null;
         //public ArchipelagoState State { get; set; }
 
         public static APSeedInfo info = null;
+        public static List<DefaultItem> AllDefaultItems = new List<DefaultItem>();
+        private Dictionary<Tag, HashedString> tagCategoryMap;
+        public static string AtmoSuitTech = "";
+        public static string JetSuitTech = "";
+        public static string LeadSuitTech = "";
 
         public static Dictionary<string, List<string>> Sciences = new Dictionary<string, List<string>>()
         {
@@ -775,20 +789,59 @@ namespace ArchipelagoNotIncluded
             "SuitsOverlay"
         };
 
+        public static List<string> StarterTech = new List<string>()
+        {
+            "Ladder",
+            "Tile",
+            "SnowTile",
+            "Door",
+            "StorageLocker",
+            "MineralDeoxidizer",
+            "SublimationStation",
+            "ManualGenerator",
+            "Wire",
+            "Battery",
+            "MicrobeMusher",
+            "Outhouse",
+            "LiquidPumpingStation",
+            "BottleEmptier",
+            "WashBasin",
+            "MedicalCot",
+            "MassageTable",
+            "Grave",
+            "Bed",
+            "ResearchCenter"
+        };
+
+        public static int getLastIndex()
+        {
+            lastItem = netmon.session.Items.AllItemsReceived.Count;
+            return lastItem;
+        }
+        public static int setLastIndex(int index)
+        {
+            return lastItem = index;
+        }
+
         public override void OnLoad(Harmony harmony)
         {
             PUtil.InitLibrary();
+            lastItem = 0;
 
             DirectoryInfo modDirectory = new DirectoryInfo(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+            Sciences = new Dictionary<string, List<string>>();
             foreach (FileInfo jsonFile in modDirectory.EnumerateFiles("*.json").OrderByDescending(f => f.LastWriteTime))
             {
                 try
                 {
+                    string json = File.ReadAllText(jsonFile.FullName);
                     if (jsonFile.Name == "DefaultItemList.json")
+                    {
+                        AllDefaultItems = JsonConvert.DeserializeObject<List<DefaultItem>>(json);
                         continue;
-                    string json = File.ReadAllText(jsonFile.FullName);
+                    }
                     info = JsonConvert.DeserializeObject<APSeedInfo>(json);
-                    break;
+                    continue;
                 }
                 catch (Exception e)
                 {
@@ -797,31 +850,10 @@ namespace ArchipelagoNotIncluded
                     continue;
                 }
             }
-            // Load Default Research
-            List<DefaultItem> ItemInfo = new List<DefaultItem>();
-            Sciences = new Dictionary<string, List<string>>();
-            foreach (FileInfo jsonFile in modDirectory.EnumerateFiles("*.json"))
+            foreach (DefaultItem item in AllDefaultItems)
             {
-                Debug.Log(jsonFile.FullName);
-                try
-                {
-                    if (jsonFile.Name != "DefaultItemList.json")
-                        continue;
-                    string json = File.ReadAllText(jsonFile.FullName);
-                    ItemInfo = JsonConvert.DeserializeObject<List<DefaultItem>>(json);
-                    break;
-                }
-                catch (Exception e)
-                {
-                    Debug.LogException(e);
-                    Debug.LogWarning($"Failed to parse JSON file {jsonFile.FullName}");
-                    continue;
-                }
-            }
-            foreach (DefaultItem item in ItemInfo)
-            {
-                Debug.Log(info.spaced_out);
-                Debug.Log(item.internal_tech + " " + item.internal_tech_base);
+                //Debug.Log(info.spaced_out);
+                //Debug.Log(item.internal_tech + " " + item.internal_tech_base);
                 string InternalTech = info.spaced_out ? item.internal_tech : item.internal_tech_base;
                 if (Sciences.Count > 0 && Sciences?.TryGetValue(InternalTech, out List<string> techList) == true)
                 {
@@ -831,6 +863,8 @@ namespace ArchipelagoNotIncluded
                 }
                 else
                 {
+                    if (InternalTech == "None")
+                        continue;
                     Sciences[InternalTech] = new List<string>
                     {
                         item.internal_name
@@ -838,35 +872,50 @@ namespace ArchipelagoNotIncluded
                 }
             }
 
-            base.OnLoad(harmony);
+            tagCategoryMap = new Dictionary<Tag, HashedString>();
+
+            var original = AccessTools.Method(typeof(Database.Techs), nameof(Database.Techs.Init));
+            var prefix = AccessTools.Method(typeof(Techs_Init_Patch), nameof(Techs_Init_Patch.Prefix));
+            harmony.Patch(original, new HarmonyMethod(prefix));
+            //ModUtil.AddBuildingToPlanScreen((HashedString)"test", "id");
+
+            netmon = new APNetworkMonitor(info);
+
+            SceneManager.sceneLoaded += (scene, loadScene) => {
+                if (netmon.session == null)
+                {
+                    netmon.TryConnectArchipelago();
+                }
+                base.OnLoad(harmony);
+            };
+
             //State = new ArchipelagoState();
-            session = ArchipelagoSessionFactory.CreateSession("localhost",  38281);
             /*apConnection = new ArchipelagoConnectionInfo("localhost", 38281, "Shadow", false);
             Debug.Log(apConnection.ToString());
             if (TryConnectArchipelago())*/
-            LoginResult result = session.TryConnectAndLogin("Oxygen Not Included", "Shadow", Archipelago.MultiClient.Net.Enums.ItemsHandlingFlags.AllItems);
-            if (result.Successful)
-                Debug.Log("Connection successful");
-            else
-                Debug.Log("Connection failed");
+
+            //Game.Instance.Subscribe(11390976, new Action<object>(PlanScreen.Instance.OnResearchComplete));
+
         }
 
-        /*public bool TryConnectArchipelago()
+        /*private void SceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode loadSceneMode)
         {
-            if (apConnection != null)
-                State.APConnectionInfo = apConnection;
-            
-            if (session.IsConnected)
-                return true;
-
-            var error = "";
-            if (session.ConnectToMultiworld(apConnection, out error))
-                return true;
-
-            return false;
+            this.OnLoad(harmony);
         }*/
 
-        private void OnItemReceived()
-        { }
+        /*public void Render1000ms(float _)
+        {
+            Debug.Log($"Render1000ms");
+            if (session == null)
+            {
+                Counter++;
+                if (Counter == 20)
+                {
+                    Debug.Log($"Attempting to reconnect");
+                    TryConnectArchipelago();
+                    Counter = 0;
+                }
+            }
+        }*/
     }
 }

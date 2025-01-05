@@ -11,6 +11,8 @@ class ModJson:
     """
     AP_seed: str
     AP_slotName: str
+    URL: str
+    port: int
     spaced_out: bool
     frosty: bool
     technologies: typing.Dict[str, typing.List[str]]
@@ -21,6 +23,8 @@ class ModJson:
         self.spaced_out = space
         self.frosty = frost
         self.technologies = tech
+        self.URL = "archipelago.gg"
+        self.port = 38281
 
     def to_json(self, indent):
         return json.dumps(self, default=lambda o: o.__dict__,

@@ -6,7 +6,7 @@
     <ProjectGuid>{413d7388-e6ad-4d14-8cd5-3cab5330a444}</ProjectGuid>
     <ProjectHome />
     <StartupFile>..\compile.bat</StartupFile>
-    <SearchPath />
+    <SearchPath>..\Archipelago-0.5.1;..\Archipelago-0.5.1</SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>

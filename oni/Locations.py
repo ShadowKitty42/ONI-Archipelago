@@ -5,7 +5,7 @@ from .Names import LocationNames, TechNames
 
 
 class ONILocation(Location):
-    game: str = "Oxygen Not Included"
+    game = "Oxygen Not Included"
 
 # Basic Research
 basic_locations = [

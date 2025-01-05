@@ -4,10 +4,10 @@ import json
 from typing import *
 import typing
 
-from BaseClasses import Item, Tutorial, Region, ItemClassification
+from BaseClasses import Item, Location, Tutorial, Region, ItemClassification
 from worlds.AutoWorld import WebWorld, World
 from worlds.generic.Rules import set_rule
-from .Items import ONIItem, ItemData
+from .Items import ONIItem, ItemData, all_items
 from .Locations import ONILocation
 from .ArchipelagoItem import APItem
 from .ModJson import ModJson, APJson, APLocationJson
@@ -112,38 +112,93 @@ class ONIWorld(World):
     location_name_to_internal = {}
     internal_item_to_name = {}
     all_items = []
+    local_items = ["Atmo Suit", "Jet Suit Pattern", "Lead Suit", "Oxygen Mask Station"]
     basic_locations = []
     advanced_locations = []
     radbolt_locations = []
     orbital_locations = []
     all_regions = []
     all_locations = []
-
-    item_name_to_id = {}
-    location_name_to_id = {}
-    
-    regions_by_name = {}
-    items_by_name = {}
-
-    #ap_items = {}
-    #ap_locations = {}
     
     base_only = True
     spaced_out = False
     frosty = False
+
+    
+    for item in default_item_list:
+
+        internal_item_to_name[item.internal_name] = item.name
+
+        # Create list of Items
+        ap_class = ItemClassification.useful
+        #print(item)
+        match item.ap_classification:
+            case "Filler":
+                ap_class = ItemClassification.filler
+            case "Progression":
+                ap_class = ItemClassification.progression
+            case "Useful":
+                ap_class = ItemClassification.useful
+            case "Trap":
+                ap_class = ItemClassification.trap
+            case "SkipBalancing":
+                ap_class = ItemClassification.skip_balancing
+            case "ProgressionSkipBalancing":
+                ap_class = ItemClassification.progression_skip_balancing
+        #all_items.append(ONIItem(item.name, ap_class, item.version))
+        all_items.append(ItemData(item.name, ap_class))
+
+        location_name = ""
+        tech = item.tech
+        count = 1
+        if (tech != "None"):
+            for location in all_locations:
+                if tech in location:
+                    count += 1
+
+            location_name = f"{tech} - {count}"
+            all_locations.append(location_name)
+
+        if (item.tech != item.tech_base):
+            tech = item.tech_base
+            count = 1
+            for location in all_locations:
+                if tech in location:
+                    count += 1
+
+            location_name = f"{tech} - {count}"
+            all_locations.append(location_name)
+
+    item_name_to_id = {data.itemName: 0x257514000 + index for index, data in enumerate(all_items)}
+    #item_name_to_id = {data.name: index for index, data in enumerate(all_items, base_id)}
+    location_name_to_id = {loc_name: 0x257514000 + index for index, loc_name in enumerate(all_locations)}
+    #location_name_to_id = {loc_name: index for index, loc_name in enumerate(all_locations, base_id)}
+    
+    #regions_by_name = {region.name: region for region in all_regions}
+    items_by_name = {item.itemName: item for item in all_items}
+
+
+    #ap_items = {}
+    #ap_locations = {}
 
     def generate_early(self) -> None:
         """
         Run before any general steps of the MultiWorld other than options. Useful for getting and adjusting option
         results and determining layouts for entrance rando etc. start inventory gets pushed after this step.
         """
+        
+        json_string = json.dumps(self.get_data_package_data(), default=lambda o: o.__dict__, indent=4)
+        output_file_path = os.path.join(__file__, f"..\data_package.json")
+        with open(output_file_path, "w") as file:
+            file.write(json_string)
 
         if self.options.spaced_out:
             self.base_only = False
             self.spaced_out = True
         if self.options.frosty:
             self.frosty = True
-
+            
+        self.all_items = []
         for item in self.default_item_list:
             if self.base_only == False and item.version == "BaseOnly":
                 continue;
@@ -151,8 +206,6 @@ class ONIWorld(World):
                 continue;
             if self.frosty == False and item.version == "Frosty":
                 continue;
-
-            self.internal_item_to_name[item.internal_name] = item.name
 
             # Create list of Items
             ap_class = ItemClassification.useful
@@ -230,11 +283,6 @@ class ONIWorld(World):
             ]
             self.all_locations = self.basic_locations + self.advanced_locations + self.radbolt_locations + self.orbital_locations
 
-        self.item_name_to_id = {data.itemName: 0x257514000 + index for index, data in enumerate(self.all_items)}
-        self.location_name_to_id = {loc_name: 0x257514000 + index for index, loc_name in enumerate(self.all_locations)}
-    
-        self.regions_by_name = {region.name: region for region in self.all_regions}
-        self.items_by_name = {item.itemName: item for item in self.all_items}
 
     def create_regions(self) -> None:
         """Method for creating and connecting regions for the World."""
@@ -272,8 +320,8 @@ class ONIWorld(World):
         to the MultiWorld after this step. If items need to be placed during pre_fill use `get_prefill_items`.
         """
         for item in self.all_items:
-            progressionStr = "None"
-            match item.progression:
+            '''progressionStr = "None"
+            match item.classification:
                 case ItemClassification.filler:
                     progressionStr = "Filler"
                 case ItemClassification.progression:
@@ -285,10 +333,11 @@ class ONIWorld(World):
                 case ItemClassification.skip_balancing:
                     progressionStr = "SkipBalancing"
                 case ItemClassification.progression_skip_balancing:
-                    progressionStr = "ProgressionSkipBalancing"
+                    progressionStr = "ProgressionSkipBalancing"'''
                     
             #self.ap_items[item.itemName] = APItem(self.item_name_to_id.get(item.itemName, None), progressionStr)
-            self.multiworld.itempool.append(self.create_item(item.itemName))
+            if item.itemName not in self.local_items:
+                self.multiworld.itempool.append(self.create_item(item.itemName))
 
     def set_rules(self) -> None:
         """Method for setting the rules on the World's regions and locations."""
@@ -303,6 +352,25 @@ class ONIWorld(World):
 
     def pre_fill(self) -> None:
         """Optional method that is supposed to be used for special fill stages. This is run *after* plando."""
+        from Fill import fill_restrictive
+
+        world = self.multiworld
+        player = self.player
+        all_state = world.get_all_state(use_cache=True)
+        suits = [self.create_item(name) for name in ['Atmo Suit', 'Jet Suit Pattern', 'Oxygen Mask Station']]
+        if self.spaced_out == True:
+            suits.append(self.create_item('Lead Suit'))
+
+        loc_dict = world.get_locations(player)
+        locs = list(loc_dict)
+        world.random.shuffle(locs)
+
+        fill_restrictive(world, all_state, locs, suits, True, True, name="ONI Add Suits")
+
+        self.multiworld.local_items[self.player].value.add("Atmo Suit")
+        self.multiworld.local_items[self.player].value.add("Jet Suit Pattern")
+        if self.spaced_out == True:
+            self.multiworld.local_items[self.player].value.add("Lead Suit")
         pass
 
     def fill_hook(self,
@@ -326,8 +394,11 @@ class ONIWorld(World):
             tech_name = self.location_name_to_internal[location_name]
             location = self.multiworld.get_location(location_name, self.player)
             ap_item = location.item
-            if ap_item is not None and ap_item.name in item_names:
-                self.science_dicts[tech_name].append([x for x in self.default_item_list if x.name == ap_item.name][0].internal_name)
+            if ap_item is not None:
+                output_item_name = ap_item.name
+                if output_item_name in item_names:
+                    output_item_name = [x for x in self.default_item_list if x.name == ap_item.name][0].internal_name
+                self.science_dicts[tech_name].append(output_item_name)
 
         mod_json = ModJson(str(self.multiworld.seed), self.multiworld.player_name[self.player], self.spaced_out, self.frosty, self.science_dicts)
         json_string = mod_json.to_json(indent=4)
@@ -366,8 +437,11 @@ class ONIWorld(World):
         """For deeper modification of server multidata."""
         pass
 
-    def create_item(self, name: str) -> "Item":
+    def create_item(self, name: str) -> "ONIItem":
         """Create an item for this world type and player.
         Warning: this may be called with self.world = None, for example by MultiServer"""
+        #self.items_by_name[name].code = self.item_name_to_id[name]
+        #self.items_by_name[name].player = self.player
         item = self.items_by_name[name]
         return ONIItem(item.itemName, item.progression, self.item_name_to_id[name], self.player)
+        #return self.items_by_name[name]
