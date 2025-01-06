@@ -66,7 +66,7 @@ Note: The mod will always use the *most recent* json in the directory. If you ge
 
 ### Planned Features
 
-- [ ] Add in-game options menu for changing Multiworld settings (URL and Port)
+- [x] ~~Add in-game options menu for changing Multiworld settings (URL and Port)~~
 - [ ] Add additional locations to the game other than Research Tree
 - [ ] Add Death Link Options. Current ideas for this are Random (Kill a random dupe when someone dies), Oldest (Kill oldest dupe), and Character Linked (Each dupe is linked to someone participating in Death Link)
 - [ ] Maybe add support for mods that add new technologies
