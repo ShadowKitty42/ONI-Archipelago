@@ -13,33 +13,25 @@ namespace ArchipelagoNotIncluded
     [RestartRequired]
     public sealed class ANIOptions
     {
-        /// <summary>
-		/// Archipelago server location. Default: Archipelago.gg
-        /// If you are connecting locally: localhost
-		/// </summary>
-        [Option("URL", "Archipelago server location. Default: Archipelago.gg\nIf you are connecting locally: localhost")]
+        [Option("URL", "Archipelago server location. Default: Archipelago.gg\nIf you are connecting locally: localhost.")]
         [JsonProperty]
 		public string URL { get; set; }
-
-        /// <summary>
-        /// Port number to connect to.
-        /// </summary>
-        [Option("Port", "Port number to connect to")]
+        [Option("Port", "Port number to connect to.")]
         [JsonProperty]
         public int Port { get; set; }
-
-        /// <summary>
-        /// Player name.
-        /// </summary>
-        [Option("Player Name", "Also called Slot Name")]
+        [Option("Player Name", "Also called Slot Name.")]
         [JsonProperty]
         public string SlotName { get; set; }
+        [Option("Password", "Password for Multiworld. Leave blank if there isn't one.")]
+        [JsonProperty]
+        public string Password { get; set; }
 
         public ANIOptions()
         {
             URL = "Archipelago.gg";
             Port = 38281;
             SlotName = "PlayerName";
+            SlotName = "";
         }
     }
 }

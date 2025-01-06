@@ -833,7 +833,10 @@ namespace ArchipelagoNotIncluded
             Options = POptions.ReadSettings<ANIOptions>() ?? new ANIOptions();
             new POptions().RegisterOptions(this, typeof(ANIOptions));
             //Options = ReloadOptions();
-            netmon = new APNetworkMonitor(Options.URL, Options.Port, Options.SlotName);
+            if (Options.Password == "")
+                netmon = new APNetworkMonitor(Options.URL, Options.Port, Options.SlotName);
+            else
+                netmon = new APNetworkMonitor(Options.URL, Options.Port, Options.SlotName, Options.Password);
             LoginResult result = netmon.TryConnectArchipelago();
             if (result.Successful)
             {

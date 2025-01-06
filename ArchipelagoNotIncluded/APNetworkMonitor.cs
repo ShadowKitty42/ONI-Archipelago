@@ -21,18 +21,24 @@ namespace ArchipelagoNotIncluded
         private string URL = "localhost";
         private int Port = 38281;
         private string SlotName = "Shadow";
+        private string Password = "Password";
 
-        public APNetworkMonitor(string URL, int port, string name)
+        public APNetworkMonitor(string URL, int port, string name, string password = "")
         {
             this.URL = URL;
             this.Port = port;
             this.SlotName = name;
+            this.Password = password;
         }
 
         public LoginResult TryConnectArchipelago()
         {
             session = ArchipelagoSessionFactory.CreateSession(URL, Port);
-            LoginResult result = session.TryConnectAndLogin("Oxygen Not Included", SlotName, ItemsHandlingFlags.AllItems);
+            LoginResult result;
+            if (this.Password == "")
+                result = session.TryConnectAndLogin("Oxygen Not Included", SlotName, ItemsHandlingFlags.AllItems);
+            else
+                result = session.TryConnectAndLogin("Oxygen Not Included", SlotName, ItemsHandlingFlags.AllItems, password: this.Password);
             if (result.Successful)
             {
                 Debug.Log("Connection successful");
