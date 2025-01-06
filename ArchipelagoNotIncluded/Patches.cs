@@ -144,8 +144,10 @@ namespace ArchipelagoNotIncluded
                 string name = instance.tech.Name.Split(delimiters)[2];
                 //Debug.Log($"Name: {name}");
                 //Debug.Log($"Count: {instance.tech.unlockedItemIDs.Count}");
-                long[] locationIds = new long[instance.tech.unlockedItemIDs.Count];
-                for (int i = 0; i < instance.tech.unlockedItemIDs.Count; i++)
+                List<DefaultItem> defItem = ArchipelagoNotIncluded.info.spaced_out ? ArchipelagoNotIncluded.AllDefaultItems.FindAll(i => i.tech == name) : ArchipelagoNotIncluded.AllDefaultItems.FindAll(i => i.tech_base == name);
+                int count = defItem.Count;
+                long[] locationIds = new long[count];
+                for (int i = 0; i < count; i++)
                 {
                     //Debug.Log($"Location: {name} - {i + 1}");
                     long id = ArchipelagoNotIncluded.netmon.session.Locations.GetLocationIdFromName("Oxygen Not Included", $"{name} - {i + 1}");

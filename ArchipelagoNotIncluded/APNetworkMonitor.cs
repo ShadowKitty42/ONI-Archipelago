@@ -18,17 +18,21 @@ namespace ArchipelagoNotIncluded
     public class APNetworkMonitor : KMonoBehaviour
     {
         public ArchipelagoSession session = null;
-        private APSeedInfo info = null;
+        private string URL = "localhost";
+        private int Port = 38281;
+        private string SlotName = "Shadow";
 
-        public APNetworkMonitor(APSeedInfo apinfo)
+        public APNetworkMonitor(string URL, int port, string name)
         {
-            info = apinfo;
+            this.URL = URL;
+            this.Port = port;
+            this.SlotName = name;
         }
 
         public LoginResult TryConnectArchipelago()
         {
-            session = ArchipelagoSessionFactory.CreateSession(info.URL, info.port);
-            LoginResult result = session.TryConnectAndLogin("Oxygen Not Included", info.AP_slotName, ItemsHandlingFlags.AllItems);
+            session = ArchipelagoSessionFactory.CreateSession(URL, Port);
+            LoginResult result = session.TryConnectAndLogin("Oxygen Not Included", SlotName, ItemsHandlingFlags.AllItems);
             if (result.Successful)
             {
                 Debug.Log("Connection successful");

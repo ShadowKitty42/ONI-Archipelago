@@ -1,6 +1,7 @@
 from collections import namedtuple
 import os
 import json
+import threading
 from typing import *
 import typing
 
@@ -119,6 +120,8 @@ class ONIWorld(World):
     orbital_locations = []
     all_regions = []
     all_locations = []
+    mod_json = {}
+    slot_data_ready = threading.Event()
     
     base_only = True
     spaced_out = False
@@ -400,11 +403,13 @@ class ONIWorld(World):
                     output_item_name = [x for x in self.default_item_list if x.name == ap_item.name][0].internal_name
                 self.science_dicts[tech_name].append(output_item_name)
 
-        mod_json = ModJson(str(self.multiworld.seed), self.multiworld.player_name[self.player], self.spaced_out, self.frosty, self.science_dicts)
-        json_string = mod_json.to_json(indent=4)
+        self.mod_json = ModJson(str(self.multiworld.seed), self.multiworld.player_name[self.player], self.spaced_out, self.frosty, self.science_dicts)
+        json_string = self.mod_json.to_json(indent=4)
         output_file_path = os.path.join(output_directory, f"{self.multiworld.get_out_file_name_base(self.player)}.json")
         with open(output_file_path, "w") as file:
             file.write(json_string)
+
+        self.slot_data_ready.set()
 
         '''ap_json = APJson(self.ap_items)
         json_string = ap_json.to_json(indent=4)
@@ -426,7 +431,17 @@ class ONIWorld(World):
 
         The generation does not wait for `generate_output` to complete before calling this.
         `threading.Event` can be used if you need to wait for something from `generate_output`."""
-        return {}
+        self.slot_data_ready.wait()
+        slot_data = {
+            "AP_seed": self.mod_json.AP_seed,
+            "AP_slotName": self.mod_json.AP_slotName,
+            "URL": self.mod_json.URL,
+            "port": self.mod_json.port,
+            "spaced_out": self.mod_json.spaced_out,
+            "frosty": self.mod_json.frosty,
+            "technologies": self.mod_json.technologies
+        }
+        return slot_data
 
     def extend_hint_information(self, hint_data: typing.Dict[int, typing.Dict[int, str]]):
         """Fill in additional entrance information text into locations, which is displayed when hinted.

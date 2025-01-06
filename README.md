@@ -42,7 +42,7 @@ Required files can be found on the [Releases](https://github.com/ShadowKitty42/O
 2. Extract the `oni_world.zip` file and you should have a folder called `oni` (It is recommended to delete `oni_world.zip` after extracting it.)
 3. Download the attached YAML and modify any options you deem necessary and place it in your Players directory in your Archipelago Installation. You can choose any combination of DLC listed in the YAML, just make sure when you start a new game that you choose the same combination. The only Goal currrently implemented is to complete the Research Tree.
 4. Run "Generate" either through the executable or the AP launcher.
-5. In your `Output` directory, extract the ZIP and find the `.json` file generated. This will be needed in "Installing the mod" below.
+5. The result will be in your `Output` directory. This can be uploaded to [Archipelago Host Game](https://archipelago.gg/uploads) to use Archipelago servers as the host. Or it can be ran locally by extracting the ZIP and running the `.archipelago` file.
 
 ## Installing the Mod
 
@@ -51,13 +51,13 @@ Required files can be found on the [Releases](https://github.com/ShadowKitty42/O
 3. If there is a folder called `Local`, open it. If not, make a new folder called `Local` and then open.
 4. Place the `ArchipelagoNotIncluded.zip` file in the `Local` folder and extract it. You should now have a folder called `ArchipelagoNotIncluded`.
 5. Open the new `ArchipelagoNotIncluded` folder. You should see `.dll` files and most importantly, `mod.yaml` and `mod_info.yaml`. If you do, everything has been done correctly.
-6. Copy the `.json` file from the end of "Seed Generation" and paste it in this folder.
-7. Open the `.json` file using any Text Editor (like Notepad).
-8. Change the `URL` and `Port` based on how you are connecting to the multiworld and save the file.
-9. Open Oxygen Not Included.
-10. Navigate to the Mods menu.
-11. Click the empty checkbox next to ArchipelagoNotIncluded.
-12. Close the Mods menu and accept the changes. The game will need to restart.
+6. Open Oxygen Not Included.
+7. Navigate to the `Mods` menu.
+8. Click the empty checkbox next to `ArchipelagoNotIncluded`.
+9. Close the `Mods` menu and accept the changes. The game will need to restart.
+10. After the game restarts, open the `Mods` menu again.
+11. Click the `Settings` button next to `ArchipelagoNotIncluded`
+12. Change the settings listed to match your setup. NOTE: Player name MUST match what you put in the YAML file in step #3 of Seed Generation. (in URL, change it to `localhost` if running locally)
 13. You're ready to play! Start a new game and enjoy!
 
 Note: The mod will always use the *most recent* json in the directory. If you generate another seed, copying it over will apply that mod to all colonies from that point forward. Previous jsons are not currently deleted, but can be manually deleted if you find that you are loading the wrong one.
@@ -76,3 +76,4 @@ Note: The mod will always use the *most recent* json in the directory. If you ge
 - [ ] When research is completed, the original tech category gets a <!> icon even if nothing was added to it.
 - [ ] When research is completed, a research complete notification is generated and has incorrect information about what was unlocked.
 - [ ] If your game includes items from other games, they will not appear in the Research Tree. Despite this, every Research topic still unlocks the same number of items as normal.
+- [ ] Building Categories appear at the bottom even if there are no buildings listed for it.

@@ -20,6 +20,8 @@ using System.Reflection;
 using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.Models;
 using static ArchipelagoNotIncluded.Patches;
+using PeterHan.PLib.Options;
+using PeterHan.PLib.PatchManager;
 
 namespace ArchipelagoNotIncluded
 {
@@ -35,6 +37,7 @@ namespace ArchipelagoNotIncluded
         //public static ArchipelagoConnectionInfo apConnection = null;
         //public ArchipelagoState State { get; set; }
 
+        internal static ANIOptions Options {  get; private set; }
         public static APSeedInfo info = null;
         public static List<DefaultItem> AllDefaultItems = new List<DefaultItem>();
         private Dictionary<Tag, HashedString> tagCategoryMap;
@@ -826,6 +829,18 @@ namespace ArchipelagoNotIncluded
         public override void OnLoad(Harmony harmony)
         {
             PUtil.InitLibrary();
+
+            Options = POptions.ReadSettings<ANIOptions>() ?? new ANIOptions();
+            new POptions().RegisterOptions(this, typeof(ANIOptions));
+            //Options = ReloadOptions();
+            netmon = new APNetworkMonitor(Options.URL, Options.Port, Options.SlotName);
+            LoginResult result = netmon.TryConnectArchipelago();
+            if (result.Successful)
+            {
+                LoginSuccessful success = (LoginSuccessful)result;
+                info = JsonConvert.DeserializeObject<APSeedInfo>(JsonConvert.SerializeObject(success.SlotData));
+            }
+
             lastItem = 0;
 
             DirectoryInfo modDirectory = new DirectoryInfo(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
@@ -840,7 +855,7 @@ namespace ArchipelagoNotIncluded
                         AllDefaultItems = JsonConvert.DeserializeObject<List<DefaultItem>>(json);
                         continue;
                     }
-                    info = JsonConvert.DeserializeObject<APSeedInfo>(json);
+                    //info = JsonConvert.DeserializeObject<APSeedInfo>(json);
                     continue;
                 }
                 catch (Exception e)
@@ -850,25 +865,28 @@ namespace ArchipelagoNotIncluded
                     continue;
                 }
             }
-            foreach (DefaultItem item in AllDefaultItems)
+            if (info != null)
             {
-                //Debug.Log(info.spaced_out);
-                //Debug.Log(item.internal_tech + " " + item.internal_tech_base);
-                string InternalTech = info.spaced_out ? item.internal_tech : item.internal_tech_base;
-                if (Sciences.Count > 0 && Sciences?.TryGetValue(InternalTech, out List<string> techList) == true)
+                foreach (DefaultItem item in AllDefaultItems)
                 {
-                    if (techList == null)
-                        techList = new List<string>();
-                    techList.Add(item.internal_name);
-                }
-                else
-                {
-                    if (InternalTech == "None")
-                        continue;
-                    Sciences[InternalTech] = new List<string>
+                    //Debug.Log(info.spaced_out);
+                    //Debug.Log(item.internal_tech + " " + item.internal_tech_base);
+                    string InternalTech = info.spaced_out ? item.internal_tech : item.internal_tech_base;
+                    if (Sciences.Count > 0 && Sciences?.TryGetValue(InternalTech, out List<string> techList) == true)
                     {
-                        item.internal_name
-                    };
+                        if (techList == null)
+                            techList = new List<string>();
+                        techList.Add(item.internal_name);
+                    }
+                    else
+                    {
+                        if (InternalTech == "None")
+                            continue;
+                        Sciences[InternalTech] = new List<string>
+                        {
+                            item.internal_name
+                        };
+                    }
                 }
             }
 
@@ -879,10 +897,12 @@ namespace ArchipelagoNotIncluded
             harmony.Patch(original, new HarmonyMethod(prefix));
             //ModUtil.AddBuildingToPlanScreen((HashedString)"test", "id");
 
-            netmon = new APNetworkMonitor(info);
-
             SceneManager.sceneLoaded += (scene, loadScene) => {
                 if (netmon.session == null)
+                {
+                    netmon.TryConnectArchipelago();
+                }
+                else
                 {
                     netmon.TryConnectArchipelago();
                 }
@@ -896,6 +916,12 @@ namespace ArchipelagoNotIncluded
 
             //Game.Instance.Subscribe(11390976, new Action<object>(PlanScreen.Instance.OnResearchComplete));
 
+        }
+
+        [PLibMethod(RunAt.OnStartGame)]
+        public static void ReloadOptions()
+        {
+            Options = POptions.ReadSettings<ANIOptions>() ?? new ANIOptions();
         }
 
         /*private void SceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode loadSceneMode)

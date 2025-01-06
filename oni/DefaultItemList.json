@@ -2952,7 +2952,7 @@
         "version": "Base"
     },
     {
-        "name": "Oxygen Mask Station",
+        "name": "Oxygen Mask Pattern",
         "internal_name": "OxygenMask",
         "research_level": "basic",
         "research_level_base": "basic",
