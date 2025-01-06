@@ -78,3 +78,4 @@ Note: The mod will always use the *most recent* json in the directory. If you ge
 - [ ] When research is completed, a research complete notification is generated and has incorrect information about what was unlocked.
 - [ ] If your game includes items from other games, they will not appear in the Research Tree. Despite this, every Research topic still unlocks the same number of items as normal.
 - [ ] Building Categories appear at the bottom even if there are no buildings listed for it.
+- [ ] Trying to "Copy" the Ration Box you start the game causes a crash.
