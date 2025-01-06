@@ -164,7 +164,9 @@ namespace ArchipelagoNotIncluded
             string name = item.LocationName.Split('-')[0].Trim();
             Debug.Log(name);
             DefaultItem defItem = ArchipelagoNotIncluded.info.spaced_out ? ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.tech == name) : ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.tech_base == name);
-            Tech itemTech = Db.Get().Techs.TryGetTechForTechItem(defItem.internal_name);
+            Tech itemTech = null;
+            if (defItem != null)
+                itemTech = Db.Get().Techs.TryGetTechForTechItem(defItem.internal_name);
             if (itemTech != null)
                 Game.Instance.Trigger(11390976, (object)itemTech);
         }
