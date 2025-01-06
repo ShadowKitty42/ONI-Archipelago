@@ -58,7 +58,8 @@ Required files can be found on the [Releases](https://github.com/ShadowKitty42/O
 10. After the game restarts, open the `Mods` menu again.
 11. Click the `Settings` button next to `ArchipelagoNotIncluded`
 12. Change the settings listed to match your setup. NOTE: Player name MUST match what you put in the YAML file in step #3 of Seed Generation. (in URL, change it to `localhost` if running locally)
-13. You're ready to play! Start a new game and enjoy!
+13. The game will need to restart to apply changes.
+14. You're ready to play! Start a new game and enjoy!
 
 Note: The mod will always use the *most recent* json in the directory. If you generate another seed, copying it over will apply that mod to all colonies from that point forward. Previous jsons are not currently deleted, but can be manually deleted if you find that you are loading the wrong one.
 
