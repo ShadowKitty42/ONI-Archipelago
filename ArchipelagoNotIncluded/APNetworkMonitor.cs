@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using Newtonsoft.Json;
+using Archipelago.MultiClient.Net.Packets;
 
 namespace ArchipelagoNotIncluded
 {
@@ -31,14 +32,14 @@ namespace ArchipelagoNotIncluded
             this.Password = password;
         }
 
-        public LoginResult TryConnectArchipelago()
+        public LoginResult TryConnectArchipelago(ItemsHandlingFlags flags = ItemsHandlingFlags.AllItems)
         {
             session = ArchipelagoSessionFactory.CreateSession(URL, Port);
             LoginResult result;
             if (this.Password == "")
-                result = session.TryConnectAndLogin("Oxygen Not Included", SlotName, ItemsHandlingFlags.AllItems);
+                result = session.TryConnectAndLogin("Oxygen Not Included", SlotName, flags);
             else
-                result = session.TryConnectAndLogin("Oxygen Not Included", SlotName, ItemsHandlingFlags.AllItems, password: this.Password);
+                result = session.TryConnectAndLogin("Oxygen Not Included", SlotName, flags, password: this.Password);
             if (result.Successful)
             {
                 Debug.Log("Connection successful");
@@ -143,9 +144,12 @@ namespace ArchipelagoNotIncluded
             Debug.Log("UpdateAllItems Triggered");
             //List<string> techList = new List<string>();
             Debug.Log(this.session.Items.AllItemsReceived.Count);
-            for (int i = ArchipelagoNotIncluded.lastItem; i < session.Items.AllItemsReceived.Count - 1; i++)
+            //for (int i = ArchipelagoNotIncluded.lastItem; i < session.Items.AllItemsReceived.Count - 1; i++)
+            session.Socket.SendPacket(new SyncPacket());
+            foreach(ItemInfo item in session.Items.AllItemsReceived)
             {
-                AddItem(session.Items.AllItemsReceived[i]);
+                //AddItem(session.Items.AllItemsReceived[i]);
+                AddItem(item);
                 /*DefaultItem defItem = AllDefaultItems.SingleOrDefault(i => i.internal_name == item.ItemName);
                 string InternalTech = info.spaced_out ? defItem.internal_tech : defItem.internal_tech_base;
                 Debug.Log(InternalTech);
@@ -162,8 +166,9 @@ namespace ArchipelagoNotIncluded
         private static void AddItem(ItemInfo item)
         {
             string name = item.LocationName.Split('-')[0].Trim();
-            Debug.Log(name);
-            DefaultItem defItem = ArchipelagoNotIncluded.info.spaced_out ? ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.tech == name) : ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.tech_base == name);
+            Debug.Log(item.ItemName);
+            //DefaultItem defItem = ArchipelagoNotIncluded.info.spaced_out ? ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.tech == name) : ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.tech_base == name);
+            DefaultItem defItem = ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.name == item.ItemName);
             Tech itemTech = null;
             if (defItem != null)
                 itemTech = Db.Get().Techs.TryGetTechForTechItem(defItem.internal_name);

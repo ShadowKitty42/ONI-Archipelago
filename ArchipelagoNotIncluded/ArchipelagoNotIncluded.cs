@@ -837,11 +837,12 @@ namespace ArchipelagoNotIncluded
                 netmon = new APNetworkMonitor(Options.URL, Options.Port, Options.SlotName);
             else
                 netmon = new APNetworkMonitor(Options.URL, Options.Port, Options.SlotName, Options.Password);
-            LoginResult result = netmon.TryConnectArchipelago();
+            LoginResult result = netmon.TryConnectArchipelago(ItemsHandlingFlags.NoItems);
             if (result.Successful)
             {
                 LoginSuccessful success = (LoginSuccessful)result;
                 info = JsonConvert.DeserializeObject<APSeedInfo>(JsonConvert.SerializeObject(success.SlotData));
+                netmon.session.Socket.DisconnectAsync();
             }
 
             lastItem = 0;
@@ -901,14 +902,19 @@ namespace ArchipelagoNotIncluded
             //ModUtil.AddBuildingToPlanScreen((HashedString)"test", "id");
 
             SceneManager.sceneLoaded += (scene, loadScene) => {
-                if (netmon.session == null)
+                Debug.Log($"Scene: {scene.name}");
+                if (scene.name == "backend")
+                {
+                    if (netmon.session == null)
+                    {
+                        netmon.TryConnectArchipelago();
+                    }
+                    //netmon.UpdateAllItems();
+                }
+                /*else
                 {
                     netmon.TryConnectArchipelago();
-                }
-                else
-                {
-                    netmon.TryConnectArchipelago();
-                }
+                }*/
                 base.OnLoad(harmony);
             };
 
@@ -921,6 +927,13 @@ namespace ArchipelagoNotIncluded
 
         }
 
+        [PLibMethod(RunAt.AfterDbPostProcess)]
+        public static void Connect()
+        {
+            //netmon.TryConnectArchipelago();
+            
+        }
+        
         [PLibMethod(RunAt.OnStartGame)]
         public static void ReloadOptions()
         {
