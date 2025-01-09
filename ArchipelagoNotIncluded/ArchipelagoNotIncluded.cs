@@ -916,7 +916,11 @@ namespace ArchipelagoNotIncluded
                 {
                     netmon.TryConnectArchipelago();
                 }*/
-                base.OnLoad(harmony);
+                if (!patched)
+                {
+                    base.OnLoad(harmony);
+                    patched = true;
+                }
             };
 
             //State = new ArchipelagoState();
