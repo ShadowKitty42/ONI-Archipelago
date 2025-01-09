@@ -842,7 +842,7 @@ namespace ArchipelagoNotIncluded
             {
                 LoginSuccessful success = (LoginSuccessful)result;
                 info = JsonConvert.DeserializeObject<APSeedInfo>(JsonConvert.SerializeObject(success.SlotData));
-                netmon.session.Socket.DisconnectAsync();
+                //netmon.session.Socket.DisconnectAsync();
             }
 
             lastItem = 0;
@@ -859,7 +859,8 @@ namespace ArchipelagoNotIncluded
                         AllDefaultItems = JsonConvert.DeserializeObject<List<DefaultItem>>(json);
                         continue;
                     }
-                    //info = JsonConvert.DeserializeObject<APSeedInfo>(json);
+                    if (info == null)
+                        info = JsonConvert.DeserializeObject<APSeedInfo>(json);
                     continue;
                 }
                 catch (Exception e)
