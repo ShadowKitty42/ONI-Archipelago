@@ -696,11 +696,11 @@ namespace ArchipelagoNotIncluded
                 //Debug.Log("Found update method");
                 int apItems = ArchipelagoNotIncluded.netmon.session.Items.AllItemsReceived.Count;
                 Debug.Log($"apItems: {apItems}, lastItem: {ArchipelagoNotIncluded.lastItem}");
-                if (apItems == 0)
+                /*if (apItems == 0)
                     return;
 
                 if (apItems == ArchipelagoNotIncluded.lastItem)
-                    return;
+                    return;*/
 
                 ArchipelagoNotIncluded.netmon.UpdateAllItems();
             }
