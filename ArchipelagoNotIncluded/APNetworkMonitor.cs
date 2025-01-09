@@ -23,6 +23,7 @@ namespace ArchipelagoNotIncluded
         private int Port = 38281;
         private string SlotName = "Shadow";
         private string Password = "Password";
+        private bool initialSyncComplete = false;
 
         public APNetworkMonitor(string URL, int port, string name, string password = "")
         {
@@ -43,6 +44,7 @@ namespace ArchipelagoNotIncluded
             if (result.Successful)
             {
                 Debug.Log("Connection successful");
+                initialSyncComplete = false;
                 session.Items.ItemReceived += OnItemReceived;
                 session.Socket.SocketClosed += OnSocketClosed;
                 session.Socket.ErrorReceived += OnErrorReceived;
@@ -139,24 +141,28 @@ namespace ArchipelagoNotIncluded
             session.Items.DequeueItem();
         }
 
-        public void UpdateAllItems()
+        public void UpdateAllItems(bool force = false)
         {
+            if (!force && initialSyncComplete)
+                return;
+            if (!initialSyncComplete)
+                initialSyncComplete = true;
             Debug.Log("UpdateAllItems Triggered");
             //List<string> techList = new List<string>();
             Debug.Log(this.session.Items.AllItemsReceived.Count);
             //for (int i = ArchipelagoNotIncluded.lastItem; i < session.Items.AllItemsReceived.Count - 1; i++)
             session.Socket.SendPacket(new SyncPacket());
-            foreach(ItemInfo item in session.Items.AllItemsReceived)
+            /*foreach(ItemInfo item in session.Items.AllItemsReceived)
             {
                 //AddItem(session.Items.AllItemsReceived[i]);
                 AddItem(item);
-                /*DefaultItem defItem = AllDefaultItems.SingleOrDefault(i => i.internal_name == item.ItemName);
+                DefaultItem defItem = AllDefaultItems.SingleOrDefault(i => i.internal_name == item.ItemName);
                 string InternalTech = info.spaced_out ? defItem.internal_tech : defItem.internal_tech_base;
                 Debug.Log(InternalTech);
                 if (!techList.Contains(InternalTech))
-                    techList.Add(InternalTech);*/
+                    techList.Add(InternalTech);
                 //item.LocationName.Substring(0, item.LocationName.IndexOf('-') - 1);
-            }
+            }*/
             /*foreach (string tech in techList)
             {
                 Game.Instance.Trigger(-107300940, Db.Get().Techs.TryGet(tech));
