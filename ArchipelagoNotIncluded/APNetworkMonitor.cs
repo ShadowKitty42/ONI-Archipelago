@@ -71,6 +71,7 @@ namespace ArchipelagoNotIncluded
         {
             Debug.Log($"OnSocketClosed: {reason}");
             session = null;
+            TryConnectArchipelago();
             //StartCoroutine(AttemptToReconnect());
         }
 
@@ -146,12 +147,20 @@ namespace ArchipelagoNotIncluded
             if (!force && initialSyncComplete)
                 return;
             if (!initialSyncComplete)
+            {
+                //session.ConnectionInfo.UpdateConnectionOptions(ItemsHandlingFlags.AllItems);
+                ConnectUpdatePacket packet = new ConnectUpdatePacket
+                {
+                    ItemsHandling = ItemsHandlingFlags.AllItems
+                };
+                session.Socket.SendPacket(packet);
                 initialSyncComplete = true;
+            }
             Debug.Log("UpdateAllItems Triggered");
             //List<string> techList = new List<string>();
             Debug.Log(this.session.Items.AllItemsReceived.Count);
             //for (int i = ArchipelagoNotIncluded.lastItem; i < session.Items.AllItemsReceived.Count - 1; i++)
-            session.Socket.SendPacket(new SyncPacket());
+            session.Socket.SendPacketAsync(new SyncPacket());
             /*foreach(ItemInfo item in session.Items.AllItemsReceived)
             {
                 //AddItem(session.Items.AllItemsReceived[i]);

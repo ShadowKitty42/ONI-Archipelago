@@ -29,6 +29,7 @@ namespace ArchipelagoNotIncluded
     {
         public class Techs_Init_Patch
         {
+            [HarmonyPriority(Priority.VeryHigh)]
             public static bool Prefix(Techs __instance)
             {
 
@@ -628,7 +629,9 @@ namespace ArchipelagoNotIncluded
             DefaultItem defItem = ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.internal_name == InternalName);
             if (defItem == null)
                 return false;
-            foreach (ItemInfo item in ArchipelagoNotIncluded.netmon.session.Items.AllItemsReceived)
+            if (ArchipelagoNotIncluded.netmon?.session?.Items?.AllItemsReceived.Count() == 0)
+                return false;
+            foreach (ItemInfo item in ArchipelagoNotIncluded.netmon?.session?.Items?.AllItemsReceived)
                 if (item.ItemDisplayName == defItem.name)
                     return true;
             return false;
@@ -659,7 +662,9 @@ namespace ArchipelagoNotIncluded
                 return false;
             }*/
             //return true;
-            foreach (ItemInfo item in ArchipelagoNotIncluded.netmon.session.Items.AllItemsReceived)
+            if (ArchipelagoNotIncluded.netmon?.session?.Items?.AllItemsReceived.Count() == 0)
+                return false;
+            foreach (ItemInfo item in ArchipelagoNotIncluded.netmon?.session?.Items?.AllItemsReceived)
                 if (item.ItemDisplayName == name)
                     return true;
             return false;
@@ -688,7 +693,8 @@ namespace ArchipelagoNotIncluded
             }
         }
 
-        [HarmonyPatch(typeof(SaveLoader), nameof(SaveLoader.Load), new[] {typeof(IReader)})]
+        //[HarmonyPatch(typeof(SaveLoader), nameof(SaveLoader.Load), new[] {typeof(IReader)})]
+        [HarmonyPatch(typeof(Game), "OnPrefabInit")]
         public static class SaveLoader_Load_Patch
         {
             public static void Postfix()

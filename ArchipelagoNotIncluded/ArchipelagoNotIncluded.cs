@@ -904,6 +904,11 @@ namespace ArchipelagoNotIncluded
 
             SceneManager.sceneLoaded += (scene, loadScene) => {
                 Debug.Log($"Scene: {scene.name}");
+                if (!patched)
+                {
+                    base.OnLoad(harmony);
+                    patched = true;
+                }
                 if (scene.name == "backend")
                 {
                     if (netmon.session == null)
@@ -916,11 +921,6 @@ namespace ArchipelagoNotIncluded
                 {
                     netmon.TryConnectArchipelago();
                 }*/
-                if (!patched)
-                {
-                    base.OnLoad(harmony);
-                    patched = true;
-                }
             };
 
             //State = new ArchipelagoState();
@@ -932,10 +932,10 @@ namespace ArchipelagoNotIncluded
 
         }
 
-        [PLibMethod(RunAt.AfterDbPostProcess)]
+        [PLibMethod(RunAt.OnStartGame)]
         public static void Connect()
         {
-            //netmon.TryConnectArchipelago();
+            netmon.UpdateAllItems();
             
         }
         
