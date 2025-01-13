@@ -811,18 +811,21 @@ namespace ArchipelagoNotIncluded
             }
         }
 
-        /*[HarmonyDebug]
+        [HarmonyDebug]
         [HarmonyPatch(typeof(SuitFabricatorConfig))]
         [HarmonyPatch("ConfigureRecipes")]
         public class ConfigureRecipes_Patch
         {
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
             {
-                bool methodFound = false;
+                //bool methodFound = false;
                 bool startPatch = false;
                 MethodInfo method = AccessTools.Method(typeof(Db), nameof(Db.Get));
+                string atmo = ArchipelagoNotIncluded.info.technologies.FirstOrDefault(p => p.Value.Contains("AtmoSuit")).Key;
                 FieldInfo atmosuit = AccessTools.Field(typeof(TechItems), nameof(TechItems.atmoSuit));
+                string jet = ArchipelagoNotIncluded.info.technologies.FirstOrDefault(p => p.Value.Contains("JetSuit")).Key;
                 FieldInfo jetsuit = AccessTools.Field(typeof(TechItems), nameof(TechItems.jetSuit));
+                string leaad = ArchipelagoNotIncluded.info.technologies.FirstOrDefault(p => p.Value.Contains("LeadSuit")).Key;
                 FieldInfo leadsuit = AccessTools.Field(typeof(TechItems), nameof(TechItems.leadSuit));
                 FieldInfo field = AccessTools.Field(typeof(TechItem), nameof(TechItem.parentTechId));
 
@@ -836,11 +839,11 @@ namespace ArchipelagoNotIncluded
                     if (startPatch)
                     {
                         if (instruction.LoadsField(atmosuit))
-                            yield return new CodeInstruction("required tech here");
+                            yield return new CodeInstruction(OpCodes.Ldstr, atmo);
                         if (instruction.LoadsField(jetsuit))
-                            yield return new CodeInstruction("required tech here");
+                            yield return new CodeInstruction(OpCodes.Ldstr, jet);
                         if (instruction.LoadsField(leadsuit))
-                            yield return new CodeInstruction("required tech here");
+                            yield return new CodeInstruction(OpCodes.Ldstr, leaad);
                         if (instruction.LoadsField(field))
                             startPatch = false;
                         continue;
@@ -848,7 +851,7 @@ namespace ArchipelagoNotIncluded
                     yield return instruction;
                 }
             }
-        }*/
+        }
 
         [HarmonyPatch(typeof(BuildingDef))]
         [HarmonyPatch("IsValidDLC")]
