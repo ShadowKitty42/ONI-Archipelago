@@ -86,9 +86,9 @@ namespace ArchipelagoNotIncluded
 
         private void OnItemReceived(ReceivedItemsHelper helper)
         {
-            Debug.Log("OnItemReceived Triggered");
+            //Debug.Log("OnItemReceived Triggered");
             //UpdateAllItems();
-            Debug.Log(session.Items.AllItemsReceived.Count);
+            //Debug.Log(session.Items.AllItemsReceived.Count);
             //if (session.Items.AllItemsReceived.Count == 4)
             //{
             //ItemInfo item = session.Items.PeekItem();
@@ -181,7 +181,7 @@ namespace ArchipelagoNotIncluded
         private static void AddItem(ItemInfo item)
         {
             string name = item.LocationName.Split('-')[0].Trim();
-            Debug.Log(item.ItemName);
+            //Debug.Log(item.ItemName);
             //DefaultItem defItem = ArchipelagoNotIncluded.info.spaced_out ? ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.tech == name) : ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.tech_base == name);
             DefaultItem defItem = ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.name == item.ItemName);
             Tech itemTech = null;

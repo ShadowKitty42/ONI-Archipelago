@@ -900,6 +900,9 @@ namespace ArchipelagoNotIncluded
             var original = AccessTools.Method(typeof(Database.Techs), nameof(Database.Techs.Init));
             var prefix = AccessTools.Method(typeof(Techs_Init_Patch), nameof(Techs_Init_Patch.Prefix));
             harmony.Patch(original, new HarmonyMethod(prefix));
+            original = AccessTools.Method(typeof(Database.Techs), nameof(Database.Techs.Load));
+            prefix = AccessTools.Method(typeof(Techs_Load_Patch), nameof(Techs_Load_Patch.Prefix));
+            harmony.Patch(original, new HarmonyMethod(prefix));
             //ModUtil.AddBuildingToPlanScreen((HashedString)"test", "id");
 
             SceneManager.sceneLoaded += (scene, loadScene) => {
