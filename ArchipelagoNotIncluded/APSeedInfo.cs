@@ -11,6 +11,7 @@ namespace ArchipelagoNotIncluded
         public int port { get; set; }
         public bool spaced_out { get; set; }
         public bool frosty { get; set; }
+        public bool bionic { get; set; }
 
         public Dictionary<string, List<string>> technologies { get; set; }
     }

@@ -73,6 +73,7 @@ class ONIWorld(World):
     base_only = True
     spaced_out = False
     frosty = False
+    bionic = False
 
     
     for item in default_item_list:
@@ -142,6 +143,8 @@ class ONIWorld(World):
             self.spaced_out = True
         if self.options.frosty:
             self.frosty = True
+        if self.options.bionic:
+            self.bionic = True
             
         self.all_items = []
         for item in self.default_item_list:
@@ -150,6 +153,8 @@ class ONIWorld(World):
             if self.spaced_out == False and item.version == "SpacedOut":
                 continue;
             if self.frosty == False and item.version == "Frosty":
+                continue;
+            if self.bionic == False and item.version == "Bionic":
                 continue;
 
             # Create list of Items
@@ -379,8 +384,9 @@ class ONIWorld(World):
             "AP_slotName": self.mod_json.AP_slotName,
             "URL": self.mod_json.URL,
             "port": self.mod_json.port,
-            "spaced_out": self.mod_json.spaced_out,
-            "frosty": self.mod_json.frosty,
+            "spaced_out": self.spaced_out,
+            "frosty": self.frosty,
+            "bionic": self.bionic,
             "technologies": self.mod_json.technologies
         }
         return slot_data

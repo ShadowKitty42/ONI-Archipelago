@@ -20,13 +20,15 @@ using System.Runtime.InteropServices;
 using Archipelago.MultiClient.Net.DataPackage;
 using Archipelago.MultiClient.Net.Models;
 using System.Collections;
+using System.Text;
 
 namespace ArchipelagoNotIncluded
 {
-    [HarmonyPatch(typeof(Techs))]
-    [HarmonyPatch("Init")]
+    
     public class Patches
-    {
+    { 
+        [HarmonyPatch(typeof(Techs))]
+        [HarmonyPatch("Init")]
         public class Techs_Init_Patch
         {
             [HarmonyPriority(Priority.VeryHigh)]
@@ -54,6 +56,14 @@ namespace ArchipelagoNotIncluded
                         new Tech(pair.Key, pair.Value.ToList(), __instance);
                     }
                 }
+
+                /*foreach (DefaultItem item in ArchipelagoNotIncluded.AllDefaultItems)
+                {
+                    if (!ArchipelagoNotIncluded.info.technologies.Values.Any(i => i.Contains(item.internal_name)))
+                    {
+                        ArchipelagoNotIncluded.PreUnlockedTech.Add(item.internal_name);
+                    }
+                }*/
 
                 Tech preUnlockedTechs = new Tech("PreUnlockedTechs", ArchipelagoNotIncluded.PreUnlockedTech, __instance);
                 Db.Get().Techs.resources.Add(preUnlockedTechs);
@@ -762,7 +772,7 @@ namespace ArchipelagoNotIncluded
         [HarmonyPatch("Load")]
         public class Load_Patch
         {
-            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
             {
                 bool methodFound = false;
                 bool startPatch = false;
@@ -820,14 +830,15 @@ namespace ArchipelagoNotIncluded
             {
                 //bool methodFound = false;
                 bool startPatch = false;
+                string tech = "Placeholder";
                 MethodInfo method = AccessTools.Method(typeof(Db), nameof(Db.Get));
-                string atmo = ArchipelagoNotIncluded.info.technologies.FirstOrDefault(p => p.Value.Contains("AtmoSuit")).Key;
                 FieldInfo atmosuit = AccessTools.Field(typeof(TechItems), nameof(TechItems.atmoSuit));
-                string jet = ArchipelagoNotIncluded.info.technologies.FirstOrDefault(p => p.Value.Contains("JetSuit")).Key;
                 FieldInfo jetsuit = AccessTools.Field(typeof(TechItems), nameof(TechItems.jetSuit));
-                string leaad = ArchipelagoNotIncluded.info.technologies.FirstOrDefault(p => p.Value.Contains("LeadSuit")).Key;
                 FieldInfo leadsuit = AccessTools.Field(typeof(TechItems), nameof(TechItems.leadSuit));
                 FieldInfo field = AccessTools.Field(typeof(TechItem), nameof(TechItem.parentTechId));
+                /*string atmo = ArchipelagoNotIncluded.info.technologies.FirstOrDefault(p => p.Value.Contains("AtmoSuit")).Key;
+                string jet = ArchipelagoNotIncluded.info.technologies.FirstOrDefault(p => p.Value.Contains("JetSuit")).Key;
+                string lead = ArchipelagoNotIncluded.info.technologies.FirstOrDefault(p => p.Value.Contains("LeadSuit")).Key;*/
 
                 foreach (CodeInstruction instruction in instructions)
                 {
@@ -838,12 +849,65 @@ namespace ArchipelagoNotIncluded
                     }
                     if (startPatch)
                     {
-                        if (instruction.LoadsField(atmosuit))
-                            yield return new CodeInstruction(OpCodes.Ldstr, atmo);
-                        if (instruction.LoadsField(jetsuit))
+                        if (instruction.LoadsField(atmosuit) || instruction.LoadsField(jetsuit) || instruction.LoadsField(leadsuit))
+                            yield return new CodeInstruction(OpCodes.Ldstr, tech);
+                        /*if (instruction.LoadsField(jetsuit))
                             yield return new CodeInstruction(OpCodes.Ldstr, jet);
                         if (instruction.LoadsField(leadsuit))
-                            yield return new CodeInstruction(OpCodes.Ldstr, leaad);
+                            yield return new CodeInstruction(OpCodes.Ldstr, lead);*/
+                        if (instruction.LoadsField(field))
+                            startPatch = false;
+                        continue;
+                    }
+                    yield return instruction;
+                }
+            }
+        }
+
+        //[HarmonyDebug]
+        [HarmonyPatch(typeof(CraftingTableConfig))]
+        [HarmonyPatch("ConfigureRecipes")]
+        public class ConfigureRecipes2_Patch
+        {
+            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                //bool methodFound = false;
+                bool firstLineFound = false;
+                bool secondLineFound = false;
+                bool startPatch = false;
+                string tech = "Placeholder";
+                MethodInfo method = AccessTools.Method(typeof(Db), nameof(Db.Get));
+                FieldInfo oxygenmask = AccessTools.Field(typeof(TechItems), nameof(TechItems.oxygenMask));
+                FieldInfo field = AccessTools.Field(typeof(TechItem), nameof(TechItem.parentTechId));
+
+                foreach (CodeInstruction instruction in instructions)
+                {
+                    // BEGIN SKIP FOR BIONIC RECIPES
+                    if (!firstLineFound)
+                    {
+                        if (instruction.LoadsField(field))
+                            firstLineFound = true;
+                        continue;
+                    }
+                    if (!secondLineFound)
+                    {
+                        if (instruction.opcode == OpCodes.Ldc_I4_1)
+                        {
+                            secondLineFound = true;
+                            yield return instruction;
+                        }
+                        continue;
+                    }
+                    // END SKIP
+                    if (!startPatch && instruction.Calls(method))
+                    {
+                        //Debug.Log("Found method");
+                        startPatch = true;
+                    }
+                    if (startPatch)
+                    {
+                        if (instruction.LoadsField(oxygenmask))
+                            yield return new CodeInstruction(OpCodes.Ldstr, tech);
                         if (instruction.LoadsField(field))
                             startPatch = false;
                         continue;
@@ -878,5 +942,201 @@ namespace ArchipelagoNotIncluded
                 return true;
             }
         }
+
+        [HarmonyPatch(typeof(ComplexRecipe))]
+        [HarmonyPatch(nameof(ComplexRecipe.IsRequiredTechUnlocked))]
+        public static class IsRequiredTechUnlocked_Patch
+        {
+            public static bool Prefix(ComplexRecipe __instance, ref bool __result)
+            {
+                //Debug.Log("Found update method");
+                //Debug.Log(___def.PrefabID);
+                //if (!CheckItemList(___def.PrefabID))
+                //requirementsState = PlanScreen.RequirementsState.Invalid;
+                string search = null;
+                foreach (ComplexRecipe.RecipeElement element in __instance.ingredients)
+                {
+                    switch (element.material.Name)
+                    {
+                        case string x when x.Contains("Atmo"):
+                            search = "AtmoSuit";
+                            break;
+                        case string x when x.Contains("Jet"):
+                            search = "JetSuit";
+                            break;
+                        case string x when x.Contains("Lead"):
+                            search = "LeadSuit";
+                            break;
+                        case string x when x.Contains("Oxygen"):
+                            search = "OxygenMask";
+                            break;
+                    }
+                }
+                if (!String.IsNullOrEmpty(search) && CheckItemList(search))
+                {
+                    __result = true;
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        [HarmonyPatch(typeof(Techs))]
+        [HarmonyPatch(nameof(Techs.Load))]
+        public static class Techs_Load_Patch
+        {
+            /*public static MethodInfo TargetMethod()
+            {
+                return AccessTools.Method(typeof(ResourceLoader<ResourceTreeNode>), "Load", new Type[] { typeof(TextAsset) });
+                return typeof(ResourceTreeLoader<>).GetMethod("Load", new Type[] { typeof(TextAsset) });
+            }*/
+            public static bool Prefix(Techs __instance, List<List<Tuple<string, float>>> ___TECH_TIERS)
+            {
+                TextAsset tree_file = Db.Get().researchTreeFileExpansion1;
+                ResourceTreeLoader<ResourceTreeNode> resourceTreeLoader = new ResourceTreeLoader<ResourceTreeNode>(tree_file);
+                List<TechTreeTitle> techTreeTitleList = new List<TechTreeTitle>();
+                for (int idx = 0; idx < Db.Get().TechTreeTitles.Count; ++idx)
+                    techTreeTitleList.Add(Db.Get().TechTreeTitles[idx]);
+                techTreeTitleList.Sort((Comparison<TechTreeTitle>)((a, b) => a.center.y.CompareTo(b.center.y)));
+
+                ResourceTreeNode newnode = new ResourceTreeNode
+                {
+                    Id = "_TestId",
+                    Name = "Test",
+                    nodeX = 200.0f,
+                    nodeY = -5000f,
+                    height = 72f,
+                    width = 250f
+                };
+                newnode.references.Add(new ResourceTreeNode
+                {
+                    Id = "AtmoSuit",
+                    Name = "Test",
+                    nodeX = 200.0f,
+                    nodeY = 45f,
+                    height = 72f,
+                    width = 250f
+                });
+                resourceTreeLoader.resources.Add(newnode);
+                foreach (ResourceTreeNode node in (ResourceLoader<ResourceTreeNode>)resourceTreeLoader)
+                {
+                    Debug.Log(GetLogFor(node));
+                    int count = 0;
+                    foreach (ResourceTreeNode refNode in node.references)
+                    {
+                        count++;
+                        Debug.Log($"{node.Id} ref #{count}: {GetLogFor(refNode)}");
+                    }
+                    count = 0;
+                    foreach (ResourceTreeNode.Edge edge in node.edges)
+                    {
+                        count++;
+                        Debug.Log($"{node.Id} edge #{count}: {GetLogFor(edge)}");
+                    }
+                    //Debug.Log(GetLogFor(node.edges));
+                    if (!string.Equals(node.Id.Substring(0, 1), "_"))
+                    {
+                        Tech tech1 = __instance.TryGet(node.Id);
+                        if (tech1 != null)
+                        {
+                            string categoryID1 = "";
+                            for (int index = 0; index < techTreeTitleList.Count; ++index)
+                            {
+                                if ((double)techTreeTitleList[index].center.y >= (double)node.center.y)
+                                {
+                                    categoryID1 = techTreeTitleList[index].Id;
+                                    break;
+                                }
+                            }
+                            tech1.SetNode(node, categoryID1);
+                            foreach (ResourceTreeNode reference in node.references)
+                            {
+                                Tech tech2 = __instance.TryGet(reference.Id);
+                                if (tech2 != null)
+                                {
+                                    string categoryID2 = "";
+                                    for (int index = 0; index < techTreeTitleList.Count; ++index)
+                                    {
+                                        if ((double)techTreeTitleList[index].center.y >= (double)node.center.y)
+                                        {
+                                            categoryID2 = techTreeTitleList[index].Id;
+                                            break;
+                                        }
+                                    }
+                                    tech2.SetNode(reference, categoryID2);
+                                    tech2.requiredTech.Add(tech1);
+                                    tech1.unlockedTech.Add(tech2);
+                                }
+                            }
+                        }
+                    }
+                }
+                foreach (Tech resource in __instance.resources)
+                {
+                    resource.tier = Techs.GetTier(resource);
+                    foreach (Tuple<string, float> tuple in ___TECH_TIERS[resource.tier])
+                    {
+                        if (!resource.costsByResearchTypeID.ContainsKey(tuple.first))
+                            resource.costsByResearchTypeID.Add(tuple.first, tuple.second);
+                    }
+                }
+                for (int idx = __instance.Count - 1; idx >= 0; --idx)
+                {
+                    if (!((Tech)__instance.GetResource(idx)).FoundNode)
+                        __instance.Remove(__instance.GetResource(idx));
+                }
+                return false;
+            }
+            /*{
+                //Debug.Log("Found update method");
+                //Debug.Log(___def.PrefabID);
+                //if (!CheckItemList(___def.PrefabID))
+                //requirementsState = PlanScreen.RequirementsState.Invalid;
+                
+                ResourceTreeNode node = new ResourceTreeNode
+                {
+                    Id = "TestId",
+                    Name = "Test",
+                    nodeX = 200.0f,
+                    nodeY = 4500f,
+                    height = 72f,
+                    width = 250f
+                };
+                ___resources.Add(node);
+                Debug.Log("Code is ran");
+            }*/
+        }
+        public static string GetLogFor(object objectToGetStateOf)
+        {
+            if (objectToGetStateOf == null)
+            {
+                const string PARAMETER_NAME = "objectToGetStateOf";
+                throw new ArgumentException(string.Format("Parameter {0} cannot be null", PARAMETER_NAME), PARAMETER_NAME);
+            }
+            var builder = new StringBuilder();
+
+            foreach (var property in objectToGetStateOf.GetType().GetProperties())
+            {
+                object value = property.GetValue(objectToGetStateOf, null);
+
+                builder.Append(property.Name)
+                .Append(" = ")
+                .Append((value ?? "null"))
+                .AppendLine();
+            }
+            foreach (var property in objectToGetStateOf.GetType().GetFields())
+            {
+                object value = property.GetValue(objectToGetStateOf);
+
+                builder.Append(property.Name)
+                .Append(" = ")
+                .Append((value ?? "null"))
+                .AppendLine();
+
+                //if (objectToGetStateOf.GetType() == typeof(ResourceTreeNode))
+            }
+            return builder.ToString();
+        }
     }
+
 }
