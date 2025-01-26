@@ -350,7 +350,7 @@ class ONIWorld(World):
                     output_item_name = [x for x in self.default_item_list if x.name == ap_item.name][0].internal_name
                 self.science_dicts[tech_name].append(output_item_name)
 
-        self.mod_json = ModJson(str(self.multiworld.seed), self.multiworld.player_name[self.player], self.spaced_out, self.frosty, self.science_dicts)
+        self.mod_json = ModJson(str(self.multiworld.seed), self.multiworld.player_name[self.player], self.spaced_out, self.frosty, self.bionic, self.science_dicts)
         json_string = self.mod_json.to_json(indent=4)
         output_file_path = os.path.join(output_directory, f"{self.multiworld.get_out_file_name_base(self.player)}.json")
         with open(output_file_path, "w") as file:
