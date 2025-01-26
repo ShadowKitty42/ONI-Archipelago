@@ -92,7 +92,9 @@ namespace ArchipelagoNotIncluded
             //if (session.Items.AllItemsReceived.Count == 4)
             //{
             //ItemInfo item = session.Items.PeekItem();
-            AddItem(session.Items.PeekItem());
+            ItemInfo item = session.Items.PeekItem();
+            if (item.Player.Name == SlotName)
+                AddItem(item);
             /*Debug.Log(item.ItemName);
 
             //char[] delimiters = { '<', '>' };

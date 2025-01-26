@@ -27,9 +27,16 @@ class Frosty(Toggle):
     """
     display_name = "Enable Frosty DLC"
 
+class Bionic(Toggle):
+    """
+    Enable Bionic DLC
+    """
+    display_name = "Enable Bionic DLC"
+
 
 @dataclass
 class ONIOptions(PerGameCommonOptions):
     goal: Goal
     spaced_out: SpacedOut
     frosty: Frosty
+    bionic: Bionic

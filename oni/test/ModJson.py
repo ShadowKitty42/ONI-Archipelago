@@ -15,13 +15,15 @@ class ModJson:
     port: int
     spaced_out: bool
     frosty: bool
+    bionic: bool
     technologies: typing.Dict[str, typing.List[str]]
 
-    def __init__(self, seed, slot, space, frost, tech):
+    def __init__(self, seed, slot, space, frost, bionic, tech):
         self.AP_seed = seed
         self.AP_slotName = slot
         self.spaced_out = space
         self.frosty = frost
+        self.bionic = bionic
         self.technologies = tech
         self.URL = "archipelago.gg"
         self.port = 38281

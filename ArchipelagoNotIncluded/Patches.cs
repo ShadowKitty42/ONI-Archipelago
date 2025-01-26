@@ -36,7 +36,7 @@ namespace ArchipelagoNotIncluded
             {
 
                 //If there is no info, run the normal tech init function
-                if (ArchipelagoNotIncluded.info == null)
+                if (ArchipelagoNotIncluded.info is null || ArchipelagoNotIncluded.info.technologies is null)
                 {
                     Debug.Log("No mod json could be loaded. Skipping mod override");
                     return true;
