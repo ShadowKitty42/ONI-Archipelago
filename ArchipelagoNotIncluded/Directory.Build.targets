@@ -18,10 +18,11 @@
 
 	<Target Name="ILRepack" AfterTargets="Build" Condition="'$(IsPacked)' == 'true'">
 		<ItemGroup>
-      <InputAssemblies Include="$(TargetPath)" />
-      <InputAssemblies
-			  Include="$(LibFolder)\*.dll"
-			  Exclude="$(TargetPath); **/0Harmony.dll; **_public.dll ;**Newtonsoft.Json;**/System.*; **/Microsoft.*" />
+		  
+		  <InputAssemblies
+				  Include="$(LibFolder)\Archipelago.MultiClient.Net.dll;
+						   $(LibFolder)\PLib.dll;
+				  "/>
 		</ItemGroup>
 
 		<ILRepack
@@ -30,6 +31,7 @@
 		  InputAssemblies="@(InputAssemblies)"
 		  Wildcards="true"
 		  LibraryPath="$(GameLibsFolder)"
+		  Internalize="true"
 		  Parallel="true"
 		  OutputFile="$(TargetPath)"/>
 	</Target>

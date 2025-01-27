@@ -2,7 +2,7 @@
 <Project>
 	<PropertyGroup>
 		<!--Gamedata Folder, adjust to your own ONI installation-->
-		<GameLibsFolder>C:\Program Files (x86)\Steam\steamapps\common\OxygenNotIncluded\OxygenNotIncluded_Data\Managed</GameLibsFolder>
+		<GameLibsFolder>F:\Steam\steamapps\common\OxygenNotIncluded\OxygenNotIncluded_Data\Managed</GameLibsFolder>
 		<!--OutputModFolder, adjust it to your own dev folder-->
 		<ModFolder>$(UserProfile)\OneDrive\Documents\Klei\OxygenNotIncluded\mods\dev</ModFolder>
 		<LibFolder>$(DirectoryBuildPropsPath)\..\..\lib</LibFolder>

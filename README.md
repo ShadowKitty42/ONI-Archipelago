@@ -20,7 +20,7 @@ This mod should be compatible with any other mod that does not modify the tech t
 
 ### Important Note
 
-The Research Tree currently ignores items from other games and will not display them. This does NOT affect how many items a Research topic will give you. This means if a Research topic gives 4 items in vanilla, it still gives 4 items, even if it doesn't display 4. If you don't remember how many items a Research Topic will give, I recommend using the wiki page for reference. Use either [Base Game](https://oxygennotincluded.fandom.com/wiki/Category:Research) or [Spaced Out (and later)](https://oxygennotincluded.fandom.com/wiki/Category:Research).
+The Research Tree currently ignores items from other games and will not display them. This does NOT affect how many items a Research topic will give you. This means if a Research topic gives 4 items in vanilla, it will still send 4 items to the Multiworld. You will only see items listed that are in ONI. If you don't remember how many items a Research Topic will give, I recommend using the wiki page for reference. Use either [Base Game](https://oxygennotincluded.fandom.com/wiki/Category:Research) or [Spaced Out (and later)](https://oxygennotincluded.fandom.com/wiki/Category:Research).
 
 ## Logic
 
@@ -45,6 +45,23 @@ Required files can be found on the [Releases](https://github.com/ShadowKitty42/O
 5. The result will be in your `Output` directory. This can be uploaded to [Archipelago Host Game](https://archipelago.gg/uploads) to use Archipelago servers as the host. Or it can be ran locally by extracting the ZIP and running the `.archipelago` file.
 
 ## Installing the Mod
+
+### Steam Workshop
+
+1. Open `Steam` and navigate to the `Oxygen Not Included` `Workshop` page.
+2. Use the search bar to search for `ArchipelagoNotIncluded`.
+3. Subscribe to the mod.
+4. Open `Oxygen Not Included`.
+5. Navigate to the `Mods` menu.
+6. Click the empty checkbox next to `ArchipelagoNotIncluded`.
+7. Close the `Mods` menu and accept the changes. The game will need to restart.
+8. After the game restarts, open the `Mods` menu again.
+9. Click the `Settings` button next to `ArchipelagoNotIncluded`
+10. Change the settings listed to match your setup. NOTE: Player name MUST match what you put in the YAML file in step #3 of Seed Generation. (in URL, change it to `localhost` if running locally)
+11. The game will need to restart to apply changes.
+12. You're ready to play! Start a new game and enjoy!
+
+### Manual Installation
 
 1. Download the `ArchipelagoNotIncluded.zip`
 2. Navigate to your ONI Mods Folder. On Windows, this is either<br/>`C:\Users\[YOUR NAME]\Documents\Klei\OxygenNotIncluded\mods` OR<br/>`C:\Users\[YOUR NAME]\OneDrive\Documents\Klei\OxygenNotIncluded\mods`

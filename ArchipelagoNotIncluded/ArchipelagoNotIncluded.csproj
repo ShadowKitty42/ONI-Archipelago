@@ -13,6 +13,7 @@
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
+    <IsPacked>true</IsPacked>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -88,6 +89,9 @@
     </PackageReference>
     <PackageReference Include="KaitoKid.ArchipelagoUtilities.Net">
       <Version>1.1.16</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>7.0.1</Version>
     </PackageReference>
     <PackageReference Include="PLib">
       <Version>4.17.1</Version>
