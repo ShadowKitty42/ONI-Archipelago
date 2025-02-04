@@ -361,8 +361,13 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
 /ONI-Decompiled/
 /StardewArchipelago-main/
 /Archipelago-0.5.1/
 /ArchipelagoNotIncluded_dev/
 /lib/
+/1LineCrasher/
+/Releases/
+/PublicisedAssembly/
+Directory.Build.props.user

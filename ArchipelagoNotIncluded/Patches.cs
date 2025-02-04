@@ -872,18 +872,19 @@ namespace ArchipelagoNotIncluded
             static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
             {
                 //bool methodFound = false;
-                bool firstLineFound = false;
-                bool secondLineFound = false;
+                //bool firstLineFound = false;
+                //bool secondLineFound = false;
                 bool startPatch = false;
                 string tech = "Placeholder";
                 MethodInfo method = AccessTools.Method(typeof(Db), nameof(Db.Get));
+                FieldInfo electrobank = AccessTools.Field(typeof(TechItems), nameof(TechItems.disposableElectrobankUraniumOre));
                 FieldInfo oxygenmask = AccessTools.Field(typeof(TechItems), nameof(TechItems.oxygenMask));
                 FieldInfo field = AccessTools.Field(typeof(TechItem), nameof(TechItem.parentTechId));
 
                 foreach (CodeInstruction instruction in instructions)
                 {
                     // BEGIN SKIP FOR BIONIC RECIPES
-                    if (!firstLineFound)
+                    /*if (!firstLineFound)
                     {
                         if (instruction.LoadsField(field))
                             firstLineFound = true;
@@ -897,7 +898,7 @@ namespace ArchipelagoNotIncluded
                             yield return instruction;
                         }
                         continue;
-                    }
+                    }*/
                     // END SKIP
                     if (!startPatch && instruction.Calls(method))
                     {
@@ -906,6 +907,8 @@ namespace ArchipelagoNotIncluded
                     }
                     if (startPatch)
                     {
+                        if (instruction.LoadsField(electrobank))
+                            yield return new CodeInstruction(OpCodes.Ldstr, tech);
                         if (instruction.LoadsField(oxygenmask))
                             yield return new CodeInstruction(OpCodes.Ldstr, tech);
                         if (instruction.LoadsField(field))
@@ -926,6 +929,31 @@ namespace ArchipelagoNotIncluded
                 //Debug.Log("Found update method");
                 //Debug.Log(__instance.PrefabID);
                 __result = __result & CheckItemList(__instance.PrefabID);
+            }
+        }
+
+        /*[HarmonyPatch(typeof(DlcManager))]
+        [HarmonyPatch("ShouldLoadDLCAssets")]
+        public static class ShouldLoadDLCAssets_Patch
+        {
+            public static void Postfix(ref bool __result)
+            {
+                //Debug.Log("Found update method");
+                //Debug.Log(__instance.PrefabID);
+                __result = true;
+            }
+        }*/
+
+        [HarmonyPatch(typeof(DlcManager))]
+        [HarmonyPatch("IsContentSubscribed")]
+        public static class IsContentSubscribed_Patch
+        {
+            public static void Postfix(string dlcId, ref bool __result)
+            {
+                //Debug.Log("Found update method");
+                //Debug.Log(__instance.PrefabID);
+                if (dlcId == "DLC3_ID")
+                    __result = false;
             }
         }
 
