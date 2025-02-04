@@ -1,81 +1,41 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- General Package Properties -->
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C7022013-36D9-44A6-B7DB-46E9FBEEEC24}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ArchipelagoNotIncluded</RootNamespace>
+    <PackageId>ArchipelagoNotIncluded</PackageId>
+    <Version>0.75</Version>
+    <Authors>ShadowKitty42</Authors>
+    <Copyright>$(AssemblyCopyright)</Copyright>
+    <RepositoryUrl>https://github.com/ShadowKitty42/ONI-Archipelago</RepositoryUrl>
+  </PropertyGroup>
+
+  <!-- Build Properties -->
+  <PropertyGroup>
+    <TargetFramework>net471</TargetFramework>
+    <Configurations>Debug;Release</Configurations>
     <AssemblyName>ArchipelagoNotIncluded</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile />
+    <RootNamespace>ArchipelagoNotIncluded</RootNamespace>
     <IsMod>true</IsMod>
     <GenerateMetadata>true</GenerateMetadata>
     <IsPacked>true</IsPacked>
-    <Version>0.75</Version>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
+
+
+  <!-- Mod Info -->
   <PropertyGroup>
     <ModName>ArchipelagoNotIncluded</ModName>
-    <ModDescription>Adds Archipelago functionality.</ModDescription>
-    <SupportedContent>ALL</SupportedContent>
+    <ModDescription></ModDescription>
+    <SupportedContent>ALL</SupportedContent> <!-- Use "EXPANSION1_ID" for dlc only -->
     <MinimumSupportedBuild>587362</MinimumSupportedBuild>
     <APIVersion>2</APIVersion>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="ANIOptions.cs" />
-    <Compile Include="APNetworkMonitor.cs" />
-    <Compile Include="APSeedInfo.cs" />
-    <Compile Include="ArchipelagoNotIncluded.cs" />
-    <Compile Include="ArchipelagoState.cs" />
-    <Compile Include="DefaultItem.cs" />
-    <Compile Include="Patches.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="mod.yaml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="mod_info.yaml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutDir>bin</OutDir>
+  </PropertyGroup>
+
+
   <ItemGroup>
     <PackageReference Include="Archipelago.MultiClient.Net">
       <Version>6.3.1</Version>
@@ -90,11 +50,8 @@
       <Version>4.17.1</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <LangVersion>preview</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>
 </Project>
