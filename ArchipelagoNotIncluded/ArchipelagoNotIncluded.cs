@@ -22,6 +22,7 @@ using Archipelago.MultiClient.Net.Models;
 using static ArchipelagoNotIncluded.Patches;
 using PeterHan.PLib.Options;
 using PeterHan.PLib.PatchManager;
+using UtilLibs;
 
 namespace ArchipelagoNotIncluded
 {
@@ -829,7 +830,7 @@ namespace ArchipelagoNotIncluded
         public override void OnLoad(Harmony harmony)
         {
             PUtil.InitLibrary();
-
+            
             Options = POptions.ReadSettings<ANIOptions>() ?? new ANIOptions();
             new POptions().RegisterOptions(this, typeof(ANIOptions));
             //Options = ReloadOptions();

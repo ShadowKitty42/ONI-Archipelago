@@ -21,12 +21,23 @@ using Archipelago.MultiClient.Net.DataPackage;
 using Archipelago.MultiClient.Net.Models;
 using System.Collections;
 using System.Text;
+using UtilLibs;
 
 namespace ArchipelagoNotIncluded
 {
     
     public class Patches
-    { 
+    {
+        [HarmonyPatch(typeof(Db))]
+        [HarmonyPatch(nameof(Db.Initialize))]
+        public class Db_Initialize_Patch
+        {
+            public static void Postfix()
+            {
+                Debug.Log("DB_Intitialize");
+            }
+        }
+
         [HarmonyPatch(typeof(Techs))]
         [HarmonyPatch("Init")]
         public class Techs_Init_Patch
@@ -35,6 +46,7 @@ namespace ArchipelagoNotIncluded
             public static bool Prefix(Techs __instance)
             {
 
+                Debug.Log("Techs_Init");
                 //If there is no info, run the normal tech init function
                 if (ArchipelagoNotIncluded.info is null || ArchipelagoNotIncluded.info.technologies is null)
                 {
@@ -45,6 +57,7 @@ namespace ArchipelagoNotIncluded
                 foreach (KeyValuePair<string, List<string>> pair in ArchipelagoNotIncluded.info.technologies)
                 {
                     Debug.Log($"Generating research for {pair.Key}, ({pair.Value.Join(s => s, ",")})");
+                    //InjectionMethods.AddItemToTechnologySprite
                     new Tech(pair.Key, pair.Value.ToList(), __instance);
                 }
 
@@ -635,11 +648,13 @@ namespace ArchipelagoNotIncluded
             if (ArchipelagoNotIncluded.StarterTech.Contains(InternalName))
                 return true;
 
-            //Debug.Log($"InternalName: {InternalName}");
+            Debug.Log($"InternalName: {InternalName}");
             DefaultItem defItem = ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.internal_name == InternalName);
             if (defItem == null)
                 return false;
-            if (ArchipelagoNotIncluded.netmon?.session?.Items?.AllItemsReceived.Count() == 0)
+            if (ArchipelagoNotIncluded.netmon?.session?.Items?.AllItemsReceived == null)
+                return false;
+            if (ArchipelagoNotIncluded.netmon?.session?.Items?.AllItemsReceived?.Count() == 0)
                 return false;
             foreach (ItemInfo item in ArchipelagoNotIncluded.netmon?.session?.Items?.AllItemsReceived)
                 if (item.ItemDisplayName == defItem.name)
@@ -672,6 +687,8 @@ namespace ArchipelagoNotIncluded
                 return false;
             }*/
             //return true;
+            if (ArchipelagoNotIncluded.netmon?.session?.Items?.AllItemsReceived == null)
+                return false;
             if (ArchipelagoNotIncluded.netmon?.session?.Items?.AllItemsReceived.Count() == 0)
                 return false;
             foreach (ItemInfo item in ArchipelagoNotIncluded.netmon?.session?.Items?.AllItemsReceived)

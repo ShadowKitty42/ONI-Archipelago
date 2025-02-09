@@ -371,3 +371,4 @@ FodyWeavers.xsd
 /Releases/
 /PublicisedAssembly/
 Directory.Build.props.user
+/UtilLibs/
