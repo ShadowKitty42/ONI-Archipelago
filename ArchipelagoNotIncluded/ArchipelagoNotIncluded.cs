@@ -23,6 +23,8 @@ using static ArchipelagoNotIncluded.Patches;
 using PeterHan.PLib.Options;
 using PeterHan.PLib.PatchManager;
 using UtilLibs;
+using static MathUtil;
+using Epic.OnlineServices;
 
 namespace ArchipelagoNotIncluded
 {
@@ -40,7 +42,9 @@ namespace ArchipelagoNotIncluded
 
         internal static ANIOptions Options {  get; private set; }
         public static APSeedInfo info = null;
+        public static List<KeyValuePair<string, string>> apItems = new List<KeyValuePair<string, string>>();
         public static List<DefaultItem> AllDefaultItems = new List<DefaultItem>();
+        public static List<ModItem> AllModItems = new List<ModItem>();
         private Dictionary<Tag, HashedString> tagCategoryMap;
         public static string AtmoSuitTech = "";
         public static string JetSuitTech = "";
@@ -838,7 +842,7 @@ namespace ArchipelagoNotIncluded
                 netmon = new APNetworkMonitor(Options.URL, Options.Port, Options.SlotName);
             else
                 netmon = new APNetworkMonitor(Options.URL, Options.Port, Options.SlotName, Options.Password);
-            LoginResult result = netmon.TryConnectArchipelago(ItemsHandlingFlags.NoItems);
+            LoginResult result = netmon.TryConnectArchipelago(ItemsHandlingFlags.AllItems);
             if (result.Successful)
             {
                 LoginSuccessful success = (LoginSuccessful)result;
@@ -860,8 +864,13 @@ namespace ArchipelagoNotIncluded
                         AllDefaultItems = JsonConvert.DeserializeObject<List<DefaultItem>>(json);
                         continue;
                     }
-                    if (info == null)
-                        info = JsonConvert.DeserializeObject<APSeedInfo>(json);
+                    if (jsonFile.Name == "ModItems.json")
+                    {
+                        AllModItems = JsonConvert.DeserializeObject<List<ModItem>>(json);
+                        continue;
+                    }
+                    //if (info == null)
+                    //info = JsonConvert.DeserializeObject<APSeedInfo>(json);
                     continue;
                 }
                 catch (Exception e)
@@ -904,6 +913,9 @@ namespace ArchipelagoNotIncluded
             original = AccessTools.Method(typeof(Database.Techs), nameof(Database.Techs.Load));
             prefix = AccessTools.Method(typeof(Techs_Load_Patch), nameof(Techs_Load_Patch.Prefix));
             harmony.Patch(original, new HarmonyMethod(prefix));
+            original = AccessTools.Method(typeof(Db), nameof(Db.Initialize));
+            var postfix = AccessTools.Method(typeof(Db_Initialize_Patch), nameof(Db_Initialize_Patch.Postfix));
+            harmony.Patch(original, postfix: new HarmonyMethod(postfix));
             //ModUtil.AddBuildingToPlanScreen((HashedString)"test", "id");
 
             SceneManager.sceneLoaded += (scene, loadScene) => {
@@ -919,6 +931,40 @@ namespace ArchipelagoNotIncluded
                     {
                         netmon.TryConnectArchipelago();
                     }
+                    if (Options.CreateModList)
+                    {
+                        List<ModItem> modItems = new List<ModItem>();
+                        foreach (Tech tech in Db.Get().Techs.resources)
+                        {
+                            foreach (TechItem techitem in tech.unlockedItems)
+                            {
+                                modItems.Add(new ModItem(techitem));
+                            }
+                        }
+                        //Debug.Log("Directory: " + modDirectory.ToString());
+                        //File.WriteAllText(modDirectory.ToString() + "\\ModItems.json", JsonConvert.SerializeObject(modItems, Formatting.Indented));
+                        if (modItems.Count > 0)
+                        {
+                            using (FileStream fs = File.Open(modDirectory.ToString() + "\\ModItems.json", FileMode.Create))
+                            {
+                                using (StreamWriter sw = new StreamWriter(fs))
+                                {
+                                    using (JsonTextWriter jw = new JsonTextWriter(sw))
+                                    {
+                                        jw.Formatting = Formatting.Indented;
+                                        jw.IndentChar = ' ';
+                                        jw.Indentation = 4;
+
+                                        JsonSerializer serializer = new JsonSerializer();
+                                        serializer.Serialize(jw, modItems);
+                                    }
+                                }
+                            }
+                        }
+                        Options.CreateModList = false;
+                        POptions.WriteSettings(Options);
+                    }
+                    //JsonConvert.SerializeObject()
                     //netmon.UpdateAllItems();
                 }
                 /*else
@@ -926,14 +972,6 @@ namespace ArchipelagoNotIncluded
                     netmon.TryConnectArchipelago();
                 }*/
             };
-
-            //State = new ArchipelagoState();
-            /*apConnection = new ArchipelagoConnectionInfo("localhost", 38281, "Shadow", false);
-            Debug.Log(apConnection.ToString());
-            if (TryConnectArchipelago())*/
-
-            //Game.Instance.Subscribe(11390976, new Action<object>(PlanScreen.Instance.OnResearchComplete));
-
         }
 
         [PLibMethod(RunAt.OnStartGame)]
@@ -947,6 +985,21 @@ namespace ArchipelagoNotIncluded
         public static void ReloadOptions()
         {
             Options = POptions.ReadSettings<ANIOptions>() ?? new ANIOptions();
+        }
+
+        public static string CleanName(string name)
+        {
+            char[] delimiters = { '<', '>' };
+            string cleaned = "";
+            if (name.Contains('<'))
+            {
+                cleaned = name.Split(delimiters)[2];
+            }
+            else
+            {
+                cleaned = name;
+            }
+            return cleaned;
         }
 
         /*private void SceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode loadSceneMode)

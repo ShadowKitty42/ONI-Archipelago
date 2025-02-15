@@ -21,7 +21,7 @@ namespace ArchipelagoNotIncluded
         public ArchipelagoSession session = null;
         private string URL = "localhost";
         private int Port = 38281;
-        private string SlotName = "Shadow";
+        public string SlotName = "Shadow";
         private string Password = "Password";
         private bool initialSyncComplete = false;
 

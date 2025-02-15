@@ -34,7 +34,7 @@ namespace ArchipelagoNotIncluded
         {
             public static void Postfix()
             {
-                Debug.Log("DB_Intitialize");
+                //Debug.Log("DB_Intitialize");
             }
         }
 
@@ -45,7 +45,6 @@ namespace ArchipelagoNotIncluded
             [HarmonyPriority(Priority.VeryHigh)]
             public static bool Prefix(Techs __instance)
             {
-
                 Debug.Log("Techs_Init");
                 //If there is no info, run the normal tech init function
                 if (ArchipelagoNotIncluded.info is null || ArchipelagoNotIncluded.info.technologies is null)
@@ -54,33 +53,40 @@ namespace ArchipelagoNotIncluded
                     return true;
                 }
 
-                foreach (KeyValuePair<string, List<string>> pair in ArchipelagoNotIncluded.info.technologies)
+                if (!ArchipelagoNotIncluded.Options.CreateModList)
                 {
-                    Debug.Log($"Generating research for {pair.Key}, ({pair.Value.Join(s => s, ",")})");
-                    //InjectionMethods.AddItemToTechnologySprite
-                    new Tech(pair.Key, pair.Value.ToList(), __instance);
+                    foreach (KeyValuePair<string, List<string>> pair in ArchipelagoNotIncluded.info.technologies)
+                    {
+                        Debug.Log($"Generating research for {pair.Key}, ({pair.Value.Join(s => s, ",")})");
+                        //InjectionMethods.AddItemToTechnologySprite
+                        Tech tech = __instance.TryGet(pair.Key);
+                        if (tech == null)
+                            tech = new Tech(pair.Key, new List<string>(), __instance);
+                        foreach (string techitemid in pair.Value)
+                        {
+                            DefaultItem defItem = ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.internal_name == techitemid);
+                            if (defItem == null)
+                                //ArchipelagoNotIncluded.apItems.Add(new KeyValuePair<string, string>(techitemid, pair.Key));
+                                InjectionMethods.AddItemToTechnologyKanim(techitemid, pair.Key, "Unknown Artifact", "A mysterious item from another world", "apItemSprite_kanim");
+                            else
+                                tech.AddUnlockedItemIDs(new string[] { techitemid });
+                        }
+                        //new Tech(pair.Key, pair.Value.ToList(), __instance);
+                    }
                 }
 
                 foreach (KeyValuePair<string, List<string>> pair in ArchipelagoNotIncluded.Sciences)
                 {
-                    if (!ArchipelagoNotIncluded.info.technologies.ContainsKey(pair.Key))
+                    if (ArchipelagoNotIncluded.Options.CreateModList || !ArchipelagoNotIncluded.info.technologies.ContainsKey(pair.Key))
                     {
                         Debug.Log($"Generating Default Research for {pair.Key}, ({pair.Value.Join(s => s, ",")})");
                         new Tech(pair.Key, pair.Value.ToList(), __instance);
                     }
                 }
 
-                /*foreach (DefaultItem item in ArchipelagoNotIncluded.AllDefaultItems)
-                {
-                    if (!ArchipelagoNotIncluded.info.technologies.Values.Any(i => i.Contains(item.internal_name)))
-                    {
-                        ArchipelagoNotIncluded.PreUnlockedTech.Add(item.internal_name);
-                    }
-                }*/
-
                 Tech preUnlockedTechs = new Tech("PreUnlockedTechs", ArchipelagoNotIncluded.PreUnlockedTech, __instance);
                 Db.Get().Techs.resources.Add(preUnlockedTechs);
-
+                
                 return false;
             }
         }
@@ -652,28 +658,20 @@ namespace ArchipelagoNotIncluded
             DefaultItem defItem = ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.internal_name == InternalName);
             if (defItem == null)
                 return false;
-            if (ArchipelagoNotIncluded.netmon?.session?.Items?.AllItemsReceived == null)
-                return false;
+            return (bool)ArchipelagoNotIncluded.netmon?.session?.Items?.AllItemsReceived.Any<ItemInfo>(i => i.ItemDisplayName == defItem.name && i.Player.Name == ArchipelagoNotIncluded.netmon.SlotName);
+            /*    return false;
             if (ArchipelagoNotIncluded.netmon?.session?.Items?.AllItemsReceived?.Count() == 0)
                 return false;
             foreach (ItemInfo item in ArchipelagoNotIncluded.netmon?.session?.Items?.AllItemsReceived)
                 if (item.ItemDisplayName == defItem.name)
                     return true;
-            return false;
+            return false;*/
         }
 
         static bool CheckItemList(TechItem TechItem)
         {
             char[] delimiters = { '<', '>' };
-            string name = "";
-            if (TechItem.Name.Contains('<'))
-            {
-                name = TechItem.Name.Split(delimiters)[2];
-            }
-            else
-            {
-                name = TechItem.Name;
-            }
+            string name = ArchipelagoNotIncluded.CleanName(TechItem.Name);
             //Debug.Log($"Name: {TechItem.Name}, Id: {TechItem.Id}");
 
             /*if (ArchipelagoNotIncluded.session.Items.AllItemsReceived.SingleOrDefault(i => i.ItemDisplayName == name) != null)
@@ -687,14 +685,15 @@ namespace ArchipelagoNotIncluded
                 return false;
             }*/
             //return true;
-            if (ArchipelagoNotIncluded.netmon?.session?.Items?.AllItemsReceived == null)
+            return (bool)ArchipelagoNotIncluded.netmon?.session?.Items?.AllItemsReceived.Any<ItemInfo>(i => i.ItemDisplayName == name && i.Player.Name == ArchipelagoNotIncluded.netmon.SlotName);
+            /*if (ArchipelagoNotIncluded.netmon?.session?.Items?.AllItemsReceived == null)
                 return false;
             if (ArchipelagoNotIncluded.netmon?.session?.Items?.AllItemsReceived.Count() == 0)
                 return false;
             foreach (ItemInfo item in ArchipelagoNotIncluded.netmon?.session?.Items?.AllItemsReceived)
                 if (item.ItemDisplayName == name)
                     return true;
-            return false;
+            return false;*/
             //return false;
         }
 
@@ -838,7 +837,6 @@ namespace ArchipelagoNotIncluded
             }
         }
 
-        [HarmonyDebug]
         [HarmonyPatch(typeof(SuitFabricatorConfig))]
         [HarmonyPatch("ConfigureRecipes")]
         public class ConfigureRecipes_Patch
@@ -978,14 +976,14 @@ namespace ArchipelagoNotIncluded
         [HarmonyPatch("RefreshFG")]
         public static class RefreshFG_Patch
         {
-            public static bool Prefix(PlanBuildingToggle __instance, BuildingDef ___def, PlanScreen.RequirementsState requirementsState)
+            /*public static bool Prefix(PlanBuildingToggle __instance, BuildingDef ___def, PlanScreen.RequirementsState requirementsState)
             {
                 //Debug.Log("Found update method");
                 //Debug.Log(___def.PrefabID);
                 //if (!CheckItemList(___def.PrefabID))
                     //requirementsState = PlanScreen.RequirementsState.Invalid;
                 return true;
-            }
+            }*/
         }
 
         [HarmonyPatch(typeof(ComplexRecipe))]
