@@ -14,6 +14,7 @@ namespace ArchipelagoNotIncluded
         public bool bionic { get; set; }
 
         public Dictionary<string, List<string>> technologies { get; set; }
+        public List<string> apModItems { get; set; }
     }
 
 }

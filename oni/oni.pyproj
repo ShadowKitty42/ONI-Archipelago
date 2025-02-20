@@ -24,6 +24,7 @@
     <Compile Include="Items.py" />
     <Compile Include="ArchipelagoItem.py" />
     <Compile Include="Locations.py" />
+    <Compile Include="ModItem.py" />
     <Compile Include="ModJson.py" />
     <Compile Include="Names.py" />
     <Compile Include="Options.py" />

@@ -27,7 +27,8 @@ namespace ArchipelagoNotIncluded
         public string research_level { get; set; }
         public string tech { get; set; }
         public string internal_tech { get; set; }
-        public string ap_classssification { get; set; }
+        public string ap_classification { get; set; }
+        public bool randomized { get; set; }
 
         public ModItem()
         { }
@@ -37,7 +38,8 @@ namespace ArchipelagoNotIncluded
             internal_name = techitem.Id;
             tech = ArchipelagoNotIncluded.CleanName(techitem.ParentTech.Name);
             internal_tech = techitem.parentTechId;
-            ap_classssification = "Useful";
+            ap_classification = "Useful";
+            randomized = false;
 
             if (techitem.ParentTech.RequiresResearchType("orbital"))
                 research_level = "orbital";

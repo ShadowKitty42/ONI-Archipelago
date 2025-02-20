@@ -25,6 +25,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "1_CycleComma", "1LineCrashe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UtilLibs", "UtilLibs\UtilLibs.csproj", "{A8D6D6B6-054A-48B7-B3E2-E7D0C09F8382}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsUnlimitedImproved", "StatsUnlimitedImproved\StatsUnlimitedImproved.csproj", "{1A85C444-0C81-4BB3-849B-EC846AD4EA87}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsUnlimitedSOMerged", "StatsUnlimited\StatsUnlimitedSOMerged.csproj", "{0B5CD6A4-C27F-408A-81ED-D67CCEB30588}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +53,12 @@ Global
 		{A8D6D6B6-054A-48B7-B3E2-E7D0C09F8382}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A8D6D6B6-054A-48B7-B3E2-E7D0C09F8382}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A8D6D6B6-054A-48B7-B3E2-E7D0C09F8382}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A85C444-0C81-4BB3-849B-EC846AD4EA87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A85C444-0C81-4BB3-849B-EC846AD4EA87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A85C444-0C81-4BB3-849B-EC846AD4EA87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B5CD6A4-C27F-408A-81ED-D67CCEB30588}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B5CD6A4-C27F-408A-81ED-D67CCEB30588}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B5CD6A4-C27F-408A-81ED-D67CCEB30588}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

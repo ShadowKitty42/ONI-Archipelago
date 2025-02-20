@@ -32,6 +32,7 @@ namespace ArchipelagoNotIncluded
     {
         //public KaitoKid.ArchipelagoUtilities.Net.Interfaces.ILogger logger;
         private static bool patched = false;
+        public static bool cheatmode = false;
 
         private static int Counter = 0;
         public static APNetworkMonitor netmon = null;
@@ -40,12 +41,13 @@ namespace ArchipelagoNotIncluded
         //public static ArchipelagoConnectionInfo apConnection = null;
         //public ArchipelagoState State { get; set; }
 
+        public static DirectoryInfo modDirectory = null;
         internal static ANIOptions Options {  get; private set; }
         public static APSeedInfo info = null;
         public static List<KeyValuePair<string, string>> apItems = new List<KeyValuePair<string, string>>();
         public static List<DefaultItem> AllDefaultItems = new List<DefaultItem>();
         public static List<ModItem> AllModItems = new List<ModItem>();
-        private Dictionary<Tag, HashedString> tagCategoryMap;
+        public static List<string> TechList = new List<string>();
         public static string AtmoSuitTech = "";
         public static string JetSuitTech = "";
         public static string LeadSuitTech = "";
@@ -834,6 +836,7 @@ namespace ArchipelagoNotIncluded
         public override void OnLoad(Harmony harmony)
         {
             PUtil.InitLibrary();
+            cheatmode = true;
             
             Options = POptions.ReadSettings<ANIOptions>() ?? new ANIOptions();
             new POptions().RegisterOptions(this, typeof(ANIOptions));
@@ -852,7 +855,7 @@ namespace ArchipelagoNotIncluded
 
             lastItem = 0;
 
-            DirectoryInfo modDirectory = new DirectoryInfo(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+            modDirectory = new DirectoryInfo(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
             Sciences = new Dictionary<string, List<string>>();
             foreach (FileInfo jsonFile in modDirectory.EnumerateFiles("*.json").OrderByDescending(f => f.LastWriteTime))
             {
@@ -864,7 +867,7 @@ namespace ArchipelagoNotIncluded
                         AllDefaultItems = JsonConvert.DeserializeObject<List<DefaultItem>>(json);
                         continue;
                     }
-                    if (jsonFile.Name == "ModItems.json")
+                    if (jsonFile.Name == $"{Options.SlotName}_ModItems.json")
                     {
                         AllModItems = JsonConvert.DeserializeObject<List<ModItem>>(json);
                         continue;
@@ -903,9 +906,16 @@ namespace ArchipelagoNotIncluded
                         };
                     }
                 }
-            }
 
-            tagCategoryMap = new Dictionary<Tag, HashedString>();
+                if (AllModItems != null)
+                {
+                    foreach (ModItem item in AllModItems)
+                    {
+                        if (info?.apModItems.Contains(item.internal_name) == true)
+                            item.randomized = true;
+                    }
+                }
+            }
 
             var original = AccessTools.Method(typeof(Database.Techs), nameof(Database.Techs.Init));
             var prefix = AccessTools.Method(typeof(Techs_Init_Patch), nameof(Techs_Init_Patch.Prefix));
@@ -927,10 +937,6 @@ namespace ArchipelagoNotIncluded
                 }
                 if (scene.name == "backend")
                 {
-                    if (netmon.session == null)
-                    {
-                        netmon.TryConnectArchipelago();
-                    }
                     if (Options.CreateModList)
                     {
                         List<ModItem> modItems = new List<ModItem>();
@@ -938,14 +944,16 @@ namespace ArchipelagoNotIncluded
                         {
                             foreach (TechItem techitem in tech.unlockedItems)
                             {
-                                modItems.Add(new ModItem(techitem));
+                                DefaultItem defItem = AllDefaultItems.Find(i => i.internal_name == techitem.Id);
+                                if (defItem == null && !PreUnlockedTech.Contains(techitem.Id))
+                                    modItems.Add(new ModItem(techitem));
                             }
                         }
                         //Debug.Log("Directory: " + modDirectory.ToString());
                         //File.WriteAllText(modDirectory.ToString() + "\\ModItems.json", JsonConvert.SerializeObject(modItems, Formatting.Indented));
                         if (modItems.Count > 0)
                         {
-                            using (FileStream fs = File.Open(modDirectory.ToString() + "\\ModItems.json", FileMode.Create))
+                            using (FileStream fs = File.Open(modDirectory.ToString() + $"\\{Options.SlotName}_ModItems.json", FileMode.Create))
                             {
                                 using (StreamWriter sw = new StreamWriter(fs))
                                 {
@@ -963,6 +971,10 @@ namespace ArchipelagoNotIncluded
                         }
                         Options.CreateModList = false;
                         POptions.WriteSettings(Options);
+                    }
+                    else if (netmon.session == null)
+                    {
+                        netmon.TryConnectArchipelago();
                     }
                     //JsonConvert.SerializeObject()
                     //netmon.UpdateAllItems();

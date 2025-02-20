@@ -25,6 +25,29 @@ def object_decoder(obj):
 
 def item_decoder(objdict):
     return namedtuple('DefaultItem', objdict.keys())(*objdict.values())
+
+def mod_item_decoder(objdict):
+    return namedtuple('ModItem', objdict.keys())(*objdict.values())
+
+
+def convert_ap_class(ap_string):
+    # Create list of Items
+    ap_class = ItemClassification.useful
+    #print(item)
+    match ap_string:
+        case "Filler":
+            ap_class = ItemClassification.filler
+        case "Progression":
+            ap_class = ItemClassification.progression
+        case "Useful":
+            ap_class = ItemClassification.useful
+        case "Trap":
+            ap_class = ItemClassification.trap
+        case "SkipBalancing":
+            ap_class = ItemClassification.skip_balancing
+        case "ProgressionSkipBalancing":
+            ap_class = ItemClassification.progression_skip_balancing
+    return ap_class
  
 class ONIWeb(WebWorld):
     theme = "ice"
@@ -49,16 +72,31 @@ class ONIWorld(World):
     base_id = 0x257514000  # 0xYGEN___, clever! Thanks, Medic
     data_version = 0
 
-    file = open(os.path.join(__file__, f"..\\data\\DefaultItemList.json"))
-    default_item_list = json.load(file, object_hook=item_decoder)
-    #print(default_item_list[0].name)
-    file.close()
+    default_item_list = []
+    mod_item_list = {}
+    mod_items_exist = False
+    data_path = os.path.join(__file__, f"..\\data\\")
+    folder = os.scandir(data_path)
 
+    for file in folder:
+        if file.is_file():
+            if file.name == "DefaultItemList.json":
+                contents = open(file)
+                default_item_list = json.load(contents, object_hook=item_decoder)
+                contents.close()
+
+            if file.name.endswith("ModItems.json"):
+                mod_items_exist = True
+                player_name = file.name.split("_")[0]
+                contents = open(file)
+                mod_item_list[player_name] = json.load(contents, object_hook=mod_item_decoder)
+                contents.close()
     
 
     science_dicts = {}
     location_name_to_internal = {}
     internal_item_to_name = {}
+    name_to_internal_name = {}
     all_items = []
     local_items = ["Atmo Suit", "Jet Suit Pattern", "Lead Suit", "Oxygen Mask Pattern"]
     basic_locations = []
@@ -68,6 +106,7 @@ class ONIWorld(World):
     all_regions = []
     all_locations = []
     mod_json = {}
+    ap_mod_items = []
     slot_data_ready = threading.Event()
     
     base_only = True
@@ -81,23 +120,7 @@ class ONIWorld(World):
         internal_item_to_name[item.internal_name] = item.name
 
         # Create list of Items
-        ap_class = ItemClassification.useful
-        #print(item)
-        match item.ap_classification:
-            case "Filler":
-                ap_class = ItemClassification.filler
-            case "Progression":
-                ap_class = ItemClassification.progression
-            case "Useful":
-                ap_class = ItemClassification.useful
-            case "Trap":
-                ap_class = ItemClassification.trap
-            case "SkipBalancing":
-                ap_class = ItemClassification.skip_balancing
-            case "ProgressionSkipBalancing":
-                ap_class = ItemClassification.progression_skip_balancing
-        #all_items.append(ONIItem(item.name, ap_class, item.version))
-        all_items.append(ItemData(item.name, ap_class))
+        all_items.append(ItemData(item.name, convert_ap_class(item.ap_classification)))
 
         location_name = ""
         tech = item.tech
@@ -119,6 +142,27 @@ class ONIWorld(World):
 
             location_name = f"{tech} - {count}"
             all_locations.append(location_name)
+
+    if (mod_items_exist):
+        for player in mod_item_list:
+            for item in mod_item_list[player]:
+
+                internal_item_to_name[item.internal_name] = item.name
+
+                # Create list of Items
+                all_items.append(ItemData(item.name, convert_ap_class(item.ap_classification)))
+
+                location_name = ""
+                tech = item.tech
+                count = 1
+                for location in all_locations:
+                    if tech in location:
+                        count += 1
+
+                location_name = f"{tech} - {count}"
+                all_locations.append(location_name)
+
+                ap_mod_items.append(item.internal_name)
 
     item_name_to_id = {data.itemName: 0x257514000 + index for index, data in enumerate(all_items)}
     #item_name_to_id = {data.name: index for index, data in enumerate(all_items, base_id)}
@@ -156,24 +200,11 @@ class ONIWorld(World):
                 continue;
             if self.bionic == False and item.version == "Bionic":
                 continue;
+            
+            self.name_to_internal_name[item.name] = item.internal_name
 
             # Create list of Items
-            ap_class = ItemClassification.useful
-            #print(item)
-            match item.ap_classification:
-                case "Filler":
-                    ap_class = ItemClassification.filler
-                case "Progression":
-                    ap_class = ItemClassification.progression
-                case "Useful":
-                    ap_class = ItemClassification.useful
-                case "Trap":
-                    ap_class = ItemClassification.trap
-                case "SkipBalancing":
-                    ap_class = ItemClassification.skip_balancing
-                case "ProgressionSkipBalancing":
-                    ap_class = ItemClassification.progression_skip_balancing
-            self.all_items.append(ItemData(item.name, ap_class))
+            self.all_items.append(ItemData(item.name, convert_ap_class(item.ap_classification)))
 
             # Add to correct list of locations
             location_name = ""
@@ -214,6 +245,44 @@ class ONIWorld(World):
             # Populate Science Dict (to be used in generate_output)
             if internal_tech not in self.science_dicts:
                 self.science_dicts[internal_tech] = []
+
+
+        if (self.mod_items_exist):
+            for item in self.mod_item_list[self.player_name]:
+                
+                self.name_to_internal_name[item.name] = item.internal_name
+                
+                # Create list of Items
+                self.all_items.append(ItemData(item.name, convert_ap_class(item.ap_classification)))
+
+                # Add to correct list of locations
+                location_name = ""
+                research_level = item.research_level
+                tech = item.tech
+                internal_tech = item.internal_tech
+                match research_level:
+                    case "basic":
+                        count = len(list(filter(lambda location: tech in location, self.basic_locations))) + 1
+                        location_name = f"{tech} - {count}"
+                        self.basic_locations.append(location_name)
+                    case "advanced":
+                        count = len(list(filter(lambda location: tech in location, self.advanced_locations))) + 1
+                        location_name = f"{tech} - {count}"
+                        self.advanced_locations.append(location_name)
+                    case "radbolt":
+                        count = len(list(filter(lambda location: tech in location, self.radbolt_locations))) + 1
+                        location_name = f"{tech} - {count}"
+                        self.radbolt_locations.append(location_name)
+                    case "orbital":
+                        count = len(list(filter(lambda location: tech in location, self.orbital_locations))) + 1
+                        location_name = f"{tech} - {count}"
+                        self.orbital_locations.append(location_name)
+
+                #print(f"{research_level}, {tech}, {internal_tech}, {location_name}, {self.basic_locations.__len__() + self.advanced_locations.__len__() + self.radbolt_locations.__len__() + self.orbital_locations.__len__()}")
+                # Create Location to Internal Mapping
+                if location_name not in self.location_name_to_internal:
+                    self.location_name_to_internal[location_name] = internal_tech
+
         
         if self.base_only == True:
             self.all_regions = [
@@ -340,14 +409,16 @@ class ONIWorld(World):
         If you need any last-second randomization, use self.random instead."""
         # TODO generate mod json
         item_names = [data.itemName for data in self.all_items]
-        for location_name in self.all_locations:     # location_name = tech + location number
+        print(f"ModItems: {self.mod_items_exist}")
+        for location_name in self.all_locations:     # location_name = tech + location number\
             tech_name = self.location_name_to_internal[location_name]
             location = self.multiworld.get_location(location_name, self.player)
             ap_item = location.item
             if ap_item is not None:
                 output_item_name = ap_item.name
                 if output_item_name in item_names:
-                    output_item_name = [x for x in self.default_item_list if x.name == ap_item.name][0].internal_name
+                    output_item_name = self.name_to_internal_name[ap_item.name]
+                    #output_item_name = [x for x in self.default_item_list if x.name == ap_item.name][0].internal_name
                 self.science_dicts[tech_name].append(output_item_name)
 
         self.mod_json = ModJson(str(self.multiworld.seed), self.multiworld.player_name[self.player], self.spaced_out, self.frosty, self.bionic, self.science_dicts)
@@ -355,7 +426,7 @@ class ONIWorld(World):
         output_file_path = os.path.join(output_directory, f"{self.multiworld.get_out_file_name_base(self.player)}.json")
         with open(output_file_path, "w") as file:
             file.write(json_string)
-
+        
         self.slot_data_ready.set()
 
         '''ap_json = APJson(self.ap_items)
@@ -379,6 +450,7 @@ class ONIWorld(World):
         The generation does not wait for `generate_output` to complete before calling this.
         `threading.Event` can be used if you need to wait for something from `generate_output`."""
         self.slot_data_ready.wait()
+
         slot_data = {
             "AP_seed": self.mod_json.AP_seed,
             "AP_slotName": self.mod_json.AP_slotName,
@@ -387,7 +459,8 @@ class ONIWorld(World):
             "spaced_out": self.spaced_out,
             "frosty": self.frosty,
             "bionic": self.bionic,
-            "technologies": self.mod_json.technologies
+            "technologies": self.mod_json.technologies,
+            "apModItems": self.ap_mod_items
         }
         return slot_data
 
