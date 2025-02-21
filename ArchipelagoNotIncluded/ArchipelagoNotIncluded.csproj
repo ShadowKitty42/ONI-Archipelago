@@ -3,7 +3,7 @@
   <!-- General Package Properties -->
   <PropertyGroup>
     <PackageId>ArchipelagoNotIncluded</PackageId>
-    <Version>0.8</Version>
+    <Version>0.81</Version>
     <Authors>ShadowKitty42</Authors>
     <Copyright>$(AssemblyCopyright)</Copyright>
     <RepositoryUrl>https://github.com/ShadowKitty42/ONI-Archipelago</RepositoryUrl>
