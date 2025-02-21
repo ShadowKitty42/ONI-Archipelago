@@ -103,10 +103,10 @@ class ONIWorld(World):
     advanced_locations = []
     radbolt_locations = []
     orbital_locations = []
-    all_regions = []
+    all_regions = {}
     all_locations = []
     mod_json = {}
-    ap_mod_items = []
+    ap_mod_items = {}
     slot_data_ready = threading.Event()
     
     base_only = True
@@ -145,6 +145,7 @@ class ONIWorld(World):
 
     if (mod_items_exist):
         for player in mod_item_list:
+            ap_mod_items[player] = []
             for item in mod_item_list[player]:
 
                 internal_item_to_name[item.internal_name] = item.name
@@ -162,7 +163,7 @@ class ONIWorld(World):
                 location_name = f"{tech} - {count}"
                 all_locations.append(location_name)
 
-                ap_mod_items.append(item.internal_name)
+                ap_mod_items[player].append(item.internal_name)
 
     item_name_to_id = {data.itemName: 0x257514000 + index for index, data in enumerate(all_items)}
     #item_name_to_id = {data.name: index for index, data in enumerate(all_items, base_id)}
@@ -175,6 +176,8 @@ class ONIWorld(World):
 
     #ap_items = {}
     #ap_locations = {}
+    all_items = {}
+    all_locations = {}
 
     def generate_early(self) -> None:
         """
@@ -190,7 +193,12 @@ class ONIWorld(World):
         if self.options.bionic:
             self.bionic = True
             
-        self.all_items = []
+        current_player_name = self.multiworld.get_player_name(self.player)
+        self.all_items[current_player_name] = []
+        self.all_locations[current_player_name] = []
+        self.basic_locations = self.advanced_locations = self.radbolt_locations = self.orbital_locations = []
+        self.science_dicts[current_player_name] = {}
+        
         for item in self.default_item_list:
             if self.base_only == False and item.version == "BaseOnly":
                 continue;
@@ -204,7 +212,7 @@ class ONIWorld(World):
             self.name_to_internal_name[item.name] = item.internal_name
 
             # Create list of Items
-            self.all_items.append(ItemData(item.name, convert_ap_class(item.ap_classification)))
+            self.all_items[current_player_name].append(ItemData(item.name, convert_ap_class(item.ap_classification)))
 
             # Add to correct list of locations
             location_name = ""
@@ -243,17 +251,17 @@ class ONIWorld(World):
                 self.location_name_to_internal[location_name] = internal_tech
 
             # Populate Science Dict (to be used in generate_output)
-            if internal_tech not in self.science_dicts:
-                self.science_dicts[internal_tech] = []
+            if internal_tech not in self.science_dicts[current_player_name]:
+                self.science_dicts[current_player_name][internal_tech] = []
 
 
-        if (self.mod_items_exist):
-            for item in self.mod_item_list[self.player_name]:
-                
+        if (self.mod_item_list.__contains__(current_player_name)):
+            for item in self.mod_item_list[current_player_name]:
+                #print(f"Adding mod items for: {self.player_name}")
                 self.name_to_internal_name[item.name] = item.internal_name
                 
                 # Create list of Items
-                self.all_items.append(ItemData(item.name, convert_ap_class(item.ap_classification)))
+                self.all_items[current_player_name].append(ItemData(item.name, convert_ap_class(item.ap_classification)))
 
                 # Add to correct list of locations
                 location_name = ""
@@ -285,29 +293,29 @@ class ONIWorld(World):
 
         
         if self.base_only == True:
-            self.all_regions = [
+            self.all_regions[current_player_name] = [
                 RegionInfo("Menu", []),
                 RegionInfo(RegionNames.Basic, self.basic_locations),
                 RegionInfo(RegionNames.Advanced, self.advanced_locations),
                 RegionInfo(RegionNames.Space_Base, self.orbital_locations)
             ]
-            self.all_locations = self.basic_locations + self.advanced_locations + self.orbital_locations
+            self.all_locations[current_player_name] = self.basic_locations + self.advanced_locations + self.orbital_locations
         else:
-            self.all_regions = [
+            self.all_regions[current_player_name] = [
                 RegionInfo("Menu", []),
                 RegionInfo(RegionNames.Basic, self.basic_locations),
                 RegionInfo(RegionNames.Advanced, self.advanced_locations),
                 RegionInfo(RegionNames.Nuclear, self.radbolt_locations),
                 RegionInfo(RegionNames.Space_DLC, self.orbital_locations)
             ]
-            self.all_locations = self.basic_locations + self.advanced_locations + self.radbolt_locations + self.orbital_locations
+            self.all_locations[current_player_name] = self.basic_locations + self.advanced_locations + self.radbolt_locations + self.orbital_locations
 
 
     def create_regions(self) -> None:
         """Method for creating and connecting regions for the World."""
         regions_by_name = {}
 
-        for region_info in self.all_regions:
+        for region_info in self.all_regions[self.multiworld.get_player_name(self.player)]:
             region = Region(region_info.name, self.player, self.multiworld)
             regions_by_name[region_info.name] = region
             for location_name in region_info.locations:
@@ -338,7 +346,7 @@ class ONIWorld(World):
         Method for creating and submitting items to the itempool. Items and Regions must *not* be created and submitted
         to the MultiWorld after this step. If items need to be placed during pre_fill use `get_prefill_items`.
         """
-        for item in self.all_items:
+        for item in self.all_items[self.multiworld.get_player_name(self.player)]:
             '''progressionStr = "None"
             match item.classification:
                 case ItemClassification.filler:
@@ -408,20 +416,22 @@ class ONIWorld(World):
         """This method gets called from a threadpool, do not use multiworld.random here.
         If you need any last-second randomization, use self.random instead."""
         # TODO generate mod json
-        item_names = [data.itemName for data in self.all_items]
+        current_player_name = self.multiworld.get_player_name(self.player)
         print(f"ModItems: {self.mod_items_exist}")
-        for location_name in self.all_locations:     # location_name = tech + location number\
-            tech_name = self.location_name_to_internal[location_name]
-            location = self.multiworld.get_location(location_name, self.player)
+        location_list = self.multiworld.get_locations(self.player)
+        print(f"{current_player_name} has {len(self.all_items[current_player_name])} items and {len(location_list)} locations")
+        for location in location_list:     # location_name = tech + location number\
+            #location = self.multiworld.get_location(location_name, self.player)
+            tech_name = self.location_name_to_internal[location.name]
             ap_item = location.item
             if ap_item is not None:
                 output_item_name = ap_item.name
-                if output_item_name in item_names:
-                    output_item_name = self.name_to_internal_name[ap_item.name]
-                    #output_item_name = [x for x in self.default_item_list if x.name == ap_item.name][0].internal_name
-                self.science_dicts[tech_name].append(output_item_name)
+                if output_item_name in self.name_to_internal_name:
+                    output_item_name = f"{self.name_to_internal_name[ap_item.name]}"
+                output_item_name = f"{output_item_name}>>{ap_item.player}"
+                self.science_dicts[current_player_name][tech_name].append(output_item_name)
 
-        self.mod_json = ModJson(str(self.multiworld.seed), self.multiworld.player_name[self.player], self.spaced_out, self.frosty, self.bionic, self.science_dicts)
+        self.mod_json = ModJson(str(self.multiworld.seed), self.multiworld.player_name[self.player], self.spaced_out, self.frosty, self.bionic, self.science_dicts[current_player_name])
         json_string = self.mod_json.to_json(indent=4)
         output_file_path = os.path.join(output_directory, f"{self.multiworld.get_out_file_name_base(self.player)}.json")
         with open(output_file_path, "w") as file:
@@ -450,22 +460,21 @@ class ONIWorld(World):
         The generation does not wait for `generate_output` to complete before calling this.
         `threading.Event` can be used if you need to wait for something from `generate_output`."""
         self.slot_data_ready.wait()
-
-        print(dir(self.multiworld.get_items()[0]))
-        output_file_path = os.path.join("..\\", f"{self.multiworld.get_out_file_name_base(self.player)}_items.json")
-        json_string = json.dumps(vars(self.multiworld.get_items()[0]), sort_keys=True, indent=4)
-        with open(output_file_path, "w") as file:
-            file.write(json_string)
+        current_player_name = self.multiworld.get_player_name(self.player)
+        mod_items = []
+        if current_player_name in self.ap_mod_items:
+            mod_items = self.ap_mod_items[current_player_name]
         slot_data = {
             "AP_seed": self.mod_json.AP_seed,
             "AP_slotName": self.mod_json.AP_slotName,
+            "AP_PlayerID": str(self.player),
             "URL": self.mod_json.URL,
             "port": self.mod_json.port,
             "spaced_out": self.spaced_out,
             "frosty": self.frosty,
             "bionic": self.bionic,
             "technologies": self.mod_json.technologies,
-            "apModItems": self.ap_mod_items
+            "apModItems": mod_items
         }
         return slot_data
 

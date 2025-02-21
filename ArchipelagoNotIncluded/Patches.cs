@@ -40,6 +40,7 @@ namespace ArchipelagoNotIncluded
                 //Debug.Log("DB_Intitialize");
                 if (ArchipelagoNotIncluded.info?.apModItems.Count > 0)
                 {
+                    Debug.Log($"There are {ArchipelagoNotIncluded.info.apModItems.Count} items added by mods");
                     foreach (string modItemID in ArchipelagoNotIncluded.info.apModItems)
                     {
                         ModItem modItem = ArchipelagoNotIncluded.AllModItems.Find(i => i.internal_name == modItemID);
@@ -87,10 +88,14 @@ namespace ArchipelagoNotIncluded
                             };
                         if (tech == null)
                             tech = new Tech(pair.Key, new List<string>(), __instance, researchCost);
-                        foreach (string techitemid in pair.Value)
+                        foreach (string techitemidplayer in pair.Value)
                         {
-                            DefaultItem defItem = ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.internal_name == techitemid);
-                            if (defItem != null || ArchipelagoNotIncluded.info.apModItems.Contains(techitemid))
+                            string[] splits = techitemidplayer.Split(new string[] { ">>" }, StringSplitOptions.RemoveEmptyEntries);
+                            string techitemid = splits[0];
+                            int playerid = int.Parse(splits[1]);
+                            //DefaultItem defItem = ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.internal_name == techitemid);
+                            //if (defItem != null || ArchipelagoNotIncluded.info.apModItems.Contains(techitemid))
+                            if (ArchipelagoNotIncluded.info.AP_PlayerID == playerid)
                             {
                                 //ArchipelagoNotIncluded.apItems.Add(new KeyValuePair<string, string>(techitemid, pair.Key));
                                 tech.AddUnlockedItemIDs(new string[] { techitemid });

@@ -836,7 +836,7 @@ namespace ArchipelagoNotIncluded
         public override void OnLoad(Harmony harmony)
         {
             PUtil.InitLibrary();
-            cheatmode = true;
+            cheatmode = false;
             
             Options = POptions.ReadSettings<ANIOptions>() ?? new ANIOptions();
             new POptions().RegisterOptions(this, typeof(ANIOptions));
