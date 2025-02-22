@@ -196,7 +196,10 @@ class ONIWorld(World):
         current_player_name = self.multiworld.get_player_name(self.player)
         self.all_items[current_player_name] = []
         self.all_locations[current_player_name] = []
-        self.basic_locations = self.advanced_locations = self.radbolt_locations = self.orbital_locations = []
+        self.basic_locations = []
+        self.advanced_locations = []
+        self.radbolt_locations = []
+        self.orbital_locations = []
         self.science_dicts[current_player_name] = {}
         
         for item in self.default_item_list:
@@ -310,6 +313,15 @@ class ONIWorld(World):
             ]
             self.all_locations[current_player_name] = self.basic_locations + self.advanced_locations + self.radbolt_locations + self.orbital_locations
 
+        '''print(f"{current_player_name} has {len(self.all_items[current_player_name])} items")
+        print(f"{current_player_name} has {len(self.basic_locations)} basic")
+        print(f"{current_player_name} has {len(self.advanced_locations)} advanced")
+        print(f"{current_player_name} has {len(self.radbolt_locations)} radbolt")
+        print(f"{current_player_name} has {len(self.orbital_locations)} orbital")
+        json_string = json.dumps(self.all_locations[current_player_name], default=lambda o: o.__dict__, indent=4)
+        output_file_path = os.path.join(__file__, f"..\\location_list.json")
+        with open(output_file_path, "w") as file:
+            file.write(json_string)'''
 
     def create_regions(self) -> None:
         """Method for creating and connecting regions for the World."""
