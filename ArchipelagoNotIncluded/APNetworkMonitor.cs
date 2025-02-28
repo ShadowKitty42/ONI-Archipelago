@@ -22,7 +22,7 @@ namespace ArchipelagoNotIncluded
         private string URL = "localhost";
         private int Port = 38281;
         public string SlotName = "Shadow";
-        private string Password = "Password";
+        private string Password = "";
         private bool initialSyncComplete = false;
 
         public APNetworkMonitor(string URL, int port, string name, string password = "")
@@ -37,15 +37,16 @@ namespace ArchipelagoNotIncluded
         {
             session = ArchipelagoSessionFactory.CreateSession(URL, Port);
             LoginResult result;
-            if (this.Password == "")
-                result = session.TryConnectAndLogin("Oxygen Not Included", SlotName, flags);
-            else
+            //if (this.Password == "")
+            //    result = session.TryConnectAndLogin("Oxygen Not Included", SlotName, flags);
+            //else
                 result = session.TryConnectAndLogin("Oxygen Not Included", SlotName, flags, password: this.Password);
             if (result.Successful)
             {
                 Debug.Log("Connection successful");
                 initialSyncComplete = false;
                 session.Items.ItemReceived += OnItemReceived;
+                session.Socket.PacketReceived += OnPacketReceived;
                 session.Socket.SocketClosed += OnSocketClosed;
                 session.Socket.ErrorReceived += OnErrorReceived;
                 //UpdateAllItems();
@@ -54,10 +55,20 @@ namespace ArchipelagoNotIncluded
                 Debug.Log("Connection failed");
             return result;
         }
+        
+        private void OnPacketReceived(ArchipelagoPacketBase packet)
+        {
+            Debug.Log($"Received packet of type: {packet.PacketType.ToString()}");
+            if (packet.PacketType.ToString() == "ReceivedItems")
+            {
+                ReceivedItemsPacket packetReceived = (ReceivedItemsPacket)packet;
+                Debug.Log($"The packet has {packetReceived.Items.Length} Items Received");
+            }
+        }
 
         private void OnErrorReceived(Exception e, string reason)
         {
-            Debug.Log($"OnErrorReceived: {reason}");
+            Debug.Log($"OnErrorReceived: {e.Message} {reason}");
             //catch(e Exception).Message = reason;
             if (reason.Contains("closed the WebSocket connection"))
             {
@@ -92,9 +103,12 @@ namespace ArchipelagoNotIncluded
             //if (session.Items.AllItemsReceived.Count == 4)
             //{
             //ItemInfo item = session.Items.PeekItem();
+
             ItemInfo item = session.Items.PeekItem();
-            if (item.Player.Name == SlotName)
-                AddItem(item);
+            //if (item.Player.Name == SlotName)
+            AddItem(item);
+            //Debug.Log($"Current Player: {SlotName} - Found {item.ItemName} for {item.Player.Name}");
+
             /*Debug.Log(item.ItemName);
 
             //char[] delimiters = { '<', '>' };
@@ -146,8 +160,10 @@ namespace ArchipelagoNotIncluded
 
         public void UpdateAllItems(bool force = false)
         {
-            if (!force && initialSyncComplete)
-                return;
+            /*if (!force && initialSyncComplete)
+                return;*/
+            Debug.Log("UpdateAllItems Triggered");
+            Debug.Log(this.session.Items.AllItemsReceived.Count);
             if (!initialSyncComplete)
             {
                 //session.ConnectionInfo.UpdateConnectionOptions(ItemsHandlingFlags.AllItems);
@@ -158,11 +174,10 @@ namespace ArchipelagoNotIncluded
                 session.Socket.SendPacket(packet);
                 initialSyncComplete = true;
             }
-            Debug.Log("UpdateAllItems Triggered");
+            else
+                session.Socket.SendPacketAsync(new SyncPacket());
             //List<string> techList = new List<string>();
-            Debug.Log(this.session.Items.AllItemsReceived.Count);
             //for (int i = ArchipelagoNotIncluded.lastItem; i < session.Items.AllItemsReceived.Count - 1; i++)
-            session.Socket.SendPacketAsync(new SyncPacket());
             /*foreach(ItemInfo item in session.Items.AllItemsReceived)
             {
                 //AddItem(session.Items.AllItemsReceived[i]);
@@ -182,15 +197,27 @@ namespace ArchipelagoNotIncluded
 
         private static void AddItem(ItemInfo item)
         {
-            string name = item.LocationName.Split('-')[0].Trim();
+            //string name = item.LocationName.Split('-')[0].Trim();
             //Debug.Log(item.ItemName);
             //DefaultItem defItem = ArchipelagoNotIncluded.info.spaced_out ? ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.tech == name) : ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.tech_base == name);
             DefaultItem defItem = ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.name == item.ItemName);
+            ModItem modItem = ArchipelagoNotIncluded.AllModItems.Find(i => i.name == item.ItemName);
             Tech itemTech = null;
             if (defItem != null)
                 itemTech = Db.Get().Techs.TryGetTechForTechItem(defItem.internal_name);
+            if (modItem != null)
+                itemTech = Db.Get().Techs.TryGetTechForTechItem(modItem.internal_name);
             if (itemTech != null)
+            {
                 Game.Instance.Trigger(11390976, (object)itemTech);
+                //PlanScreen.Instance.RefreshBuildableStates(true);
+                //PlanScreen.Instance.ForceRefreshAllBuildingToggles();
+            }
+        }
+
+        private static void SendCarePackage()
+        {
+
         }
     }
 }

@@ -137,7 +137,8 @@ class ONIWorld(World):
             tech = item.tech_base
             count = 1
             for location in all_locations:
-                if tech in location:
+                tech_name = location.split(" - ")[0]
+                if tech == tech_name:
                     count += 1
 
             location_name = f"{tech} - {count}"
@@ -157,7 +158,8 @@ class ONIWorld(World):
                 tech = item.tech
                 count = 1
                 for location in all_locations:
-                    if tech in location:
+                    tech_name = location.split(" - ")[0]
+                    if tech == tech_name:
                         count += 1
 
                 location_name = f"{tech} - {count}"
@@ -232,19 +234,35 @@ class ONIWorld(World):
                 internal_tech = item.internal_tech
             match research_level:
                 case "basic":
-                    count = len(list(filter(lambda location: tech in location, self.basic_locations))) + 1
+                    count = 1
+                    for location in self.basic_locations:
+                        tech_name = location.split(" - ")[0]
+                        if tech == tech_name:
+                            count += 1
                     location_name = f"{tech} - {count}"
                     self.basic_locations.append(location_name)
                 case "advanced":
-                    count = len(list(filter(lambda location: tech in location, self.advanced_locations))) + 1
+                    count = 1
+                    for location in self.advanced_locations:
+                        tech_name = location.split(" - ")[0]
+                        if tech == tech_name:
+                            count += 1
                     location_name = f"{tech} - {count}"
                     self.advanced_locations.append(location_name)
                 case "radbolt":
-                    count = len(list(filter(lambda location: tech in location, self.radbolt_locations))) + 1
+                    count = 1
+                    for location in self.radbolt_locations:
+                        tech_name = location.split(" - ")[0]
+                        if tech == tech_name:
+                            count += 1
                     location_name = f"{tech} - {count}"
                     self.radbolt_locations.append(location_name)
                 case "orbital":
-                    count = len(list(filter(lambda location: tech in location, self.orbital_locations))) + 1
+                    count = 1
+                    for location in self.orbital_locations:
+                        tech_name = location.split(" - ")[0]
+                        if tech == tech_name:
+                            count += 1
                     location_name = f"{tech} - {count}"
                     self.orbital_locations.append(location_name)
 
@@ -273,19 +291,35 @@ class ONIWorld(World):
                 internal_tech = item.internal_tech
                 match research_level:
                     case "basic":
-                        count = len(list(filter(lambda location: tech in location, self.basic_locations))) + 1
+                        count = 1
+                        for location in self.basic_locations:
+                            tech_name = location.split(" - ")[0]
+                            if tech == tech_name:
+                                count += 1
                         location_name = f"{tech} - {count}"
                         self.basic_locations.append(location_name)
                     case "advanced":
-                        count = len(list(filter(lambda location: tech in location, self.advanced_locations))) + 1
+                        count = 1
+                        for location in self.advanced_locations:
+                            tech_name = location.split(" - ")[0]
+                            if tech == tech_name:
+                                count += 1
                         location_name = f"{tech} - {count}"
                         self.advanced_locations.append(location_name)
                     case "radbolt":
-                        count = len(list(filter(lambda location: tech in location, self.radbolt_locations))) + 1
+                        count = 1
+                        for location in self.radbolt_locations:
+                            tech_name = location.split(" - ")[0]
+                            if tech == tech_name:
+                                count += 1
                         location_name = f"{tech} - {count}"
                         self.radbolt_locations.append(location_name)
                     case "orbital":
-                        count = len(list(filter(lambda location: tech in location, self.orbital_locations))) + 1
+                        count = 1
+                        for location in self.orbital_locations:
+                            tech_name = location.split(" - ")[0]
+                            if tech == tech_name:
+                                count += 1
                         location_name = f"{tech} - {count}"
                         self.orbital_locations.append(location_name)
 
@@ -449,6 +483,11 @@ class ONIWorld(World):
         with open(output_file_path, "w") as file:
             file.write(json_string)
         
+        '''json_string = json.dumps(self.get_data_package_data(), default=lambda o: o.__dict__, indent=4)
+        output_file_path = os.path.join(__file__, f"..\\data_package.json")
+        with open(output_file_path, "w") as file:
+            file.write(json_string)'''
+
         self.slot_data_ready.set()
 
         '''ap_json = APJson(self.ap_items)
@@ -479,7 +518,7 @@ class ONIWorld(World):
         slot_data = {
             "AP_seed": self.mod_json.AP_seed,
             "AP_slotName": self.mod_json.AP_slotName,
-            "AP_PlayerID": str(self.player),
+            "AP_PlayerID": self.player,
             "URL": self.mod_json.URL,
             "port": self.mod_json.port,
             "spaced_out": self.spaced_out,

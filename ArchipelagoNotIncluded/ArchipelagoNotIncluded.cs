@@ -841,11 +841,11 @@ namespace ArchipelagoNotIncluded
             Options = POptions.ReadSettings<ANIOptions>() ?? new ANIOptions();
             new POptions().RegisterOptions(this, typeof(ANIOptions));
             //Options = ReloadOptions();
-            if (Options.Password == "")
-                netmon = new APNetworkMonitor(Options.URL, Options.Port, Options.SlotName);
-            else
+            //if (Options.Password == "")
+            //    netmon = new APNetworkMonitor(Options.URL, Options.Port, Options.SlotName);
+            //else
                 netmon = new APNetworkMonitor(Options.URL, Options.Port, Options.SlotName, Options.Password);
-            LoginResult result = netmon.TryConnectArchipelago(ItemsHandlingFlags.AllItems);
+            LoginResult result = netmon.TryConnectArchipelago(ItemsHandlingFlags.NoItems);
             if (result.Successful)
             {
                 LoginSuccessful success = (LoginSuccessful)result;
@@ -920,12 +920,30 @@ namespace ArchipelagoNotIncluded
             var original = AccessTools.Method(typeof(Database.Techs), nameof(Database.Techs.Init));
             var prefix = AccessTools.Method(typeof(Techs_Init_Patch), nameof(Techs_Init_Patch.Prefix));
             harmony.Patch(original, new HarmonyMethod(prefix));
+
             original = AccessTools.Method(typeof(Database.Techs), nameof(Database.Techs.Load));
             prefix = AccessTools.Method(typeof(Techs_Load_Patch), nameof(Techs_Load_Patch.Prefix));
             harmony.Patch(original, new HarmonyMethod(prefix));
+
             original = AccessTools.Method(typeof(Db), nameof(Db.Initialize));
             var postfix = AccessTools.Method(typeof(Db_Initialize_Patch), nameof(Db_Initialize_Patch.Postfix));
             harmony.Patch(original, postfix: new HarmonyMethod(postfix));
+
+            original = AccessTools.Method(typeof(CraftingTableConfig), nameof(CraftingTableConfig.ConfigureRecipes));
+            var transpiler = AccessTools.Method(typeof(ConfigureRecipes2_Patch), nameof(ConfigureRecipes2_Patch.Transpiler));
+            harmony.Patch(original, transpiler: new HarmonyMethod(transpiler));
+
+            original = AccessTools.Method(typeof(LubricationStickConfig), nameof(LubricationStickConfig.CreatePrefab));
+            transpiler = AccessTools.Method(typeof(CreatePrefab_Patch), nameof(CreatePrefab_Patch.Transpiler));
+            harmony.Patch(original, transpiler: new HarmonyMethod(transpiler));
+
+            original = AccessTools.Method(typeof(SupermaterialRefineryConfig), nameof(SupermaterialRefineryConfig.ConfigureBuildingTemplate));
+            transpiler = AccessTools.Method(typeof(ConfigureBuildingTemplate_Patch), nameof(ConfigureBuildingTemplate_Patch.Transpiler));
+            harmony.Patch(original, transpiler: new HarmonyMethod(transpiler));
+
+            original = AccessTools.Method(typeof(AdvancedCraftingTableConfig), nameof(AdvancedCraftingTableConfig.ConfigureRecipes));
+            transpiler = AccessTools.Method(typeof(ConfigureRecipes3_Patch), nameof(ConfigureRecipes3_Patch.Transpiler));
+            harmony.Patch(original, transpiler: new HarmonyMethod(transpiler));
             //ModUtil.AddBuildingToPlanScreen((HashedString)"test", "id");
 
             SceneManager.sceneLoaded += (scene, loadScene) => {
@@ -974,7 +992,7 @@ namespace ArchipelagoNotIncluded
                     }
                     else if (netmon.session == null)
                     {
-                        netmon.TryConnectArchipelago();
+                        //netmon.TryConnectArchipelago();
                     }
                     //JsonConvert.SerializeObject()
                     //netmon.UpdateAllItems();
