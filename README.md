@@ -80,7 +80,7 @@ Required files can be found on the [Releases](https://github.com/ShadowKitty42/O
 1. Copy the `oni_world.zip` file into your `libs/worlds/` directory in your Archipelago installation
 2. Extract the `oni_world.zip` file and you should have a folder called `oni` (It is recommended to delete `oni_world.zip` after extracting it.)
 3. If you created a Mod List, navigate to `oni/data` and copy the `[Player Name]_ModItems.json` to that folder.
-4. Download the attached YAML and modify any options you deem necessary and place it in your Players directory in your Archipelago Installation. You can choose any combination of DLC listed in the YAML, just make sure when you start a new game that you choose the same combination. The only Goal currrently implemented is to complete the Research Tree.
+4. Download the attached YAML and modify any options you deem necessary and place it in your Players directory in your Archipelago Installation. You can choose any combination of DLC listed in the YAML, just make sure when you start a new game that you choose the same combination. The only Goal currrently implemented is to complete the Research Tree. NOTE: Even though Bionic is in the YAML file, it is not compatible yet. The mod automatically disables EVERYTHING related to Bionic, even if you enable it.
 5. Run "Generate" either through the executable or the AP launcher.
 6. The result will be in your `Output` directory. This can be uploaded to [Archipelago Host Game](https://archipelago.gg/uploads) to use Archipelago servers as the host. Or it can be ran locally by extracting the ZIP and running the `.archipelago` file.
 
@@ -109,4 +109,4 @@ Required files can be found on the [Releases](https://github.com/ShadowKitty42/O
 - [ ] When research is completed, a research complete notification is generated and has incorrect information about what was unlocked.
 - [x] ~~If your game includes items from other games, they will not appear in the Research Tree. Despite this, every Research topic still unlocks the same number of items as normal.~~
 - [ ] Building Categories appear at the bottom even if there are no buildings listed for it.
-- [ ] Trying to "Copy" the Ration Box you start the game causes a crash.
+- [ ] Trying to "Copy" the Ration Box you start the game with causes a crash.
