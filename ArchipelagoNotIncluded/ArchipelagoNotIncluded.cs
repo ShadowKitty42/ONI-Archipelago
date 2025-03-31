@@ -25,6 +25,7 @@ using PeterHan.PLib.PatchManager;
 using UtilLibs;
 using static MathUtil;
 using Epic.OnlineServices;
+using Newtonsoft.Json.Converters;
 
 namespace ArchipelagoNotIncluded
 {
@@ -33,6 +34,7 @@ namespace ArchipelagoNotIncluded
         //public KaitoKid.ArchipelagoUtilities.Net.Interfaces.ILogger logger;
         private static bool patched = false;
         public static bool cheatmode = false;
+        public static bool allowResourceChecks = false;
 
         private static int Counter = 0;
         public static APNetworkMonitor netmon = null;
@@ -799,6 +801,61 @@ namespace ArchipelagoNotIncluded
             "SuitsOverlay"
         };
 
+        public static Dictionary<string, string> BasePlanets = new Dictionary<string, string>()
+        {
+            {"terra", "clusters/SandstoneDefault" },
+            {"ceres", "dlc2::clusters/CeresBaseGameCluster" },
+            {"oceania", "clusters/Oceania" },
+            {"rime", "clusters/SandstoneFrozen" },
+            {"verdante", "clusters/ForestLush" },
+            {"arboria", "clusters/ForestDefault" },
+            {"volcanea", "clusters/Volcanic" },
+            {"badlands", "clusters/Badlands" },
+            {"aridio", "clusters/ForestHot" },
+            {"oasisse", "clusters/Oasis" }
+        };
+
+        public static Dictionary<string, string> BaseLabPlanets = new Dictionary<string, string>()
+        {
+            {"skewed", "clusters/KleiFest2023" },
+            {"blasted", "dlc2::clusters/CeresBaseGameShatteredCluster" }
+        };
+
+        public static Dictionary<string, string> ClassicPlanets = new Dictionary<string, string>()
+        {
+            {"terra", "expansion1::clusters/VanillaSandstoneCluster" },
+            {"ceres", "dlc2::clusters/CeresClassicCluster" },
+            {"oceania", "expansion1::clusters/VanillaOceaniaCluster" },
+            {"squelchy", "expansion1::clusters/VanillaSwampCluster" },
+            {"rime", "expansion1::clusters/VanillaSandstoneFrozenCluster" },
+            {"verdante", "expansion1::clusters/VanillaForestCluster" },
+            {"arboria", "expansion1::clusters/VanillaArboriaCluster" },
+            {"volcanea", "expansion1::clusters/VanillaVolcanicCluster" },
+            {"badlands", "expansion1::clusters/VanillaBadlandsCluster" },
+            {"aridio", "expansion1::clusters/VanillaAridioCluster" },
+            {"oasisse", "expansion1::clusters/VanillaOasisCluster" }
+        };
+
+        public static Dictionary<string, string> SpacedOutPlanets = new Dictionary<string, string>()
+        {
+            {"terrania", "expansion1::clusters/SandstoneStartCluster" },
+            {"ceres_minor", "dlc2::clusters/CeresSpacedOutCluster" },
+            {"folia", "expansion1::clusters/ForestStartCluster" },
+            {"quagmiris", "expansion1::clusters/SwampStartCluster" },
+            {"metallic_swampy", "expansion1::clusters/MiniClusterMetallicSwampyStart" },
+            {"desolands", "expansion1::clusters/MiniClusterBadlandsStart" },
+            {"frozen_forest", "expansion1::clusters/MiniClusterForestFrozenStart" },
+            {"flipped", "expansion1::clusters/MiniClusterFlippedStart" },
+            {"radioactive_ocean", "expansion1::clusters/MiniClusterRadioactiveOceanStart" },
+            {"ceres_mantle", "expansion1::clusters/CeresSpacedOutShatteredCluster" }
+        };
+
+        public static Dictionary<string, string> ClassicLabPlanets = new Dictionary<string, string>()
+        {
+            {"skewed", "expansion1::clusters/KleiFest2023Cluster" },
+            {"blasted", "dlc2::clusters/CeresClassicShatteredCluster" }
+        };
+
         public static List<string> StarterTech = new List<string>()
         {
             "Ladder",
@@ -823,13 +880,22 @@ namespace ArchipelagoNotIncluded
             "ResearchCenter"
         };
 
+        public static List<string> ItemList = new List<string>();
+        public static List<string> ItemListDetailed = new List<string>();
+        public static bool DebugWasUsed = false;
+        public static int lastIndexSaved = 0;
+        public static int runCount = 0;
+        public static string planetText = string.Empty;
+
         public static int getLastIndex()
         {
-            lastItem = netmon.session.Items.AllItemsReceived.Count;
+            //lastItem = netmon.session.Items.AllItemsReceived.Count;
+            Debug.Log($"getLastIndex: {lastItem}");
             return lastItem;
         }
         public static int setLastIndex(int index)
         {
+            Debug.Log($"setLastIndex: {index}");
             return lastItem = index;
         }
 
@@ -849,7 +915,8 @@ namespace ArchipelagoNotIncluded
             if (result.Successful)
             {
                 LoginSuccessful success = (LoginSuccessful)result;
-                info = JsonConvert.DeserializeObject<APSeedInfo>(JsonConvert.SerializeObject(success.SlotData));
+                info = JsonConvert.DeserializeObject<APSeedInfo>(JsonConvert.SerializeObject(success.SlotData), [new VersionConverter()]);
+                Debug.Log($"SlotData Received - AP World Version: {info.APWorld_Version}");
                 //netmon.session.Socket.DisconnectAsync();
             }
 

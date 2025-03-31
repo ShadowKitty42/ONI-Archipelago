@@ -24,6 +24,9 @@ using System.Text;
 using UtilLibs;
 using Epic.OnlineServices.Platform;
 using PeterHan.PLib.Options;
+using ProcGen;
+using TMPro;
+using Klei.CustomSettings;
 
 namespace ArchipelagoNotIncluded
 {
@@ -77,6 +80,7 @@ namespace ArchipelagoNotIncluded
                         Debug.Log($"Generating research for {pair.Key}, ({pair.Value.Join(s => s, ",")})");
                         Tech tech = __instance.TryGet(pair.Key);
                         Dictionary<string, float> researchCost = null;
+                        //List<string> idList = new List<string>();
                         if (ArchipelagoNotIncluded.cheatmode)
                             researchCost = new Dictionary<string, float>
                             {
@@ -92,8 +96,9 @@ namespace ArchipelagoNotIncluded
                             string[] splits = techitemidplayer.Split(new string[] { ">>" }, StringSplitOptions.RemoveEmptyEntries);
                             string techitemid = splits[0];
                             int playerid = int.Parse(splits[1]);
+                            //idList.Add(techitemid);
                             //Debug.Log($"Player: {ArchipelagoNotIncluded.info.AP_PlayerID} ItemID: {techitemid} PlayerID: {playerid}");
-                            if (ArchipelagoNotIncluded.info.AP_PlayerID == playerid)
+                            if (ArchipelagoNotIncluded.info.AP_PlayerID == playerid && !techitemid.StartsWith("Care Package"))
                             {
                                 //Debug.Log("Item was given default sprite");
                                 tech.AddUnlockedItemIDs(new string[] { techitemid });
@@ -130,16 +135,308 @@ namespace ArchipelagoNotIncluded
             }
         }
 
+        [HarmonyPatch(typeof(SelectModuleSideScreen))]
+        [HarmonyPatch(nameof(SelectModuleSideScreen.SpawnButtons))]
+        public static class SpawnButtons_Patch
+        {   
+            public static bool Prefix(SelectModuleSideScreen __instance)
+            {
+                __instance.ClearButtons();
+                GameObject gameObject1 = Util.KInstantiateUI(__instance.categoryPrefab, __instance.categoryContent, true);
+                HierarchyReferences component = gameObject1.GetComponent<HierarchyReferences>();
+                __instance.categories.Add(gameObject1);
+                component.GetReference<LocText>("label");
+                Transform reference = component.GetReference<Transform>("content");
+                List<GameObject> prefabsWithComponent = Assets.GetPrefabsWithComponent<RocketModuleCluster>();
+                foreach (string str in SelectModuleSideScreen.moduleButtonSortOrder)
+                {
+                    if (!CheckItemList(str))
+                        continue;
+                    string id = str;
+                    GameObject part = prefabsWithComponent.Find((Predicate<GameObject>)(p => p.PrefabID().Name == id));
+                    if ((UnityEngine.Object)part == (UnityEngine.Object)null)
+                    {
+                        Debug.LogWarning((object)("Found an id [" + id + "] in moduleButtonSortOrder in SelectModuleSideScreen.cs that doesn't have a corresponding rocket part!"));
+                    }
+                    else
+                    {
+                        GameObject gameObject2 = Util.KInstantiateUI(__instance.moduleButtonPrefab, reference.gameObject, true);
+                        gameObject2.GetComponentsInChildren<UnityEngine.UI.Image>()[1].sprite = Def.GetUISprite((object)part).first;
+                        LocText componentInChildren = gameObject2.GetComponentInChildren<LocText>();
+                        componentInChildren.text = part.GetProperName();
+                        componentInChildren.alignment = TextAlignmentOptions.Bottom;
+                        componentInChildren.enableWordWrapping = true;
+                        gameObject2.GetComponent<MultiToggle>().onClick += (System.Action)(() => __instance.SelectModule(part.GetComponent<Building>().Def));
+                        __instance.buttons.Add(part.GetComponent<Building>().Def, gameObject2);
+                        if ((UnityEngine.Object)__instance.selectedModuleDef != (UnityEngine.Object)null)
+                            __instance.SelectModule(__instance.selectedModuleDef);
+                    }
+                }
+                __instance.UpdateBuildableStates();
+                return false;
+            }
+        }
+
+        [HarmonyPatch(typeof(DestinationSelectPanel))]
+        [HarmonyPatch(nameof(DestinationSelectPanel.RePlaceAsteroids))]
+        public static class RePlaceAsteroids_Patch
+        {
+            public static bool Prefix(DestinationSelectPanel __instance)
+            {
+                string planet = ArchipelagoNotIncluded.info.planet;
+                string cluster = string.Empty;
+                if (DlcManager.IsExpansion1Active())
+                {
+                    if (ArchipelagoNotIncluded.ClassicPlanets.ContainsKey(planet))
+                        cluster = ArchipelagoNotIncluded.ClassicPlanets[planet];
+                    else if (ArchipelagoNotIncluded.SpacedOutPlanets.ContainsKey(planet))
+                        cluster = ArchipelagoNotIncluded.SpacedOutPlanets[planet];
+                    else if (ArchipelagoNotIncluded.ClassicLabPlanets.ContainsKey(planet))
+                        cluster = ArchipelagoNotIncluded.ClassicLabPlanets[planet];
+                }
+                else
+                {
+                    if (ArchipelagoNotIncluded.BasePlanets.ContainsKey(planet))
+                        cluster = ArchipelagoNotIncluded.BasePlanets[planet];
+                    else if (ArchipelagoNotIncluded.BaseLabPlanets.ContainsKey(planet))
+                        cluster = ArchipelagoNotIncluded.BaseLabPlanets[planet];
+                }
+                if (!cluster.IsNullOrWhiteSpace())
+                {
+                    __instance.clusterKeys.Clear();
+                    __instance.clusterKeys.Add(cluster);
+                    __instance.dragTarget.onBeginDrag -= new System.Action(__instance.BeginDrag);
+                    __instance.dragTarget.onDrag -= new System.Action(__instance.Drag);
+                    __instance.dragTarget.onEndDrag -= new System.Action(__instance.EndDrag);
+                    __instance.leftArrowButton.gameObject.SetActive(false);
+                    __instance.rightArrowButton.gameObject.SetActive(false);
+                }
+                //foreach (string cluster in __instance.clusterKeys)
+                //    Debug.Log($"Cluster name: {cluster}");
+
+                ArchipelagoNotIncluded.ItemList.Clear();
+                ArchipelagoNotIncluded.ItemListDetailed.Clear();
+                ArchipelagoNotIncluded.DebugWasUsed = false;
+                ArchipelagoNotIncluded.lastIndexSaved = 0;
+                ArchipelagoNotIncluded.runCount = 0;
+                ArchipelagoNotIncluded.planetText = string.Empty;
+                return true;
+            }
+        }
+
+        [HarmonyPatch(typeof(ClusterCategorySelectionScreen))]
+        [HarmonyPatch(nameof(ClusterCategorySelectionScreen.OnSpawn))]
+        public static class Cluster_OnSpawn_Patch
+        {
+            public static void Postfix(ClusterCategorySelectionScreen __instance)
+            {
+                ArchipelagoNotIncluded.allowResourceChecks = true;
+                __instance.closeButton.onClick += new System.Action(DisallowResourceChecks);
+
+                if (DlcManager.IsExpansion1Active())
+                {
+                    if (ArchipelagoNotIncluded.ClassicPlanets.ContainsKey(ArchipelagoNotIncluded.info.planet))
+                    {
+                        __instance.eventStyle.button.gameObject.SetActive(false);
+                        __instance.spacedOutStyle.button.gameObject.SetActive(false);
+                    }
+                    else if (ArchipelagoNotIncluded.SpacedOutPlanets.ContainsKey(ArchipelagoNotIncluded.info.planet))
+                    {
+                        __instance.classicStyle.button.gameObject.SetActive(false);
+                        __instance.eventStyle.button.gameObject.SetActive(false);
+                    }
+                    else if (ArchipelagoNotIncluded.ClassicLabPlanets.ContainsKey(ArchipelagoNotIncluded.info.planet))
+                    {
+                        __instance.classicStyle.button.gameObject.SetActive(false);
+                        __instance.spacedOutStyle.button.gameObject.SetActive(false);
+                    }
+                }
+                else
+                {
+                    if (ArchipelagoNotIncluded.BasePlanets.ContainsKey(ArchipelagoNotIncluded.info.planet))
+                    {
+                        __instance.eventStyle.button.gameObject.SetActive(false);
+                    }
+                    else if (ArchipelagoNotIncluded.BaseLabPlanets.ContainsKey(ArchipelagoNotIncluded.info.planet))
+                    {
+                        __instance.vanillaStyle.button.gameObject.SetActive(false);
+                    }
+                }
+            }
+            public static void DisallowResourceChecks()
+            {
+                ArchipelagoNotIncluded.allowResourceChecks = false;
+            }
+        }
+
+        [HarmonyPatch(typeof(ColonyDestinationSelectScreen))]
+        [HarmonyPatch(nameof(ColonyDestinationSelectScreen.LaunchClicked))]
+        public static class LaunchClicked_Patch
+        {
+            public static void Postfix()
+            {
+                if (ArchipelagoNotIncluded.info.teleporter)
+                    CustomGameSettings.Instance.SetQualitySetting(CustomGameSettingConfigs.Teleporters, "Enabled");
+                else
+                    CustomGameSettings.Instance.SetQualitySetting(CustomGameSettingConfigs.Teleporters, "Disabled");
+            }
+        }
+
+        [HarmonyPatch(typeof(DiscoveredResources))]
+        [HarmonyPatch(nameof(DiscoveredResources.Discover), new[] { typeof(Tag), typeof(Tag) })]
+        public static class Discover_Patch
+        {
+            public static bool Prefix(DiscoveredResources __instance, out int __state)
+            {
+                __state = __instance.newDiscoveries.Count;
+                return true;
+            }
+
+            public static void Postfix(DiscoveredResources __instance, Tag tag, int __state)
+            {
+                if (ArchipelagoNotIncluded.allowResourceChecks && __instance.newDiscoveries.Count > __state)      // New Discovery was added
+                {
+                    string ResourceName = tag.ProperNameStripLink();
+                    Debug.Log($"New Discovery: Name: {tag.Name}, StripLink: {ResourceName}");
+                    //foreach (string resource in ArchipelagoNotIncluded.info.resourceChecks)
+                    //Debug.Log(resource);
+                    string location = $"Discover Resource: {ResourceName}";
+                    if (ArchipelagoNotIncluded.info.resourceChecks.Contains( location ) )
+                        ArchipelagoNotIncluded.netmon.SendResourceCheck(location);
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(Pickupable))]
+        [HarmonyPatch(nameof(Pickupable.OnSpawn))]
+        public static class Pickupable_OnSpawn_Patch
+        {
+            public static void Postfix(Pickupable __instance)
+            {
+                if (DebugHandler.InstantBuildMode)
+                {
+                    ArchipelagoNotIncluded.DebugWasUsed = true;
+                    string element = __instance.primaryElement.ElementID.ToString();
+                    string Names;
+                    List<string> NamesList =
+                    [
+                        "Unobtanium", "OxyRock", "Snow", "SolidCarbonDioxide", "CrushedIce", "Brine Ice", "Slickster"
+                    ];
+                    if (NamesList.Contains(element) || NamesList.Contains(TagManager.StripLinkFormatting(__instance.GetProperName())))
+                        return;
+                    if (element == "Creature")
+                        Names = $"{TagManager.StripLinkFormatting(__instance.GetProperName())} ({__instance.KPrefabID.name.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[0]}), ";
+                    else
+                        Names = $"{TagManager.StripLinkFormatting(__instance.GetProperName())} ({element}), ";
+                    if (!ArchipelagoNotIncluded.ItemListDetailed.Contains(Names))
+                    {
+                        ArchipelagoNotIncluded.ItemList.Add(TagManager.StripLinkFormatting(__instance.GetProperName()));
+                        ArchipelagoNotIncluded.ItemListDetailed.Add(Names);
+                    }
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(InterfaceTool))]
+        [HarmonyPatch(nameof(InterfaceTool.ToggleConfig))]
+        public static class ToggleConfig_Patch
+        {
+            public static void Postfix(Action configKey)
+            {
+                if (ArchipelagoNotIncluded.DebugWasUsed && configKey == Action.DebugInstantBuildMode)
+                {
+                    ArchipelagoNotIncluded.DebugWasUsed = false;
+                    using (FileStream fs = File.Open(ArchipelagoNotIncluded.modDirectory.ToString() + $"\\ItemList.txt", FileMode.Append))
+                    {
+                        using (StreamWriter sw = new StreamWriter(fs))
+                        {
+                            ArchipelagoNotIncluded.runCount++;
+                            switch (ArchipelagoNotIncluded.runCount)
+                            {
+                                case 1:
+                                    ArchipelagoNotIncluded.planetText = "\t\"Planet\": {\n";
+                                    ArchipelagoNotIncluded.planetText += "\t\t\"basic\": [\n\t\t\t\"Water\", \"Polluted Water\", ";
+                                    break;
+                                case 2:
+                                    ArchipelagoNotIncluded.planetText += "\n\t\t],\n";
+                                    ArchipelagoNotIncluded.planetText += "\t\t\"advanced\": [\n\t\t\t";
+                                    break;
+                                case 3:
+                                    ArchipelagoNotIncluded.planetText += "\n\t\t],\n";
+                                    ArchipelagoNotIncluded.planetText += "\t\t\"advanced2\": [\n\t\t\t";
+                                    break;
+                                case 4:
+                                    ArchipelagoNotIncluded.planetText += "\n\t\t],\n";
+                                    ArchipelagoNotIncluded.planetText += "\t\t\"radbolt\": [\n\t\t\t";
+                                    break;
+                            }
+                            for (; ArchipelagoNotIncluded.lastIndexSaved < ArchipelagoNotIncluded.ItemList.Count; ArchipelagoNotIncluded.lastIndexSaved++)
+                            {
+                                ArchipelagoNotIncluded.planetText += $"\"{ArchipelagoNotIncluded.ItemList[ArchipelagoNotIncluded.lastIndexSaved]}\", ";
+                                sw.Write(ArchipelagoNotIncluded.ItemListDetailed[ArchipelagoNotIncluded.lastIndexSaved]);
+                            }
+                            sw.Write("\n\n");
+                            if (!DlcManager.IsExpansion1Active() && ArchipelagoNotIncluded.runCount == 2)
+                            {
+                                ArchipelagoNotIncluded.planetText += "\n\t\t]\n\t},";
+                                sw.Write(ArchipelagoNotIncluded.planetText);
+                            }
+                            if (ArchipelagoNotIncluded.runCount == 4)
+                            {
+                                ArchipelagoNotIncluded.planetText += "\n\t\t]\n\t},";
+                                sw.Write(ArchipelagoNotIncluded.planetText);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(SandboxToolParameterMenu))]
+        [HarmonyPatch(nameof(SandboxToolParameterMenu.OnSpawn))]
+        public static class Sandbox_Patch
+        {
+            public static bool Prefix(SandboxToolParameterMenu __instance)
+            {
+                __instance.brushRadiusSlider = new SandboxToolParameterMenu.SliderValue(1f, 50f, "dash", "circle_hard", "", UI.SANDBOXTOOLS.SETTINGS.BRUSH_SIZE.TOOLTIP, UI.SANDBOXTOOLS.SETTINGS.BRUSH_SIZE.NAME, delegate (float value)
+                {
+                    SandboxToolParameterMenu.instance.settings.SetIntSetting("SandboxTools.BrushSize", Mathf.Clamp(Mathf.RoundToInt(value), 1, 50));
+                }, 0);
+                return true;
+            }
+        }
+
         [HarmonyPatch(typeof(ColonyAchievementTracker))]
-        [HarmonyPatch("TriggerNewAchievementCompleted")]
+        [HarmonyPatch(nameof(ColonyAchievementTracker.TriggerNewAchievementCompleted))]
         public static class TriggerNewAchievementCompleted_Patch
         {
             public static bool Prefix(string achievement)
             {
-                Debug.Log($"New Achievement: {achievement}");
-                if (achievement == "CompleteResearchTree")
+                string goal = ArchipelagoNotIncluded.info.goal;
+                Debug.Log($"New Achievement: {achievement} Goal: {goal}");
+                if (goal == "research_all" && achievement == "CompleteResearchTree")
+                    ArchipelagoNotIncluded.netmon.session.SetGoalAchieved();
+                else if (goal == "space" && achievement == "space_race")
+                    ArchipelagoNotIncluded.netmon.session.SetGoalAchieved();
+                else if (goal == "home_sweet_home" && achievement == "thriving")
+                    ArchipelagoNotIncluded.netmon.session.SetGoalAchieved();
+                else if (goal == "great_escape" && achievement == "ReachedDistantPlanet")
+                    ArchipelagoNotIncluded.netmon.session.SetGoalAchieved();
+                else if (goal == "cosmic_archaeology" && achievement == "CollectedArtifacts")
                     ArchipelagoNotIncluded.netmon.session.SetGoalAchieved();
                 return true;
+            }
+        }
+
+        [HarmonyPatch(typeof(MonumentPart))]
+        [HarmonyPatch(nameof(MonumentPart.IsMonumentCompleted))]
+        public static class Monument_Patch
+        {
+            public static void Postfix(bool __result)
+            {
+                if (ArchipelagoNotIncluded.info.goal == "monument" && __result)
+                    ArchipelagoNotIncluded.netmon.session.SetGoalAchieved();
+
             }
         }
 
@@ -213,9 +510,11 @@ namespace ArchipelagoNotIncluded
                 string name = instance.tech.Name.Split(delimiters)[2];
                 Debug.Log($"Name: {name}");
                 List<DefaultItem> defItems = ArchipelagoNotIncluded.info.spaced_out ? ArchipelagoNotIncluded.AllDefaultItems.FindAll(i => i.tech == name) : ArchipelagoNotIncluded.AllDefaultItems.FindAll(i => i.tech_base == name);
-                List<ModItem> modItems = ArchipelagoNotIncluded.AllModItems.FindAll(i => i.tech == name);
-                Debug.Log($"Count: {defItems.Count} {modItems.Count}");
-                int count = defItems.Count + modItems.Count;
+                int modItems = 0;
+                if (ArchipelagoNotIncluded.info.apModItems.Count > 0)
+                    modItems = ArchipelagoNotIncluded.AllModItems.FindAll(i => i.tech == name).Count;
+                Debug.Log($"Count: {defItems.Count} {modItems}");
+                int count = defItems.Count + modItems;
                 long[] locationIds = new long[count];
                 for (int i = 0; i < count; i++)
                 {
@@ -234,9 +533,9 @@ namespace ArchipelagoNotIncluded
             public static void Postfix(TechItem __instance, ref bool __result)
             {
                 //Debug.Log("Found update method");
-                //if (isModItem(__instance.Id))
-                    //return;
-                __result = __result || CheckItemList(__instance);
+                if (isModItem(__instance.Id))
+                    return;
+                __result = __result & CheckItemList(__instance);
                 //__result = true;
             }
         }
@@ -250,7 +549,8 @@ namespace ArchipelagoNotIncluded
                 //Debug.Log("Found update method");
                 if (isModItem(__instance.Id))
                     return true;
-                __result = true;
+                //__result = true;
+                __result = __result & CheckItemList(__instance);
                 return false;
             }
         }
@@ -698,8 +998,11 @@ namespace ArchipelagoNotIncluded
             //Debug.Log($"Checking ModItem InternalName: {InternalName}");
             DefaultItem defItem = ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.internal_name == InternalName);
             ModItem modItem = ArchipelagoNotIncluded.AllModItems.Find(i => i.internal_name == InternalName);
-            if (defItem == null && modItem == null)
+            if (defItem == null && (modItem != null && !modItem.randomized))
+            {
+                //Debug.Log($"Found ModItem: {InternalName}");
                 return true;
+            }
             //Debug.Log("Not ModItem");
             return false;
         }
@@ -714,10 +1017,18 @@ namespace ArchipelagoNotIncluded
             DefaultItem defItem = ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.internal_name == InternalName);
             ModItem modItem = ArchipelagoNotIncluded.AllModItems.Find(i => i.internal_name == InternalName);
             if (defItem != null)
-                return (bool)ArchipelagoNotIncluded.netmon?.session?.Items?.AllItemsReceived.Any<ItemInfo>(i => i.ItemDisplayName == defItem.name/* && i.Player.Name == ArchipelagoNotIncluded.netmon.SlotName*/);
+            {
+                bool ItemFound = (bool)ArchipelagoNotIncluded.netmon?.session?.Items?.AllItemsReceived.Any<ItemInfo>(i => i.ItemDisplayName == defItem.name/* && i.Player.Name == ArchipelagoNotIncluded.netmon.SlotName*/);
+                //Debug.Log($"CheckItemList: {ItemFound}");
+                return ItemFound;
+            }
             else if (modItem != null)
-                return (bool)ArchipelagoNotIncluded.netmon?.session?.Items?.AllItemsReceived.Any<ItemInfo>(i => i.ItemDisplayName == modItem.name/* && i.Player.Name == ArchipelagoNotIncluded.netmon.SlotName*/);
-            else 
+            {
+                bool ItemFound = (bool)ArchipelagoNotIncluded.netmon?.session?.Items?.AllItemsReceived.Any<ItemInfo>(i => i.ItemDisplayName == modItem.name/* && i.Player.Name == ArchipelagoNotIncluded.netmon.SlotName*/);
+                //Debug.Log($"CheckItemList: {ItemFound}");
+                return ItemFound;
+            }
+            else
                 return false;
             /*    return false;
             if (ArchipelagoNotIncluded.netmon?.session?.Items?.AllItemsReceived?.Count() == 0)
@@ -761,12 +1072,26 @@ namespace ArchipelagoNotIncluded
         }
 
         [HarmonyPatch(typeof(PlayerController))]
-        [HarmonyPatch("Update")]
+        [HarmonyPatch(nameof(PlayerController.Update))]
+        //[HarmonyPatch(typeof(AutoDisinfectableManager))]
+        //[HarmonyPatch(nameof(AutoDisinfectableManager.Sim1000ms))]
         public static class PlayerController_Update_Patch
         {
             public static void Postfix()
             {
                 //Debug.Log("Found update method");
+                if (APNetworkMonitor.packageQueue.Count == 0)
+                    return;
+
+                //CarePackageInfo package = new CarePackageInfo(ElementLoader.FindElementByHash(SimHashes.Dirt).tag.ToString(), 500f, (Func<bool>)null);
+                Telepad telepad = Components.Telepads[0];
+                telepad.smi.sm.openPortal.Trigger(telepad.smi);
+                //package.Deliver(telepad.transform.GetPosition());
+                while (APNetworkMonitor.packageQueue.TryDequeue(out string package))
+                {
+                    ArchipelagoNotIncluded.netmon.CarePackages[package].Deliver(telepad.transform.GetPosition());
+                }
+                telepad.smi.sm.closePortal.Trigger(telepad.smi);
             }
         }
 
@@ -783,7 +1108,7 @@ namespace ArchipelagoNotIncluded
         }
 
         //[HarmonyPatch(typeof(SaveLoader), nameof(SaveLoader.Load), new[] {typeof(IReader)})]
-        [HarmonyPatch(typeof(Game), "OnPrefabInit")]
+        [HarmonyPatch(typeof(Game), nameof(Game.OnSpawn))]
         public static class SaveLoader_Load_Patch
         {
             public static void Postfix()
@@ -804,11 +1129,20 @@ namespace ArchipelagoNotIncluded
             }
         }
 
-        /*[HarmonyPatch(typeof(SaveManager))]
-        [HarmonyPatch("Save")]
+        [HarmonyPatch(typeof(SaveLoader))]
+        [HarmonyPatch(nameof(SaveLoader.Save), new[] { typeof(BinaryWriter) })]
         public class Save_Patch
         {
-            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            public static void Postfix(BinaryWriter writer)
+            {
+                bool allow = ArchipelagoNotIncluded.allowResourceChecks;
+                if (allow)
+                    writer.Write(1);
+                else
+                    writer.Write(0);
+                writer.Write(ArchipelagoNotIncluded.getLastIndex());
+            }
+            /*static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
             {
                 bool methodFound = false;
                 bool patchDone = false;
@@ -847,14 +1181,26 @@ namespace ArchipelagoNotIncluded
                     }
                     yield return instruction;
                 }
-            }
+            }*/
         }
 
-        [HarmonyPatch(typeof(SaveManager))]
-        [HarmonyPatch("Load")]
+        [HarmonyPatch(typeof(SaveLoader))]
+        [HarmonyPatch(nameof(SaveLoader.Load), new[] { typeof(IReader) })]
         public class Load_Patch
         {
-            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            public static void Postfix(IReader reader)
+            {
+                try
+                {
+                    int allow = reader.ReadInt32();
+                    ArchipelagoNotIncluded.allowResourceChecks = (allow == 1);
+                    int index = reader.ReadInt32();
+                    ArchipelagoNotIncluded.setLastIndex(index);
+                    APNetworkMonitor.HighestCount = index;
+                }
+                catch { }
+            }
+            /*public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
             {
                 if (ArchipelagoNotIncluded.Options.CreateModList)
                 {
@@ -907,8 +1253,8 @@ namespace ArchipelagoNotIncluded
                     }
                     yield return instruction;
                 }
-            }
-        }*/
+            }*/
+        }
 
         [HarmonyPatch(typeof(SuitFabricatorConfig))]
         [HarmonyPatch("ConfigureRecipes")]
@@ -1168,8 +1514,8 @@ namespace ArchipelagoNotIncluded
         }
 
         [HarmonyPatch(typeof(BuildingDef))]
-        [HarmonyPatch("IsValidDLC")]
-        public static class IsValidDLC_Patch
+        [HarmonyPatch(nameof(BuildingDef.IsAvailable))]
+        public static class IsAvailable_Patch
         {
             public static void Postfix(BuildingDef __instance, ref bool __result)
             {
@@ -1192,9 +1538,31 @@ namespace ArchipelagoNotIncluded
                 __result = true;
             }
         }*/
-        
+
+        [HarmonyPatch(typeof(SpeedControlScreen))]
+        [HarmonyPatch(nameof(SpeedControlScreen.Unpause))]
+        public static class Unpause_Patch
+        {
+            public static void Postfix()
+            {
+                /*if (APNetworkMonitor.packageQueue.Count == 0)
+                    return;
+
+                //CarePackageInfo package = new CarePackageInfo(ElementLoader.FindElementByHash(SimHashes.Dirt).tag.ToString(), 500f, (Func<bool>)null);
+                Telepad telepad = Components.Telepads[0];
+                telepad.smi.sm.openPortal.Trigger(telepad.smi);
+                //package.Deliver(telepad.transform.GetPosition());
+                while (APNetworkMonitor.packageQueue.TryDequeue(out string package))
+                {
+                    ArchipelagoNotIncluded.lastItem++;
+                    ArchipelagoNotIncluded.netmon.CarePackages[package].Deliver(telepad.transform.GetPosition());
+                }
+                telepad.smi.sm.closePortal.Trigger(telepad.smi);*/
+            }
+        }
+
         [HarmonyPatch(typeof(DlcManager))]
-        [HarmonyPatch("IsContentSubscribed")]
+        [HarmonyPatch(nameof(DlcManager.IsContentSubscribed))]
         public static class IsContentSubscribed_Patch
         {
             public static void Postfix(string dlcId, ref bool __result)

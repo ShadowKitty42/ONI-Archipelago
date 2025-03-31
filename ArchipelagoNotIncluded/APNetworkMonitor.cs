@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Newtonsoft.Json;
 using Archipelago.MultiClient.Net.Packets;
+using static STRINGS.ITEMS.BIONIC_BOOSTERS;
+using System.Collections.Concurrent;
 
 namespace ArchipelagoNotIncluded
 {
@@ -24,6 +26,10 @@ namespace ArchipelagoNotIncluded
         public string SlotName = "Shadow";
         private string Password = "";
         private bool initialSyncComplete = false;
+        public Dictionary<string, CarePackageInfo> CarePackages = new Dictionary<string, CarePackageInfo>();
+        public static ConcurrentQueue<string> packageQueue = new ConcurrentQueue<string>();
+        private int MostRecentCount = 0;
+        public static int HighestCount = 0;
 
         public APNetworkMonitor(string URL, int port, string name, string password = "")
         {
@@ -31,10 +37,12 @@ namespace ArchipelagoNotIncluded
             this.Port = port;
             this.SlotName = name;
             this.Password = password;
+            //this.PopulateCarePackages();
         }
 
         public LoginResult TryConnectArchipelago(ItemsHandlingFlags flags = ItemsHandlingFlags.AllItems)
         {
+            MostRecentCount = 0;
             session = ArchipelagoSessionFactory.CreateSession(URL, Port);
             LoginResult result;
             //if (this.Password == "")
@@ -44,7 +52,8 @@ namespace ArchipelagoNotIncluded
             if (result.Successful)
             {
                 Debug.Log("Connection successful");
-                initialSyncComplete = false;
+                if (flags != ItemsHandlingFlags.AllItems)
+                    initialSyncComplete = false;
                 session.Items.ItemReceived += OnItemReceived;
                 session.Socket.PacketReceived += OnPacketReceived;
                 session.Socket.SocketClosed += OnSocketClosed;
@@ -164,8 +173,10 @@ namespace ArchipelagoNotIncluded
                 return;*/
             Debug.Log("UpdateAllItems Triggered");
             Debug.Log(this.session.Items.AllItemsReceived.Count);
+            MostRecentCount = 0;
             if (!initialSyncComplete)
             {
+                PopulateCarePackages();
                 //session.ConnectionInfo.UpdateConnectionOptions(ItemsHandlingFlags.AllItems);
                 ConnectUpdatePacket packet = new ConnectUpdatePacket
                 {
@@ -195,11 +206,23 @@ namespace ArchipelagoNotIncluded
             }*/
         }
 
-        private static void AddItem(ItemInfo item)
+        private void AddItem(ItemInfo item)
         {
             //string name = item.LocationName.Split('-')[0].Trim();
-            //Debug.Log(item.ItemName);
+            Debug.Log($"AddItem: {item.ItemName} MostRecentCount: {MostRecentCount} lastItem: {ArchipelagoNotIncluded.lastItem}");
+            if (MostRecentCount == ArchipelagoNotIncluded.lastItem || ArchipelagoNotIncluded.lastItem == 0)
+            {
+                ArchipelagoNotIncluded.lastItem++;
+                if (item.ItemName.StartsWith("Care Package"))
+                {
+                    Debug.Log($"Sending Care Package: {item.ItemName}");
+                    SendCarePackage(item);
+                }
+            }
+            MostRecentCount++;
             //DefaultItem defItem = ArchipelagoNotIncluded.info.spaced_out ? ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.tech == name) : ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.tech_base == name);
+            
+
             DefaultItem defItem = ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.name == item.ItemName);
             ModItem modItem = ArchipelagoNotIncluded.AllModItems.Find(i => i.name == item.ItemName);
             Tech itemTech = null;
@@ -215,9 +238,98 @@ namespace ArchipelagoNotIncluded
             }
         }
 
-        private static void SendCarePackage()
+        public void SendResourceCheck(string ResourceName)
         {
+            long id = ArchipelagoNotIncluded.netmon.session.Locations.GetLocationIdFromName("Oxygen Not Included", ResourceName);
+            ArchipelagoNotIncluded.netmon.session.Locations.CompleteLocationChecks([id]);
+        }
 
+        public void PopulateCarePackages()
+        {
+            CarePackages.Add("Sandstone", new CarePackageInfo(ElementLoader.FindElementByHash(SimHashes.SandStone).tag.ToString(), 2000f, null));
+            CarePackages.Add("Dirt", new CarePackageInfo(ElementLoader.FindElementByHash(SimHashes.Dirt).tag.ToString(), 1000f, null));
+            CarePackages.Add("Algae", new CarePackageInfo(ElementLoader.FindElementByHash(SimHashes.Algae).tag.ToString(), 1000f, null));
+            CarePackages.Add("Oxylite", new CarePackageInfo(ElementLoader.FindElementByHash(SimHashes.OxyRock).tag.ToString(), 200f, null));
+            CarePackages.Add("Water", new CarePackageInfo(ElementLoader.FindElementByHash(SimHashes.Water).tag.ToString(), 4000f, null));
+            CarePackages.Add("Sand", new CarePackageInfo(ElementLoader.FindElementByHash(SimHashes.Sand).tag.ToString(), 6000f, null));
+            CarePackages.Add("Coal", new CarePackageInfo(ElementLoader.FindElementByHash(SimHashes.Carbon).tag.ToString(), 6000f, null));
+            CarePackages.Add("Fertilizer", new CarePackageInfo(ElementLoader.FindElementByHash(SimHashes.Fertilizer).tag.ToString(), 6000f, null));
+            CarePackages.Add("Ice", new CarePackageInfo(ElementLoader.FindElementByHash(SimHashes.Ice).tag.ToString(), 8000f, null));
+            CarePackages.Add("Brine", new CarePackageInfo(ElementLoader.FindElementByHash(SimHashes.Brine).tag.ToString(), 4000f, null));
+            CarePackages.Add("Salt Water", new CarePackageInfo(ElementLoader.FindElementByHash(SimHashes.SaltWater).tag.ToString(), 4000f, null));
+            CarePackages.Add("Rust", new CarePackageInfo(ElementLoader.FindElementByHash(SimHashes.Rust).tag.ToString(), 2000f, null));
+            CarePackages.Add("Copper Ore", new CarePackageInfo(ElementLoader.FindElementByHash(SimHashes.Cuprite).tag.ToString(), 4000f, null));
+            CarePackages.Add("Gold Amalgam", new CarePackageInfo(ElementLoader.FindElementByHash(SimHashes.GoldAmalgam).tag.ToString(), 4000f, null));
+            CarePackages.Add("Refined Copper", new CarePackageInfo(ElementLoader.FindElementByHash(SimHashes.Copper).tag.ToString(), 800f, null));
+            CarePackages.Add("Refined Iron", new CarePackageInfo(ElementLoader.FindElementByHash(SimHashes.Iron).tag.ToString(), 800f, null));
+            CarePackages.Add("Lime", new CarePackageInfo(ElementLoader.FindElementByHash(SimHashes.Lime).tag.ToString(), 800f, null));
+            CarePackages.Add("Plastic", new CarePackageInfo(ElementLoader.FindElementByHash(SimHashes.Polypropylene).tag.ToString(), 1000f, null));
+            CarePackages.Add("Glass", new CarePackageInfo(ElementLoader.FindElementByHash(SimHashes.Glass).tag.ToString(), 400f, null));
+            CarePackages.Add("Steel", new CarePackageInfo(ElementLoader.FindElementByHash(SimHashes.Steel).tag.ToString(), 200f, null));
+            CarePackages.Add("Ethanol", new CarePackageInfo(ElementLoader.FindElementByHash(SimHashes.Ethanol).tag.ToString(), 200f, null));
+            CarePackages.Add("Aluminum Ore", new CarePackageInfo(ElementLoader.FindElementByHash(SimHashes.AluminumOre).tag.ToString(), 200f, null));
+            CarePackages.Add("Oxyfern Seed", new CarePackageInfo("OxyfernSeed", 2f, null));
+            CarePackages.Add("Arbor Tree Seed", new CarePackageInfo("ForestTreeSeed", 2f, null));
+            CarePackages.Add("Thimble Reed Seed", new CarePackageInfo(BasicFabricMaterialPlantConfig.SEED_ID, 6f, null));
+            CarePackages.Add("Wort Seed", new CarePackageInfo("ColdBreatherSeed", 2f, null));
+            CarePackages.Add("Nutrient Bar", new CarePackageInfo("FieldRation", 10f, null));
+            CarePackages.Add("Omelettes", new CarePackageInfo("CookedEgg", 6f, null));
+            CarePackages.Add("Barbecue", new CarePackageInfo("CookedMeat", 6f, null));
+            CarePackages.Add("Spicy Tofu", new CarePackageInfo("SpicyTofu", 6f, null));
+            CarePackages.Add("Fried Mushroom", new CarePackageInfo("FriedMushroom", 3f, null));
+            CarePackages.Add("Hatch", new CarePackageInfo("HatchBaby", 2f, null));
+            CarePackages.Add("Hatch Egg", new CarePackageInfo("HatchEgg", 6f, null));
+            CarePackages.Add("Pip", new CarePackageInfo("SquirrelBaby", 2f, null));
+            CarePackages.Add("Pip Egg", new CarePackageInfo("SquirrelEgg", 4f, null));
+            CarePackages.Add("Drecko", new CarePackageInfo("DreckoBaby", 2f, null));
+            CarePackages.Add("Drecko Egg", new CarePackageInfo("DreckoEgg", 6f, null));
+            CarePackages.Add("Pacu", new CarePackageInfo("Pacu", 8f, null));
+
+            if (DlcManager.IsContentSettingEnabled("DLC2_ID"))
+            {
+                CarePackages.Add("Cinnabar", new CarePackageInfo(ElementLoader.FindElementByHash(SimHashes.Cinnabar).tag.ToString(), 4000f, null));
+                CarePackages.Add("Wood", new CarePackageInfo(ElementLoader.FindElementByHash(SimHashes.WoodLog).tag.ToString(), 400f, null));
+                CarePackages.Add("Flox", new CarePackageInfo("WoodDeerBaby", 2f, null));
+                CarePackages.Add("Spigot Seal", new CarePackageInfo("SealBaby", 2f, null));
+                CarePackages.Add("Bammoth", new CarePackageInfo("IceBellyEgg", 2f, null));
+                CarePackages.Add("Squash Fries", new CarePackageInfo("FriesCarrot", 6f, null));
+                CarePackages.Add("Idylla Seed", new CarePackageInfo("IceFlowerSeed", 6f, null));
+                CarePackages.Add("Alveo Vera Seed", new CarePackageInfo("BlueGrassSeed", 6f, null));
+                CarePackages.Add("Plume Squash Seed", new CarePackageInfo("CarrotPlantSeed", 2f, null));
+                CarePackages.Add("Bonbon Tree Seed", new CarePackageInfo("SpaceTreeSeed", 2f, null));
+                CarePackages.Add("Pikeapple Bush Seed", new CarePackageInfo("HardSkinBerryPlantSeed", 6f, null));
+            }
+            if (DlcManager.IsContentSettingEnabled("DLC3_ID"))
+            {
+                CarePackages.Add("Metal Power Bank", new CarePackageInfo("DisposableElectrobank_RawMetal", 6f, null));
+                CarePackages.Add("Construction Booster", new CarePackageInfo("Booster_Construct1", 2f, null));
+                CarePackages.Add("Digging Booster", new CarePackageInfo("Booster_Dig1", 2f, null));
+                CarePackages.Add("Electrical Engineering Booster", new CarePackageInfo("Booster_Op1", 2f, null));
+                CarePackages.Add("Suit Training Booster", new CarePackageInfo("Booster_Suits1", 2f, null));
+                CarePackages.Add("Grilling Booster", new CarePackageInfo("Booster_Cook1", 2f, null));
+                CarePackages.Add("Advanced Medical Booster", new CarePackageInfo("Booster_Medicine1", 2f, null));
+                CarePackages.Add("Strength Booster", new CarePackageInfo("Booster_Carry1", 2f, null));
+                CarePackages.Add("Masterworks Art Booster", new CarePackageInfo("Booster_Art1", 2f, null));
+                CarePackages.Add("Crop Tending Booster", new CarePackageInfo("Booster_Farm1", 2f, null));
+                CarePackages.Add("Ranching Booster", new CarePackageInfo("Booster_Ranch1", 2f, null));
+                CarePackages.Add("Researching Booster", new CarePackageInfo("Booster_Research1", 2f, null));
+                if (DlcManager.IsExpansion1Active())
+                    CarePackages.Add("Piloting Booster", new CarePackageInfo("Booster_Pilot1", 2f, null));
+                if (DlcManager.IsPureVanilla())
+                    CarePackages.Add("Piloting Booster", new CarePackageInfo("Booster_PilotVanilla1", 2f, null));
+            }
+        }
+
+        public void SendCarePackage(ItemInfo item)
+        {
+            string packageName = item.ItemName.Split(new string[] { ": " }, StringSplitOptions.RemoveEmptyEntries)[1];
+            if (!CarePackages.ContainsKey(packageName))
+            {
+                Debug.Log($"Unknown Care Package: {packageName}");
+                return;
+            }
+            
+            packageQueue.Enqueue(packageName);
         }
     }
 }

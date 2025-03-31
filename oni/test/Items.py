@@ -16,6 +16,77 @@ class ItemData(typing.NamedTuple):
     progression: ItemClassification
 
 
+care_packages_base: typing.List[str] = [
+    "Sandstone",
+    "Dirt",
+    "Algae",
+    "Oxylite", # OxyRock
+    "Water",
+    "Sand",
+    "Coal", # Carbon
+    "Fertilizer",
+    "Ice",
+    "Brine",
+    "Salt Water",
+    "Rust",
+    "Copper Ore",
+    "Gold Amalgam",
+    "Refined Copper",
+    "Refined Iron",
+    "Lime",
+    "Plastic",
+    "Glass",
+    "Steel",
+    "Ethanol",
+    "Aluminum Ore",
+    "Oxyfern Seed",
+    "Arbor Tree Seed",
+    "Thimble Reed Seed", # BasicFabricMaterialPlantConfig.SEED_ID
+    "Wort Seed", # ColdBreatherSeed
+    "Nutrient Bar", # FieldRation
+    "Omelettes", # CookedEgg
+    "Barbecue", # CookedMeat
+    "Spicy Tofu",
+    "Fried Mushroom",
+    "Hatch", # HatchBaby
+    "Hatch Egg", # HatchEgg
+    "Pip", # SquirrelBaby
+    "Pip Egg", # SquirrelEgg
+    "Drecko", # DreckoBaby
+    "Drecko Egg", # DreckoEgg
+    "Pacu"
+    ]
+
+care_packages_frosty: typing.List[str] = [
+    "Cinnabar",
+    "Wood", # WoodLog
+    "Flox", # WoodDeerBaby
+    "Spigot Seal", # SealBaby
+    "Bammoth", # IceBellyEgg
+    "Squash Fries", # FriesCarrot
+    "Idylla Seed", # IceFlowerSeed
+    "Alveo Vera Seed", # BlueGrassSeed
+    "Plume Squash Seed", # CarrotPlantSeed
+    "Bonbon Tree Seed", # SpaceTreeSeed
+    "Pikeapple Bush Seed" #HardSkinBerryPlantSeed
+    ]
+
+care_packages_bionic: typing.List[str] = [
+    "Metal Power Bank", # DisposableElectrobank_RawMetal
+    "Construction Booster", # Booster_Construct1
+    "Digging Booster", # Booster_Dig1
+    "Electrical Engineering Booster", # Booster_Op1
+    "Suit Training Booster", # Booster_Suits1
+    "Grilling Booster", # Booster_Cook1
+    "Advanced Medical Booster", # Booster_Medicine1
+    "Strength Booster", # Booster_Carry1
+    "Masterworks Art Booster", # Booster_Art1
+    "Crop Tending Booster", # Booster_Farm1
+    "Ranching Booster", # Booster_Ranch1
+    "Researching Booster", # Booster_Research1
+    "Piloting Booster", # Booster_Pilot1 Booster_PilotVanilla1
+    ]
+
 all_items: typing.List[ItemData] = [
         ItemData(ItemNames.AlgaeHabitat, ItemClassification.useful),
         ItemData(ItemNames.PlanterBox, ItemClassification.useful),

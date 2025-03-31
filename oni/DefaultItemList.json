@@ -92,7 +92,7 @@
         "tech_base": "Meal Preparation",
         "internal_tech": "FineDining",
         "internal_tech_base": "FineDining",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "Base"
     },
     {
@@ -236,7 +236,7 @@
         "tech_base": "Ranching",
         "internal_tech": "Ranching",
         "internal_tech_base": "Ranching",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "Base"
     },
     {
@@ -296,7 +296,7 @@
         "tech_base": "Ranching",
         "internal_tech": "Ranching",
         "internal_tech_base": "Ranching",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "Base"
     },
     {
@@ -452,7 +452,7 @@
         "tech_base": "Advanced Combustion",
         "internal_tech": "SpaceCombustion",
         "internal_tech_base": "SpaceCombustion",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "SpacedOut"
     },
     {
@@ -464,7 +464,7 @@
         "tech_base": "Advanced Combustion",
         "internal_tech": "SpaceCombustion",
         "internal_tech_base": "SpaceCombustion",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "SpacedOut"
     },
     {
@@ -596,7 +596,7 @@
         "tech_base": "Hydrocarbon Propulsion",
         "internal_tech": "HydrocarbonPropulsion",
         "internal_tech_base": "HydrocarbonPropulsion",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "SpacedOut"
     },
     {
@@ -620,7 +620,7 @@
         "tech_base": "Improved Hydrocarbon Propulsion",
         "internal_tech": "BetterHydroCarbonPropulsion",
         "internal_tech_base": "BetterHydroCarbonPropulsion",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "SpacedOut"
     },
     {
@@ -832,8 +832,8 @@
         "internal_name": "WireRefined",
         "research_level": "advanced",
         "research_level_base": "advanced",
-        "tech": "Low-Resistence Conductors",
-        "tech_base": "Low-Resistence Conductors",
+        "tech": "Low-Resistance Conductors",
+        "tech_base": "Low-Resistance Conductors",
         "internal_tech": "PrettyGoodConductors",
         "internal_tech_base": "PrettyGoodConductors",
         "ap_classification": "Useful",
@@ -844,8 +844,8 @@
         "internal_name": "WireRefinedBridge",
         "research_level": "advanced",
         "research_level_base": "advanced",
-        "tech": "Low-Resistence Conductors",
-        "tech_base": "Low-Resistence Conductors",
+        "tech": "Low-Resistance Conductors",
+        "tech_base": "Low-Resistance Conductors",
         "internal_tech": "PrettyGoodConductors",
         "internal_tech_base": "PrettyGoodConductors",
         "ap_classification": "Useful",
@@ -856,8 +856,8 @@
         "internal_name": "WireRefinedHighWattage",
         "research_level": "advanced",
         "research_level_base": "advanced",
-        "tech": "Low-Resistence Conductors",
-        "tech_base": "Low-Resistence Conductors",
+        "tech": "Low-Resistance Conductors",
+        "tech_base": "Low-Resistance Conductors",
         "internal_tech": "PrettyGoodConductors",
         "internal_tech_base": "PrettyGoodConductors",
         "ap_classification": "Useful",
@@ -868,8 +868,8 @@
         "internal_name": "WireRefinedBridgeHighWattage",
         "research_level": "advanced",
         "research_level_base": "advanced",
-        "tech": "Low-Resistence Conductors",
-        "tech_base": "Low-Resistence Conductors",
+        "tech": "Low-Resistance Conductors",
+        "tech_base": "Low-Resistance Conductors",
         "internal_tech": "PrettyGoodConductors",
         "internal_tech_base": "PrettyGoodConductors",
         "ap_classification": "Useful",
@@ -880,8 +880,8 @@
         "internal_name": "PowerTransformer",
         "research_level": "advanced",
         "research_level_base": "advanced",
-        "tech": "Low-Resistence Conductors",
-        "tech_base": "Low-Resistence Conductors",
+        "tech": "Low-Resistance Conductors",
+        "tech_base": "Low-Resistance Conductors",
         "internal_tech": "PrettyGoodConductors",
         "internal_tech_base": "PrettyGoodConductors",
         "ap_classification": "Useful",
@@ -932,7 +932,7 @@
         "tech_base": "Renewable Energy",
         "internal_tech": "RenewableEnergy",
         "internal_tech_base": "RenewableEnergy",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "SpacedOut"
     },
     {
@@ -1220,7 +1220,7 @@
         "tech_base": "High Velocity Destruction",
         "internal_tech": "HighVelocityDestruction",
         "internal_tech_base": "HighVelocityDestruction",
-        "ap_classification": "Filler",
+        "ap_classification": "Progression",
         "version": "SpacedOut"
     },
     {
@@ -1444,11 +1444,11 @@
         "internal_name": "HydrogenEngineCluster",
         "research_level": "orbital",
         "research_level_base": "advanced",
-        "tech": "CryoFuel Propulsion",
-        "tech_base": "CryoFuel Propulsion",
-        "internal_tech": "CryoFuelPropulsion",
-        "internal_tech_base": "CryoFuelPropulsion",
-        "ap_classification": "Useful",
+        "tech": "Cryofuel Propulsion",
+        "tech_base": "Cryofuel Propulsion",
+        "internal_tech": "CryofuelPropulsion",
+        "internal_tech_base": "CryofuelPropulsion",
+        "ap_classification": "Progression",
         "version": "SpacedOut"
     },
     {
@@ -1456,11 +1456,11 @@
         "internal_name": "OxidizerTankLiquidCluster",
         "research_level": "orbital",
         "research_level_base": "advanced",
-        "tech": "CryoFuel Propulsion",
-        "tech_base": "CryoFuel Propulsion",
-        "internal_tech": "CryoFuelPropulsion",
-        "internal_tech_base": "CryoFuelPropulsion",
-        "ap_classification": "Useful",
+        "tech": "Cryofuel Propulsion",
+        "tech_base": "Cryofuel Propulsion",
+        "internal_tech": "CryofuelPropulsion",
+        "internal_tech_base": "CryofuelPropulsion",
+        "ap_classification": "Progression",
         "version": "SpacedOut"
     },
     {
@@ -1856,7 +1856,7 @@
         "tech_base": "Radbolt Propulsion",
         "internal_tech": "NuclearPropulsion",
         "internal_tech_base": "NuclearPropulsion",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "SpacedOut"
     },
     {
@@ -2340,7 +2340,7 @@
         "version": "Base"
     },
     {
-        "name": "Water Seive",
+        "name": "Water Sieve",
         "internal_name": "WaterPurifier",
         "research_level": "advanced",
         "research_level_base": "advanced",
@@ -2504,7 +2504,7 @@
         "tech_base": "Advanced Caffeination",
         "internal_tech": "PrecisionPlumbing",
         "internal_tech_base": "PrecisionPlumbing",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "SpacedOut"
     },
     {
@@ -3008,7 +3008,7 @@
         "tech_base": "Advanced Gas Flow",
         "internal_tech": "SpaceGas",
         "internal_tech_base": "SpaceGas",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "SpacedOut"
     },
     {
@@ -3140,7 +3140,7 @@
         "tech_base": "Gas Distribution",
         "internal_tech": "GasDistribution",
         "internal_tech_base": "GasDistribution",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "SpacedOut"
     },
     {
@@ -4088,7 +4088,7 @@
         "tech_base": "Hydrocarbon Combustion",
         "internal_tech": "None",
         "internal_tech_base": "EnginesII",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "BaseOnly"
     },
     {
@@ -4100,7 +4100,7 @@
         "tech_base": "Hydrocarbon Combustion",
         "internal_tech": "None",
         "internal_tech_base": "EnginesII",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "BaseOnly"
     },
     {
@@ -4112,7 +4112,7 @@
         "tech_base": "Hydrocarbon Combustion",
         "internal_tech": "None",
         "internal_tech_base": "EnginesII",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "BaseOnly"
     },
     {
@@ -4124,7 +4124,7 @@
         "tech_base": "Cryofuel Combustion",
         "internal_tech": "None",
         "internal_tech_base": "EnginesIII",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "BaseOnly"
     },
     {
@@ -4136,7 +4136,7 @@
         "tech_base": "Cryofuel Combustion",
         "internal_tech": "None",
         "internal_tech_base": "EnginesIII",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "BaseOnly"
     },
     {
