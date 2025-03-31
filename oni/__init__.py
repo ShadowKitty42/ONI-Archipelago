@@ -512,11 +512,10 @@ class ONIWorld(World):
 
         fill_restrictive(world, all_state, locs, suits, True, True, name="ONI Add Suits")
 
-        self.multiworld.local_items[self.player].value.add("Atmo Suit")
-        self.multiworld.local_items[self.player].value.add("Jet Suit Pattern")
-        if self.spaced_out == True:
-            self.multiworld.local_items[self.player].value.add("Lead Suit")
-        pass
+        self.options.local_items.value.add("Atmo Suit")
+        self.options.local_items.value.add("Jet Suit Pattern")
+        if self.spaced_out:
+            self.options.local_items.value.add("Lead Suit")
 
     def fill_hook(self,
                   progitempool: List["Item"],
