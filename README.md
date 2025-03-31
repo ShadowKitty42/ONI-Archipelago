@@ -78,7 +78,7 @@ Install Archipelago if you haven't already. It can be found [here](https://githu
 Required files can be found on the [Releases](https://github.com/ShadowKitty42/ONI-Archipelago/releases/latest) page.
 
 1. Install oni.apworld into the `custom_worlds` folder in your Archipelago installation.
-2. If you created a Mod List, navigate to `data/ONI` in your Archipelago installation, and copy the `[Player Name]_ModItems.json` to that folder.
+2. If any players have created a Mod List, navigate to `data/ONI` in your Archipelago installation, and copy the `[Player Name]_ModItems.json` file(s) to that folder.
 3. Download the attached YAML and modify any options you deem necessary and place it in your Players directory in your Archipelago Installation. You can choose any combination of DLC listed in the YAML, just make sure when you start a new game that you choose the same combination. The only Goal currrently implemented is to complete the Research Tree. NOTE: Even though Bionic is in the YAML file, it is not compatible yet. The mod automatically disables EVERYTHING related to Bionic, even if you enable it.
 4. Run "Generate" either through the executable or the AP launcher.
 5. The result will be in your `Output` directory. This can be uploaded to [Archipelago Host Game](https://archipelago.gg/uploads) to use Archipelago servers as the host. Or it can be ran locally by extracting the ZIP and running the `.archipelago` file.
