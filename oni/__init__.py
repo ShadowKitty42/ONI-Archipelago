@@ -84,7 +84,7 @@ class ONIWorld(World):
         os.makedirs(data_path)
     folder = os.scandir(data_path)
 
-    default_item_list = json.loads(pkgutil.get_data(__name__, "DefaultItemList.json"), object_hook=mod_item_decoder)
+    default_item_list = json.loads(pkgutil.get_data(__name__, "DefaultItemList.json"), object_hook=item_decoder)
 
     for file in folder:
         if file.is_file():
