@@ -59,7 +59,7 @@ namespace ArchipelagoNotIncluded
         }
 
         [HarmonyPatch(typeof(Techs))]
-        [HarmonyPatch("Init")]
+        [HarmonyPatch(nameof(Techs.Init))]
         public class Techs_Init_Patch
         {
             [HarmonyPriority(Priority.First)]
@@ -102,6 +102,7 @@ namespace ArchipelagoNotIncluded
                             {
                                 //Debug.Log("Item was given default sprite");
                                 tech.AddUnlockedItemIDs(new string[] { techitemid });
+                                ArchipelagoNotIncluded.allTechList.Remove(techitemid);
                             }
                             else
                             {
@@ -135,6 +136,42 @@ namespace ArchipelagoNotIncluded
             }
         }
 
+        [HarmonyPatch(typeof(Techs))]
+        [HarmonyPatch(nameof(Techs.TryGetTechForTechItem))]
+        public static class TryGetTechForTechItem_Patch
+        {
+            public static bool Prefix(string itemId, ref Tech __result)
+            {
+                if (ArchipelagoNotIncluded.allTechList.Contains(itemId))
+                {
+                    __result = Db.Get().Techs.TryGet("Jobs");
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        [HarmonyPatch(typeof(TechItems))]
+        [HarmonyPatch(nameof(TechItems.AddTechItem), new[] { typeof(string), typeof(string), typeof(string), typeof(Func<string, bool, Sprite>), typeof(string[]), typeof(string[]), typeof(bool) })]
+        public static class AddTechItem_Patch
+        {
+            /*public static bool Prefix(string id)
+            {
+                Debug.Log($"Trying to add TechItem: {id}");
+                return true;
+            }*/
+            public static void Postfix(ref TechItem __result)
+            {
+                //if (__result != null)
+                //    Debug.Log($"TechItem: {__result.Id}");
+                if (__result != null && ArchipelagoNotIncluded.allTechList.Contains(__result.Id))
+                {
+                    //Debug.Log($"TechItem: {__result.Id}");
+                    Db.Get().Techs.TryGet(__result.parentTechId).unlockedItems.Remove(__result);
+                }
+            }
+        }
+
         [HarmonyPatch(typeof(SelectModuleSideScreen))]
         [HarmonyPatch(nameof(SelectModuleSideScreen.SpawnButtons))]
         public static class SpawnButtons_Patch
@@ -148,27 +185,27 @@ namespace ArchipelagoNotIncluded
                 component.GetReference<LocText>("label");
                 Transform reference = component.GetReference<Transform>("content");
                 List<GameObject> prefabsWithComponent = Assets.GetPrefabsWithComponent<RocketModuleCluster>();
-                foreach (string str in SelectModuleSideScreen.moduleButtonSortOrder)
+                foreach (string id in SelectModuleSideScreen.moduleButtonSortOrder)
                 {
-                    if (!CheckItemList(str))
+                    if (!CheckItemList(id))
                         continue;
-                    string id = str;
-                    GameObject part = prefabsWithComponent.Find((Predicate<GameObject>)(p => p.PrefabID().Name == id));
-                    if ((UnityEngine.Object)part == (UnityEngine.Object)null)
+                    GameObject part = prefabsWithComponent.Find((GameObject p) => p.PrefabID().Name == id);
+                    if (part == null)
                     {
-                        Debug.LogWarning((object)("Found an id [" + id + "] in moduleButtonSortOrder in SelectModuleSideScreen.cs that doesn't have a corresponding rocket part!"));
+                        Debug.LogWarning(("Found an id [" + id + "] in moduleButtonSortOrder in SelectModuleSideScreen.cs that doesn't have a corresponding rocket part!"));
                     }
                     else
                     {
-                        GameObject gameObject2 = Util.KInstantiateUI(__instance.moduleButtonPrefab, reference.gameObject, true);
-                        gameObject2.GetComponentsInChildren<UnityEngine.UI.Image>()[1].sprite = Def.GetUISprite((object)part).first;
+                        GameObject gameObject2 = Util.KInstantiateUI(__instance.moduleButtonPrefab, reference.gameObject, force_active: true);
+                        gameObject2.GetComponentsInChildren<UnityEngine.UI.Image>()[1].sprite = Def.GetUISprite(part).first;
                         LocText componentInChildren = gameObject2.GetComponentInChildren<LocText>();
                         componentInChildren.text = part.GetProperName();
                         componentInChildren.alignment = TextAlignmentOptions.Bottom;
                         componentInChildren.enableWordWrapping = true;
-                        gameObject2.GetComponent<MultiToggle>().onClick += (System.Action)(() => __instance.SelectModule(part.GetComponent<Building>().Def));
+                        MultiToggle component2 = gameObject2.GetComponent<MultiToggle>();
+                        component2.onClick += (System.Action)(() => __instance.SelectModule(part.GetComponent<Building>().Def));
                         __instance.buttons.Add(part.GetComponent<Building>().Def, gameObject2);
-                        if ((UnityEngine.Object)__instance.selectedModuleDef != (UnityEngine.Object)null)
+                        if (__instance.selectedModuleDef != null)
                             __instance.SelectModule(__instance.selectedModuleDef);
                     }
                 }
@@ -232,7 +269,8 @@ namespace ArchipelagoNotIncluded
             {
                 ArchipelagoNotIncluded.allowResourceChecks = true;
                 __instance.closeButton.onClick += new System.Action(DisallowResourceChecks);
-
+                if (ArchipelagoNotIncluded.info == null)
+                    return;
                 if (DlcManager.IsExpansion1Active())
                 {
                     if (ArchipelagoNotIncluded.ClassicPlanets.ContainsKey(ArchipelagoNotIncluded.info.planet))
@@ -277,8 +315,6 @@ namespace ArchipelagoNotIncluded
             {
                 if (ArchipelagoNotIncluded.info.teleporter)
                     CustomGameSettings.Instance.SetQualitySetting(CustomGameSettingConfigs.Teleporters, "Enabled");
-                else
-                    CustomGameSettings.Instance.SetQualitySetting(CustomGameSettingConfigs.Teleporters, "Disabled");
             }
         }
 
@@ -320,7 +356,7 @@ namespace ArchipelagoNotIncluded
                     string Names;
                     List<string> NamesList =
                     [
-                        "Unobtanium", "OxyRock", "Snow", "SolidCarbonDioxide", "CrushedIce", "Brine Ice", "Slickster"
+                        "Unobtanium", "OxyRock", "Snow", "SolidCarbonDioxide", "CrushedIce", "BrineIce", "Slickster", "SolidCrudeOil"
                     ];
                     if (NamesList.Contains(element) || NamesList.Contains(TagManager.StripLinkFormatting(__instance.GetProperName())))
                         return;
@@ -410,21 +446,35 @@ namespace ArchipelagoNotIncluded
         [HarmonyPatch(nameof(ColonyAchievementTracker.TriggerNewAchievementCompleted))]
         public static class TriggerNewAchievementCompleted_Patch
         {
-            public static bool Prefix(string achievement)
+            public static void Postfix(string achievement)
             {
                 string goal = ArchipelagoNotIncluded.info.goal;
                 Debug.Log($"New Achievement: {achievement} Goal: {goal}");
-                if (goal == "research_all" && achievement == "CompleteResearchTree")
-                    ArchipelagoNotIncluded.netmon.session.SetGoalAchieved();
-                else if (goal == "space" && achievement == "space_race")
-                    ArchipelagoNotIncluded.netmon.session.SetGoalAchieved();
-                else if (goal == "home_sweet_home" && achievement == "thriving")
-                    ArchipelagoNotIncluded.netmon.session.SetGoalAchieved();
-                else if (goal == "great_escape" && achievement == "ReachedDistantPlanet")
-                    ArchipelagoNotIncluded.netmon.session.SetGoalAchieved();
-                else if (goal == "cosmic_archaeology" && achievement == "CollectedArtifacts")
-                    ArchipelagoNotIncluded.netmon.session.SetGoalAchieved();
-                return true;
+                switch (achievement)
+                {
+                    case "CompleteResearchTree":
+                        if (goal == "research_all")
+                            ArchipelagoNotIncluded.netmon.session.SetGoalAchieved();
+                        goto default;
+                    case "space_race":
+                        if (goal == "launch_rocket")
+                            ArchipelagoNotIncluded.netmon.session.SetGoalAchieved();
+                        goto default;
+                    case "thriving":
+                        if (goal == "home_sweet_home")
+                            ArchipelagoNotIncluded.netmon.session.SetGoalAchieved();
+                        goto default;
+                    case "ReachedDistantPlanet":
+                        if (goal == "great_escape")
+                            ArchipelagoNotIncluded.netmon.session.SetGoalAchieved();
+                        goto default;
+                    case "CollectedArtifacts":
+                        if (goal == "cosmic_archaeology")
+                            ArchipelagoNotIncluded.netmon.session.SetGoalAchieved();
+                        goto default;
+                    default:
+                        break;
+                }
             }
         }
 
@@ -532,10 +582,9 @@ namespace ArchipelagoNotIncluded
         {
             public static void Postfix(TechItem __instance, ref bool __result)
             {
-                //Debug.Log("Found update method");
                 if (isModItem(__instance.Id))
                     return;
-                __result = __result & CheckItemList(__instance);
+                __result = __result | CheckItemList(__instance);
                 //__result = true;
             }
         }
@@ -546,11 +595,10 @@ namespace ArchipelagoNotIncluded
         {
             public static bool Prefix(TechItem __instance, ref bool __result)
             {
-                //Debug.Log("Found update method");
                 if (isModItem(__instance.Id))
                     return true;
                 //__result = true;
-                __result = __result & CheckItemList(__instance);
+                __result = __result | CheckItemList(__instance);
                 return false;
             }
         }
@@ -1014,6 +1062,10 @@ namespace ArchipelagoNotIncluded
             if (ArchipelagoNotIncluded.Options.CreateModList)
                 return false;
 
+            //Debug.Log($"InternalName: {InternalName} {ArchipelagoNotIncluded.hadBionicDupe}");
+            if (ArchipelagoNotIncluded.hadBionicDupe && InternalName == "CraftingTable")
+                return true;
+
             DefaultItem defItem = ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.internal_name == InternalName);
             ModItem modItem = ArchipelagoNotIncluded.AllModItems.Find(i => i.internal_name == InternalName);
             if (defItem != null)
@@ -1041,12 +1093,15 @@ namespace ArchipelagoNotIncluded
 
         static bool CheckItemList(TechItem TechItem)
         {
+            //Debug.Log($"Name: {TechItem.Name}, Id: {TechItem.Id} {ArchipelagoNotIncluded.hadBionicDupe}");
             if (ArchipelagoNotIncluded.Options.CreateModList)
                 return false;
 
             char[] delimiters = { '<', '>' };
             string name = ArchipelagoNotIncluded.CleanName(TechItem.Name);
-            //Debug.Log($"Name: {TechItem.Name}, Id: {TechItem.Id}");
+
+            if (ArchipelagoNotIncluded.hadBionicDupe && TechItem.Id == "CraftingTable")
+                return true;
 
             /*if (ArchipelagoNotIncluded.session.Items.AllItemsReceived.SingleOrDefault(i => i.ItemDisplayName == name) != null)
             {
@@ -1069,6 +1124,17 @@ namespace ArchipelagoNotIncluded
                     return true;
             return false;*/
             //return false;
+        }
+
+        [HarmonyPatch(typeof(BionicMinionConfig))]
+        [HarmonyPatch(nameof(BionicMinionConfig.BionicFreeDiscoveries))]
+        public static class BionicFreeDiscoveries_Patch
+        {
+            public static bool Prefix()
+            {
+                ArchipelagoNotIncluded.hadBionicDupe = true;
+                return false;
+            }
         }
 
         [HarmonyPatch(typeof(PlayerController))]
@@ -1094,6 +1160,16 @@ namespace ArchipelagoNotIncluded
                 telepad.smi.sm.closePortal.Trigger(telepad.smi);
             }
         }
+
+        /*[HarmonyPatch(typeof(GeneratedBuildings))]
+        [HarmonyPatch(nameof(GeneratedBuildings.LoadGeneratedBuildings))]
+        public static class LoadGeneratedBuildings_Patch
+        {
+            public static void PostFix()
+            {
+                    BuildingConfigManager.Instance.RegisterBuilding(Activator.CreateInstance(typeof(CraftingTableConfig)) as IBuildingConfig);
+            }
+        }*/
 
         [HarmonyReversePatch]
         [HarmonyPatch(typeof(PlanScreen))]
@@ -1135,11 +1211,16 @@ namespace ArchipelagoNotIncluded
         {
             public static void Postfix(BinaryWriter writer)
             {
-                bool allow = ArchipelagoNotIncluded.allowResourceChecks;
-                if (allow)
+                if (ArchipelagoNotIncluded.allowResourceChecks)
                     writer.Write(1);
                 else
                     writer.Write(0);
+
+                if (ArchipelagoNotIncluded.hadBionicDupe)
+                    writer.Write(1);
+                else
+                    writer.Write(0);
+
                 writer.Write(ArchipelagoNotIncluded.getLastIndex());
             }
             /*static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
@@ -1194,6 +1275,11 @@ namespace ArchipelagoNotIncluded
                 {
                     int allow = reader.ReadInt32();
                     ArchipelagoNotIncluded.allowResourceChecks = (allow == 1);
+
+                    int bionic = reader.ReadInt32();
+                    if (!ArchipelagoNotIncluded.hadBionicDupe)
+                        ArchipelagoNotIncluded.hadBionicDupe = (bionic == 1);
+
                     int index = reader.ReadInt32();
                     ArchipelagoNotIncluded.setLastIndex(index);
                     APNetworkMonitor.HighestCount = index;
@@ -1256,11 +1342,12 @@ namespace ArchipelagoNotIncluded
             }*/
         }
 
+        //[HarmonyDebug]
         [HarmonyPatch(typeof(SuitFabricatorConfig))]
         [HarmonyPatch("ConfigureRecipes")]
         public class ConfigureRecipes_Patch
         {
-            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
             {
                 //bool methodFound = false;
                 bool startPatch = false;
@@ -1569,8 +1656,8 @@ namespace ArchipelagoNotIncluded
             {
                 //Debug.Log("Found update method");
                 //Debug.Log(__instance.PrefabID);
-                if (dlcId == "DLC3_ID")
-                    __result = false;
+                //if (dlcId == "DLC3_ID")
+                //    __result = false;
             }
         }
 

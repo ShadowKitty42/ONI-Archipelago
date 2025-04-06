@@ -188,6 +188,299 @@ resource_locations: typing.Dict[str, typing.Dict[str, typing.List[str]]] = {
 			"Waterweed Seed", "Nosh Bean", "Dasha Saltvine Seed", "Solid Chlorine", "Tranquil Toe Seed", "Saturn Critter Trap Seed", 
 		]
 	},
+    "rime": {
+		"basic": [
+			"Water", "Polluted Water", "Blossom Seed", "Copper Ore", "Algae", "Dirt", "Sand", "Sandstone", "Muckroot", "Mealwood Seed", "Briar Seed", "Slime", "Coal", "Fertilizer", "Hatch", "Aluminum Ore", "Ice", "Igneous Rock", 
+		],
+		"advanced": [
+			"Sporechid Seed", "Abyssalite", "Lead", "Uranium Ore", "Granite", "Pincha Pepper Seed", "Saturn Critter Trap Seed", "Tranquil Toe Seed", "Thimble Reed Seed", "Fungal Spore", "Arbor Acorn", "Hexalent Fruit",
+            "Waterweed Seed", "Balm Lily Seed", "Obsidian", "Fossil", "Iron Ore", "Diamond", "Polluted Ice", "Wolframite", "Phosphorite", "Sedimentary Rock", "Rust", "Sulfur", "Gold Amalgam", "Clay", "Bleach Stone", "Mafic Rock",
+            "Salt", "Regolith", "Joya Seed", "Wort Seed", "Mirth Leaf Seed", "Buddy Bud Seed", "Nosh Bean", "Oxyfern Seed", 
+		],
+		"advanced2": [
+			"Bog Bucket Seed", "Mallow Seed", "Polluted Mud", "Mud", "Swamp Chard Heart", "Polluted Dirt", "Cobalt Ore", 
+		],
+		"radbolt": [
+			"Bliss Burst Seed", "Grubfruit Seed", "Sleet Wheat Grain", "Iron", "Sucrose", 
+		]
+	},
+    "verdante": {
+		"basic": [
+			"Water", "Polluted Water", "Hexalent Fruit", "Mirth Leaf Seed", "Oxyfern Seed", "Arbor Acorn", "Mealwood Seed", "Dirt", "Igneous Rock", "Aluminum Ore", "Hatch", "Phosphorite", 
+		],
+		"advanced": [
+			"Joya Seed", "Sporechid Seed", "Pincha Pepper Seed", "Bog Bucket Seed", "Mallow Seed", "Swamp Chard Heart", "Waterweed Seed", "Nosh Bean", "Dasha Saltvine Seed", "Balm Lily Seed", "Wort Seed", "Thimble Reed Seed",
+            "Fungal Spore", "Buddy Bud Seed", "Obsidian", "Abyssalite", "Lead", "Granite", "Fossil", "Diamond", "Slime", "Iron Ore", "Algae", "Coal", "Mud", "Polluted Dirt", "Cobalt Ore", "Sedimentary Rock", "Mafic Rock", "Rust",
+            "Polluted Mud", "Sand", "Bleach Stone", "Salt", "Fertilizer", "Gold Amalgam", "Clay", "Uranium Ore", "Ice", "Sandstone", "Wolframite", "Regolith", "Copper Ore", 
+		],
+		"advanced2": [
+			"Blossom Seed", "Briar Seed", "Muckroot", 
+		],
+		"radbolt": [
+			"Solid Chlorine", "Tranquil Toe Seed", "Saturn Critter Trap Seed", "Bliss Burst Seed", "Grubfruit Seed", "Sulfur", "Sucrose", 
+		]
+	},
+    "arboria": {
+		"basic": [
+			"Water", "Polluted Water", "Hexalent Fruit", "Mirth Leaf Seed", "Mealwood Seed", "Oxyfern Seed", "Arbor Acorn", "Dirt", "Igneous Rock", "Aluminum Ore", "Granite", "Hatch", "Phosphorite", 
+		],
+		"advanced": [
+			"Wort Seed", "Joya Seed", "Sporechid Seed", "Pincha Pepper Seed", "Bog Bucket Seed", "Mallow Seed", "Balm Lily Seed", "Waterweed Seed", "Swamp Chard Heart", "Sleet Wheat Grain", "Nosh Bean", "Dasha Saltvine Seed", "Ice",
+            "Wolframite", "Polluted Ice", "Obsidian", "Cobalt Ore", "Abyssalite", "Iron Ore", "Diamond", "Fossil", "Lead", "Iron", "Coal", "Sand", "Sedimentary Rock", "Salt", "Bleach Stone", "Polluted Dirt", "Algae", "Polluted Mud",
+            "Mud", "Uranium Ore", "Fertilizer", "Sandstone", "Mafic Rock", "Rust", "Slime", "Regolith", "Copper Ore", 
+		],
+		"advanced2": [
+			"Muckroot", "Briar Seed", "Blossom Seed", 
+		],
+		"radbolt": [
+			"Saturn Critter Trap Seed", "Tranquil Toe Seed", "Grubfruit Seed", "Bliss Burst Seed", "Sulfur", "Sucrose", 
+		]
+	},
+    "volcanea": {
+		"basic": [
+			"Water", "Polluted Water", "Mealwood Seed", "Briar Seed", "Blossom Seed", "Muckroot", "Fertilizer", "Sandstone", "Sand", "Algae", "Copper Ore", "Coal", "Dirt", "Igneous Rock", "Hatch", 
+		],
+		"advanced": [
+			"Granite", "Wort Seed", "Joya Seed", "Sporechid Seed", "Pincha Pepper Seed", "Balm Lily Seed", "Mirth Leaf Seed", "Sleet Wheat Grain", "Waterweed Seed", "Fungal Spore", "Grubfruit Seed", "Bliss Burst Seed", "Thimble Reed Seed",
+            "Buddy Bud Seed", "Ice", "Wolframite", "Obsidian", "Abyssalite", "Iron Ore", "Lead", "Diamond", "Fossil", "Phosphorite", "Polluted Ice", "Slime", "Salt", "Sedimentary Rock", "Clay", "Gold Amalgam", "Bleach Stone", "Sulfur",
+            "Mafic Rock", "Uranium Ore", "Regolith", "Iron", 
+		],
+		"advanced2": [
+			"Swamp Chard Heart", "Mallow Seed", "Bog Bucket Seed", "Cobalt Ore", "Polluted Dirt", "Mud", "Polluted Mud", 
+		],
+		"radbolt": [
+			"Tranquil Toe Seed", "Saturn Critter Trap Seed", "Nosh Bean", "Dasha Saltvine Seed", "Oxyfern Seed", "Hexalent Fruit", "Arbor Acorn", "Rust", "Aluminum Ore", 
+		]
+	},
+    "badlands": {
+		"basic": [
+			"Water", "Polluted Water", "Muckroot", "Blossom Seed", "Mealwood Seed", "Briar Seed", "Dirt", "Sandstone", "Sand", "Algae", "Copper Ore", "Fertilizer", "Coal", "Hatch", "Igneous Rock", 
+		],
+		"advanced": [
+			"Granite", "Joya Seed", "Sporechid Seed", "Pincha Pepper Seed", "Balm Lily Seed", "Mirth Leaf Seed", "Sleet Wheat Grain", "Wort Seed", "Grubfruit Seed", "Bliss Burst Seed", "Nosh Bean", "Dasha Saltvine Seed", "Obsidian",
+            "Abyssalite", "Fossil", "Lead", "Ice", "Polluted Ice", "Diamond", "Iron Ore", "Wolframite", "Iron", "Sedimentary Rock", "Phosphorite", "Bleach Stone", "Sulfur", "Mafic Rock", "Slime", "Uranium Ore", "Rust", "Salt", "Sucrose", "Regolith", 
+		],
+		"advanced2": [
+			"Bog Bucket Seed", "Mallow Seed", "Swamp Chard Heart", "Polluted Dirt", "Mud", "Polluted Mud", "Cobalt Ore", 
+		],
+		"radbolt": [
+			"Saturn Critter Trap Seed", "Tranquil Toe Seed", "Hexalent Fruit", "Oxyfern Seed", "Fungal Spore", "Thimble Reed Seed", "Arbor Acorn", "Buddy Bud Seed", "Clay", "Gold Amalgam", "Aluminum Ore", 
+		]
+	},
+    "aridio": {
+		"basic": [
+			"Water", "Polluted Water", "Arbor Acorn", "Oxyfern Seed", "Mealwood Seed", "Mirth Leaf Seed", "Hexalent Fruit", "Igneous Rock", "Dirt", "Aluminum Ore", "Phosphorite", "Hatch", 
+		],
+		"advanced": [
+			"Joya Seed", "Sporechid Seed", "Pincha Pepper Seed", "Waterweed Seed", "Balm Lily Seed", "Thimble Reed Seed", "Fungal Spore", "Dasha Saltvine Seed", "Grubfruit Seed", "Bliss Burst Seed", "Buddy Bud Seed", "Wort Seed", "Obsidian",
+            "Abyssalite", "Fossil", "Iron Ore", "Lead", "Granite", "Diamond", "Slime", "Coal", "Sand", "Algae", "Sedimentary Rock", "Bleach Stone", "Uranium Ore", "Salt", "Ice", "Wolframite", "Gold Amalgam", "Sandstone", "Clay", "Mafic Rock",
+            "Rust", "Sulfur", "Copper Ore", "Sucrose", "Fertilizer", "Regolith", "Nosh Bean", 
+		],
+		"advanced2": [
+			"Blossom Seed", "Muckroot", "Briar Seed", 
+		],
+		"radbolt": [
+			"Tranquil Toe Seed", "Saturn Critter Trap Seed", "Mallow Seed", "Bog Bucket Seed", "Swamp Chard Heart", "Sleet Wheat Grain", "Iron", "Polluted Dirt", "Mud", "Cobalt Ore", "Polluted Mud", "Polluted Ice", 
+		]
+	},
+    "oasisse": {
+		"basic": [
+			"Water", "Polluted Water", "Mirth Leaf Seed", "Oxyfern Seed", "Mealwood Seed", "Dirt", "Igneous Rock", "Aluminum Ore", "Phosphorite", "Hatch", "Arbor Acorn", "Hexalent Fruit", 
+		],
+		"advanced": [
+			"Abyssalite", "Lead", "Uranium Ore", "Wort Seed", "Waterweed Seed", "Pincha Pepper Seed", "Sporechid Seed", "Balm Lily Seed", "Fungal Spore", "Muckroot", "Briar Seed", "Blossom Seed", "Grubfruit Seed", "Thimble Reed Seed",
+            "Bliss Burst Seed", "Joya Seed", "Ice", "Wolframite", "Obsidian", "Granite", "Iron Ore", "Diamond", "Gold Amalgam", "Clay", "Slime", "Sedimentary Rock", "Algae", "Fossil", "Sand", "Bleach Stone", "Salt", "Coal", "Sandstone",
+            "Copper Ore", "Mafic Rock", "Sulfur", "Fertilizer", "Iron", "Regolith", "Buddy Bud Seed", 
+		],
+		"advanced2": [
+			"Bog Bucket Seed", "Swamp Chard Heart", "Cobalt Ore", "Polluted Mud", "Mud", "Polluted Dirt", "Mallow Seed", 
+		],
+		"radbolt": [
+			"Saturn Critter Trap Seed", "Tranquil Toe Seed", "Dasha Saltvine Seed", "Nosh Bean", "Sleet Wheat Grain", "Rust", "Polluted Ice", 
+		]
+	},
+    "terrania": {
+		"basic": [
+			"Water", "Polluted Water", "Blossom Seed", "Muckroot", "Mealwood Seed", "Briar Seed", "Algae", "Sandstone", "Dirt", "Fertilizer", "Sand", "Igneous Rock", "Sedimentary Rock", "Copper Ore", "Coal", "Hatch", 
+		],
+		"advanced": [
+			"Granite", "Sporechid Seed", "Balm Lily Seed", "Fungal Spore", "Pincha Pepper Seed", "Thimble Reed Seed", "Mirth Leaf Seed", "Buddy Bud Seed", "Bliss Burst Seed", "Grubfruit Seed", "Wort Seed", "Sleet Wheat Grain",
+            "Obsidian", "Abyssalite", "Iron Ore", "Iron", "Gold Amalgam", "Slime", "Clay", "Phosphorite", "Bleach Stone", "Lead", "Uranium Ore", "Mafic Rock", "Sulfur", "Sucrose", "Polluted Ice", "Salt", "Ice", "Rust", "Wolframite", 
+		],
+		"advanced2": [
+			"Swamp Chard Heart", "Mallow Seed", "Bog Bucket Seed", "Cobalt Ore", "Polluted Mud", "Mud", "Polluted Dirt", 
+		],
+		"radbolt": [
+			"Joya Seed", "Dasha Saltvine Seed", "Nosh Bean", "Fossil", "Diamond", 
+		]
+	},
+    "ceres_minor": {
+		"basic": [
+			"Water", "Polluted Water", "Alveo Vera Seed", "Sherberry", "Idylla Seed", "Ice", "Cinnabar Ore", "Phosphorite", "Dirt", "Pikeapple Bush Seed", "Oxylite", "Warm Coat"
+		],
+		"advanced": [
+			"Hexalent Fruit", "Mirth Leaf Seed", "Mealwood Seed", "Arbor Acorn", "Grubfruit Seed", "Sporechid Seed", "Oxyfern Seed", "Bliss Burst Seed", "Pincha Pepper Seed", "Plume Squash Seed", "Carved Lumen Quartz",
+            "Sleet Wheat Grain", "Wort Seed", "Waterweed Seed", "Bonbon Tree Seed", "Obsidian", "Igneous Rock", "Abyssalite", "Aluminum Ore", "Sand", "Sandstone", "Sulfur", "Mafic Rock", "Copper Ore", "Granite", "Coal",
+            "Algae", "Slime", "Fossil", "Diamond", "Cobalt Ore", "Fertilizer", "Bleach Stone", "Sedimentary Rock", "Iron Ore", "Rust", "Sucrose", "Polluted Ice", "Wolframite", "Lead", "Uranium Ore", "Salt", "Mercury", "Nosh Bean", 
+		],
+		"advanced2": [
+			"Blossom Seed", "Briar Seed", "Muckroot", "Hatch", 
+		],
+		"radbolt": [
+			"Joya Seed", "Dasha Saltvine Seed", "Iron", 
+		]
+	},
+    "folia": {
+		"basic": [
+			"Water", "Polluted Water", "Hexalent Fruit", "Arbor Acorn", "Oxyfern Seed", "Mirth Leaf Seed", "Mealwood Seed", "Aluminum Ore", "Igneous Rock", "Dirt", "Hatch", "Mafic Rock", "Phosphorite", 
+		],
+		"advanced": [
+			"Granite", "Sleet Wheat Grain", "Grubfruit Seed", "Bliss Burst Seed", "Balm Lily Seed", "Pincha Pepper Seed", "Wort Seed", "Nosh Bean", "Dasha Saltvine Seed", "Obsidian", "Abyssalite", "Coal", "Iron",
+            "Iron Ore", "Salt", "Polluted Ice", "Ice", "Sandstone", "Rust", "Sand", "Copper Ore", "Sulfur", "Sedimentary Rock", "Algae", "Sucrose", "Bleach Stone", "Lead", "Uranium Ore", "Wolframite", "Regolith", 
+		],
+		"advanced2": [
+			"Muckroot", "Briar Seed", "Blossom Seed", "Fertilizer", 
+		],
+		"radbolt": [
+			"Joya Seed", "Sporechid Seed", "Waterweed Seed", "Fossil", "Diamond", "Slime", 
+		]
+	},
+    "quagmiris": {
+		"basic": [
+			"Water", "Polluted Water", "Swamp Chard Heart", "Sedimentary Rock", "Fertilizer", "Mud", "Polluted Dirt", "Cobalt Ore", "Phosphorite", "Polluted Mud", "Dirt", "Sandstone", "Sand", "Mallow Seed",
+            "Bog Bucket Seed", "Igneous Rock", "Fossil", 
+		],
+		"advanced": [
+			"Sporechid Seed", "Pincha Pepper Seed", "Balm Lily Seed", "Mirth Leaf Seed", "Grubfruit Seed", "Bliss Burst Seed", "Sleet Wheat Grain", "Wort Seed", "Obsidian", "Abyssalite", "Granite", "Slime",
+            "Iron Ore", "Algae", "Coal", "Iron", "Diamond", "Ice", "Bleach Stone", "Wolframite", "Copper Ore", "Sulfur", "Mafic Rock", "Sucrose", "Polluted Ice", "Salt", "Rust", "Lead", "Uranium Ore", 
+		],
+		"advanced2": [
+			"Muckroot", "Mealwood Seed", "Briar Seed", "Blossom Seed", "Hatch", 
+		],
+		"radbolt": [
+			"Joya Seed", "Nosh Bean", "Dasha Saltvine Seed", "Waterweed Seed", 
+		]
+	},
+    "metallic_swampy": {
+		"basic": [
+			"Water", "Polluted Water", "Bog Bucket Seed", "Swamp Chard Heart", "Mallow Seed", "Polluted Mud", "Sedimentary Rock", "Polluted Dirt", "Mud", "Dirt", "Phosphorite", "Cobalt Ore", "Fertilizer", "Fossil", "Sand", 
+		],
+		"advanced": [
+			"Thimble Reed Seed", "Buddy Bud Seed", "Fungal Spore", "Obsidian", "Abyssalite", "Slime", "Algae", "Clay", "Gold Amalgam", "Igneous Rock", "Coal", "Granite", "Gold", "Aluminum Ore", "Sandstone", "Polluted Ice", "Wolframite", "Ice", 
+		],
+		"advanced2": [
+			"Mealwood Seed", "Hexalent Fruit", "Arbor Acorn", "Mirth Leaf Seed", "Oxyfern Seed", 
+		],
+		"radbolt": [
+			"Wort Seed", "Iron Ore", "Rust", "Mafic Rock", "Bleach Stone", "Regolith", "Pincha Pepper Seed", "Nosh Bean", "Dasha Saltvine Seed", 
+		]
+	},
+    "desolands": {
+		"basic": [
+			"Water", "Polluted Water", "Blossom Seed", "Mealwood Seed", "Muckroot", "Briar Seed", "Sandstone", "Dirt", "Copper Ore", "Sand", "Coal", "Algae", "Fertilizer", "Hatch", "Igneous Rock", "Phosphorite", "Sedimentary Rock", 
+		],
+		"advanced": [
+			"Granite", "Sporechid Seed", "Joya Seed", "Pincha Pepper Seed", "Mirth Leaf Seed", "Balm Lily Seed", "Fossil", "Lead", "Abyssalite", "Iron Ore", "Slime", "Diamond", "Obsidian", "Iron", "Bleach Stone", 
+		],
+		"advanced2": [
+			"Hexalent Fruit", "Oxyfern Seed", "Arbor Acorn", "Aluminum Ore", "Mud", 
+		],
+		"radbolt": [
+			"Wort Seed", "Saturn Critter Trap Seed", "Tranquil Toe Seed", "Waterweed Seed", "Ice", "Uranium Ore", "Rust", "Sulfur", "Wolframite", "Salt", 
+		]
+	},
+    "frozen_forest": {
+		"basic": [
+			"Water", "Polluted Water", "Hexalent Fruit", "Mealwood Seed", "Oxyfern Seed", "Mirth Leaf Seed", "Arbor Acorn", "Phosphorite", "Igneous Rock", "Dirt", "Aluminum Ore", "Hatch", "Sandstone", "Sand", "Ice", "Sedimentary Rock", 
+		],
+		"advanced": [
+			"Wort Seed", "Obsidian", "Abyssalite", "Rust", "Iron Ore", "Mafic Rock", "Bleach Stone", "Coal", "Algae", "Granite", "Regolith", "Dasha Saltvine Seed", "Pincha Pepper Seed", "Nosh Bean", 
+		],
+		"advanced2": [
+			"Blossom Seed", "Muckroot", "Briar Seed", "Fertilizer", "Copper Ore", "Lead", 
+		],
+		"radbolt": [
+			"Balm Lily Seed", "Joya Seed", "Sporechid Seed", "Iron", "Fossil", "Diamond", 
+		]
+	},
+    "flipped": {
+		"basic": [
+			"Water", "Polluted Water", "Briar Seed", "Blossom Seed", "Muckroot", "Mealwood Seed", "Copper Ore", "Coal", "Sandstone", "Sand", "Dirt", "Fertilizer", "Algae", "Igneous Rock", "Hatch", 
+		],
+		"advanced": [
+			"Sleet Wheat Grain", "Wort Seed", "Grubfruit Seed", "Bliss Burst Seed", "Sporechid Seed", "Slime", "Granite", "Ice", "Abyssalite", "Polluted Ice", "Wolframite", "Sedimentary Rock", "Mafic Rock", "Obsidian", 
+		],
+		"advanced2": [
+			"Sulfur", 
+		],
+		"radbolt": [
+			"Balm Lily Seed", "Joya Seed", "Pincha Pepper Seed", "Mirth Leaf Seed", "Diamond", "Iron Ore", "Lead", "Fossil", "Iron", "Phosphorite", "Bleach Stone", 
+		]
+	},
+    "radioactive_ocean": {
+		"basic": [
+			"Water", "Polluted Water", "Hexalent Fruit", "Oxyfern Seed", "Mirth Leaf Seed", "Mealwood Seed", "Arbor Acorn", "Igneous Rock", "Dirt", "Aluminum Ore", "Hatch", "Sedimentary Rock", "Phosphorite", 
+		],
+		"advanced": [
+			"Tranquil Toe Seed", "Saturn Critter Trap Seed", "Waterweed Seed", "Pincha Pepper Seed", "Obsidian", "Abyssalite", "Uranium Ore", "Rust", "Sulfur", "Ice", "Bleach Stone", "Wolframite", "Granite", "Salt", "Sand",
+            "Diamond", "Copper Ore", "Sandstone", "Fossil", "Iron Ore", 
+		],
+		"advanced2": [
+			"Blossom Seed", "Algae", "Coal", "Fertilizer", "Briar Seed", "Muckroot", 
+		],
+		"radbolt": [
+			"Sleet Wheat Grain", "Wort Seed", "Grubfruit Seed", "Bliss Burst Seed", "Polluted Ice", "Mafic Rock", "Sucrose", 
+		]
+	},
+    "ceres_mantle": {
+		"basic": [
+			"Water", "Polluted Water", "Alveo Vera Seed", "Pikeapple Bush Seed", "Sherberry", "Ice", "Dirt", "Phosphorite", "Cinnabar Ore", "Idylla Seed",  "Oxylite", "Warm Coat"
+		],
+		"advanced": [
+			"Wort Seed", "Sporechid Seed", "Carved Lumen Quartz", "Waterweed Seed", "Plume Squash Seed", "Abyssalite", "Wolframite", "Coal", "Sand", "Mafic Rock", "Iron Ore", "Rust", "Obsidian", "Igneous Rock",
+            "Sedimentary Rock", "Granite", "Sucrose", "Bleach Stone", "Salt", "Sandstone", "Nosh Bean", "Pincha Pepper Seed", 
+		],
+		"advanced2": [
+			"Sleet Wheat Grain", "Polluted Ice", 
+		],
+		"radbolt": [
+			"Bonbon Tree Seed", "Muckroot", "Lead", "Fossil", "Sulfur", "Diamond", "Copper Ore", "Fertilizer", "Algae", "Mercury", "Slime", "Bliss Burst Seed", "Grubfruit Seed", "Joya Seed", "Hatch", "Mealwood Seed",
+            "Briar Seed", "Blossom Seed", 
+		]
+	},
+    "skewed": {
+		"basic": [
+			"Water", "Polluted Water", "Mealwood Seed", "Muckroot", "Blossom Seed", "Sandstone", "Fertilizer", "Copper Ore", "Algae", "Dirt", "Sand", "Coal", "Briar Seed", "Hatch", "Igneous Rock", 
+		],
+		"advanced": [
+			"Granite", "Sleet Wheat Grain", "Waterweed Seed", "Pincha Pepper Seed", "Wort Seed", "Balm Lily Seed", "Mirth Leaf Seed", "Sporechid Seed", "Fungal Spore", "Buddy Bud Seed", "Thimble Reed Seed",
+            "Joya Seed", "Obsidian", "Abyssalite", "Fossil", "Lead", "Ice", "Polluted Ice", "Salt", "Sedimentary Rock", "Bleach Stone", "Slime", "Gold Amalgam", "Wolframite", "Phosphorite", "Iron Ore", "Mafic Rock",
+            "Regolith", "Clay", "Diamond", "Iron", 
+		],
+		"advanced2": [
+			"Swamp Chard Heart", "Mallow Seed", "Bog Bucket Seed", "Polluted Mud", "Mud", "Cobalt Ore", "Polluted Dirt", 
+		],
+		"radbolt": [
+			"Nosh Bean", "Dasha Saltvine Seed", "Rust", "Saturn Critter Trap Seed", "Tranquil Toe Seed", "Hexalent Fruit", "Oxyfern Seed", "Arbor Acorn", "Uranium Ore", "Solid Chlorine", "Sulfur", "Aluminum Ore", 
+		]
+	},
+    "blasted": {
+		"basic": [
+			"Water", "Polluted Water", "Ice", "Pikeapple Bush Seed", "Alveo Vera Seed", "Sherberry", "Idylla Seed", "Cinnabar Ore", "Phosphorite", "Dirt", "Oxylite", "Warm Coat"
+		],
+		"advanced": [
+			"Hexalent Fruit", "Mirth Leaf Seed", "Oxyfern Seed", "Mealwood Seed", "Joya Seed", "Sporechid Seed", "Arbor Acorn", "Pincha Pepper Seed", "Wort Seed", "Sleet Wheat Grain", "Saturn Critter Trap Seed",
+            "Tranquil Toe Seed", "Plume Squash Seed", "Carved Lumen Quartz", "Waterweed Seed", "Bonbon Tree Seed", "Igneous Rock", "Obsidian", "Fossil", "Granite", "Lead", "Abyssalite", "Iron", "Aluminum Ore",
+            "Iron Ore", "Coal", "Diamond", "Copper Ore", "Polluted Ice", "Gold Amalgam", "Wolframite", "Sand", "Sedimentary Rock", "Uranium Ore", "Rust", "Bleach Stone", "Sulfur", "Mafic Rock", "Sandstone", "Salt",
+            "Algae", "Slime", "Sucrose", "Fertilizer", "Mercury", "Nosh Bean", 
+		],
+		"advanced2": [
+			"Mallow Seed", "Bog Bucket Seed", "Cobalt Ore", "Mud", "Polluted Dirt", "Polluted Mud", "Swamp Chard Heart", 
+		],
+		"radbolt": [
+			"Grubfruit Seed", "Bliss Burst Seed", "Balm Lily Seed", "Thimble Reed Seed", "Fungal Spore", "Clay", "Buddy Bud Seed", 
+		]
+	},
 }
 
 # Basic Research

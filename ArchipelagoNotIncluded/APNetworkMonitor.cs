@@ -227,9 +227,16 @@ namespace ArchipelagoNotIncluded
             ModItem modItem = ArchipelagoNotIncluded.AllModItems.Find(i => i.name == item.ItemName);
             Tech itemTech = null;
             if (defItem != null)
-                itemTech = Db.Get().Techs.TryGetTechForTechItem(defItem.internal_name);
+            {
+                if (!ArchipelagoNotIncluded.allTechList.Contains(defItem.internal_name))
+                    itemTech = Db.Get().Techs.TryGetTechForTechItem(defItem.internal_name);
+            }
             if (modItem != null)
-                itemTech = Db.Get().Techs.TryGetTechForTechItem(modItem.internal_name);
+            {
+                if (!ArchipelagoNotIncluded.allTechList.Contains(modItem.internal_name))
+                    itemTech = Db.Get().Techs.TryGetTechForTechItem(modItem.internal_name);
+            }
+
             if (itemTech != null)
             {
                 Game.Instance.Trigger(11390976, (object)itemTech);

@@ -92,7 +92,7 @@
         "tech_base": "Meal Preparation",
         "internal_tech": "FineDining",
         "internal_tech_base": "FineDining",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "Base"
     },
     {
@@ -236,7 +236,7 @@
         "tech_base": "Ranching",
         "internal_tech": "Ranching",
         "internal_tech_base": "Ranching",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "Base"
     },
     {
@@ -296,7 +296,7 @@
         "tech_base": "Ranching",
         "internal_tech": "Ranching",
         "internal_tech_base": "Ranching",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "Base"
     },
     {
@@ -452,7 +452,7 @@
         "tech_base": "Advanced Combustion",
         "internal_tech": "SpaceCombustion",
         "internal_tech_base": "SpaceCombustion",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "SpacedOut"
     },
     {
@@ -464,7 +464,7 @@
         "tech_base": "Advanced Combustion",
         "internal_tech": "SpaceCombustion",
         "internal_tech_base": "SpaceCombustion",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "SpacedOut"
     },
     {
@@ -596,11 +596,11 @@
         "tech_base": "Hydrocarbon Propulsion",
         "internal_tech": "HydrocarbonPropulsion",
         "internal_tech_base": "HydrocarbonPropulsion",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "SpacedOut"
     },
     {
-        "name": "Mission Control Station",
+        "name": "Mission Control Station Cluster",
         "internal_name": "MissionControlCluster",
         "research_level": "orbital",
         "research_level_base": "advanced",
@@ -612,7 +612,7 @@
         "version": "SpacedOut"
     },
     {
-        "name": "Petroleum Engine",
+        "name": "Petroleum Engine Cluster",
         "internal_name": "KeroseneEngineCluster",
         "research_level": "orbital",
         "research_level_base": "advanced",
@@ -620,7 +620,7 @@
         "tech_base": "Improved Hydrocarbon Propulsion",
         "internal_tech": "BetterHydroCarbonPropulsion",
         "internal_tech_base": "BetterHydroCarbonPropulsion",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "SpacedOut"
     },
     {
@@ -924,7 +924,7 @@
         "version": "Base"
     },
     {
-        "name": "Steam Engine",
+        "name": "Steam Engine Cluster",
         "internal_name": "SteamEngineCluster",
         "research_level": "radbolt",
         "research_level_base": "advanced",
@@ -932,7 +932,7 @@
         "tech_base": "Renewable Energy",
         "internal_tech": "RenewableEnergy",
         "internal_tech_base": "RenewableEnergy",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "SpacedOut"
     },
     {
@@ -1128,7 +1128,7 @@
         "version": "Base"
     },
     {
-        "name": "Cargo Bay",
+        "name": "Cargo Bay Small",
         "internal_name": "SolidCargoBaySmall",
         "research_level": "radbolt",
         "research_level_base": "advanced",
@@ -1220,7 +1220,7 @@
         "tech_base": "High Velocity Destruction",
         "internal_tech": "HighVelocityDestruction",
         "internal_tech_base": "HighVelocityDestruction",
-        "ap_classification": "Filler",
+        "ap_classification": "Progression",
         "version": "SpacedOut"
     },
     {
@@ -1440,7 +1440,7 @@
         "version": "SpacedOut"
     },
     {
-        "name": "Hydrogen Engine",
+        "name": "Hydrogen Engine Cluster",
         "internal_name": "HydrogenEngineCluster",
         "research_level": "orbital",
         "research_level_base": "advanced",
@@ -1448,11 +1448,11 @@
         "tech_base": "CryoFuel Propulsion",
         "internal_tech": "CryoFuelPropulsion",
         "internal_tech_base": "CryoFuelPropulsion",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "SpacedOut"
     },
     {
-        "name": "Liquid Oxidizer Tank",
+        "name": "Liquid Oxidizer Tank Cluster",
         "internal_name": "OxidizerTankLiquidCluster",
         "research_level": "orbital",
         "research_level_base": "advanced",
@@ -1460,7 +1460,7 @@
         "tech_base": "CryoFuel Propulsion",
         "internal_tech": "CryoFuelPropulsion",
         "internal_tech_base": "CryoFuelPropulsion",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "SpacedOut"
     },
     {
@@ -1524,7 +1524,7 @@
         "version": "Base"
     },
     {
-        "name": "Telescope",
+        "name": "Telescope Cluster",
         "internal_name": "ClusterTelescope",
         "research_level": "basic",
         "research_level_base": "basic",
@@ -1620,7 +1620,7 @@
         "version": "SpacedOut"
     },
     {
-        "name": "Virtual Planetarium",
+        "name": "Virtual Planetarium Cluster",
         "internal_name": "DLC1CosmicResearchCenter",
         "research_level": "advanced",
         "research_level_base": "advanced",
@@ -1856,7 +1856,7 @@
         "tech_base": "Radbolt Propulsion",
         "internal_tech": "NuclearPropulsion",
         "internal_tech_base": "NuclearPropulsion",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "SpacedOut"
     },
     {
@@ -2504,7 +2504,7 @@
         "tech_base": "Advanced Caffeination",
         "internal_tech": "PrecisionPlumbing",
         "internal_tech_base": "PrecisionPlumbing",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "SpacedOut"
     },
     {
@@ -3008,7 +3008,7 @@
         "tech_base": "Advanced Gas Flow",
         "internal_tech": "SpaceGas",
         "internal_tech_base": "SpaceGas",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "SpacedOut"
     },
     {
@@ -3036,7 +3036,7 @@
         "version": "SpacedOut"
     },
     {
-        "name": "Gas Cargo Canister",
+        "name": "Gas Cargo Canister Small",
         "internal_name": "GasCargoBaySmall",
         "research_level": "advanced",
         "research_level_base": "advanced",
@@ -3140,7 +3140,7 @@
         "tech_base": "Gas Distribution",
         "internal_tech": "GasDistribution",
         "internal_tech_base": "GasDistribution",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "SpacedOut"
     },
     {
@@ -4088,7 +4088,7 @@
         "tech_base": "Hydrocarbon Combustion",
         "internal_tech": "None",
         "internal_tech_base": "EnginesII",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "BaseOnly"
     },
     {
@@ -4100,7 +4100,7 @@
         "tech_base": "Hydrocarbon Combustion",
         "internal_tech": "None",
         "internal_tech_base": "EnginesII",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "BaseOnly"
     },
     {
@@ -4112,7 +4112,7 @@
         "tech_base": "Hydrocarbon Combustion",
         "internal_tech": "None",
         "internal_tech_base": "EnginesII",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "BaseOnly"
     },
     {
@@ -4124,7 +4124,7 @@
         "tech_base": "Cryofuel Combustion",
         "internal_tech": "None",
         "internal_tech_base": "EnginesIII",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "BaseOnly"
     },
     {
@@ -4136,7 +4136,7 @@
         "tech_base": "Cryofuel Combustion",
         "internal_tech": "None",
         "internal_tech_base": "EnginesIII",
-        "ap_classification": "Useful",
+        "ap_classification": "Progression",
         "version": "BaseOnly"
     },
     {
@@ -4198,5 +4198,197 @@
         "internal_tech_base": "CargoIII",
         "ap_classification": "Useful",
         "version": "BaseOnly"
+    },
+    {
+        "name": "Compact Discharger",
+        "internal_name": "SmallElectrobankDischarger",
+        "research_level": "basic",
+        "research_level_base": "basic",
+        "tech": "Power Regulation",
+        "tech_base": "Power Regulation",
+        "internal_tech": "PowerRegulation",
+        "internal_tech_base": "PowerRegulation",
+        "ap_classification": "Useful",
+        "version": "Bionic"
+    },
+    {
+        "name": "Power Bank Charger",
+        "internal_name": "ElectrobankCharger",
+        "research_level": "advanced",
+        "research_level_base": "advanced",
+        "tech": "Sound Amplifiers",
+        "tech_base": "Sound Amplifiers",
+        "internal_tech": "Acoustics",
+        "internal_tech_base": "Acoustics",
+        "ap_classification": "Useful",
+        "version": "Bionic"
+    },
+    {
+        "name": "Eco Power Bank Pattern",
+        "internal_name": "Electrobank",
+        "research_level": "advanced",
+        "research_level_base": "advanced",
+        "tech": "Sound Amplifiers",
+        "tech_base": "Sound Amplifiers",
+        "internal_tech": "Acoustics",
+        "internal_tech_base": "Acoustics",
+        "ap_classification": "Useful",
+        "version": "Bionic"
+    },
+    {
+        "name": "Large Discharger",
+        "internal_name": "LargeElectrobankDischarger",
+        "research_level": "advanced",
+        "research_level_base": "advanced",
+        "tech": "Low-Resistance Conductors",
+        "tech_base": "Low-Resistance Conductors",
+        "internal_tech": "PrettyGoodConductors",
+        "internal_tech_base": "PrettyGoodConductors",
+        "ap_classification": "Useful",
+        "version": "Bionic"
+    },
+    {
+        "name": "Flydo Pattern",
+        "internal_name": "FetchDrone",
+        "research_level": "advanced",
+        "research_level_base": "advanced",
+        "tech": "Artificial Friends",
+        "tech_base": "Artificial Friends",
+        "internal_tech": "ArtificialFriends",
+        "internal_tech_base": "ArtificialFriends",
+        "ap_classification": "Useful",
+        "version": "Bionic"
+    },
+    {
+        "name": "Robo-Pilot Module",
+        "internal_name": "RoboPilotModule",
+        "research_level": "advanced",
+        "research_level_base": "None",
+        "tech": "Robotic Tools",
+        "tech_base": "None",
+        "internal_tech": "RoboticTools",
+        "internal_tech_base": "None",
+        "ap_classification": "Useful",
+        "version": "Bionic"
+    },
+    {
+        "name": "Soldering Station",
+        "internal_name": "AdvancedCraftingTable",
+        "research_level": "basic",
+        "research_level_base": "basic",
+        "tech": "Advanced Research",
+        "tech_base": "Advanced Research",
+        "internal_tech": "AdvancedResearch",
+        "internal_tech_base": "AdvancedResearch",
+        "ap_classification": "Useful",
+        "version": "Bionic"
+    },
+    {
+        "name": "Uranium Ore Power Bank Pattern",
+        "internal_name": "DisposableElectrobank_UraniumOre",
+        "research_level": "advanced",
+        "research_level_base": "None",
+        "tech": "Materials Science Research",
+        "tech_base": "None",
+        "internal_tech": "NuclearResearch",
+        "internal_tech_base": "None",
+        "ap_classification": "Useful",
+        "version": "Bionic"
+    },
+    {
+        "name": "Atomic Power Bank Pattern",
+        "internal_name": "SelfChargingElectrobank",
+        "research_level": "orbital",
+        "research_level_base": "None",
+        "tech": "Materials Science Research",
+        "tech_base": "None",
+        "internal_tech": "NuclearResearch",
+        "internal_tech_base": "None",
+        "ap_classification": "Useful",
+        "version": "Bionic"
+    },
+    {
+        "name": "Gear Balm Pattern",
+        "internal_name": "LubricationStick",
+        "research_level": "basic",
+        "research_level_base": "basic",
+        "tech": "Pharmacology",
+        "tech_base": "Pharmacology",
+        "internal_tech": "MedicineI",
+        "internal_tech_base": "MedicineI",
+        "ap_classification": "Progression",
+        "version": "Bionic"
+    },
+    {
+        "name": "Gunk Extractor",
+        "internal_name": "GunkEmptier",
+        "research_level": "basic",
+        "research_level_base": "basic",
+        "tech": "Sanitation",
+        "tech_base": "Sanitation",
+        "internal_tech": "SanitationSciences",
+        "internal_tech_base": "SanitationSciences",
+        "ap_classification": "Useful",
+        "version": "Bionic"
+    },
+    {
+        "name": "Lubrication Station",
+        "internal_name": "OilChanger",
+        "research_level": "basic",
+        "research_level_base": "basic",
+        "tech": "Filtration",
+        "tech_base": "",
+        "internal_tech": "AdvancedFiltration",
+        "internal_tech_base": "",
+        "ap_classification": "Useful",
+        "version": "Bionic"
+    },
+    {
+        "name": "Data Miner",
+        "internal_name": "DataMiner",
+        "research_level": "orbital",
+        "research_level_base": "orbital",
+        "tech": "Data Science",
+        "tech_base": "",
+        "internal_tech": "DataScience",
+        "internal_tech_base": "DataScienceBaseGame",
+        "ap_classification": "Progression",
+        "version": "Bionic"
+    },
+    {
+        "name": "Remote Worker Dock",
+        "internal_name": "RemoteWorkerDock",
+        "research_level": "orbital",
+        "research_level_base": "orbital",
+        "tech": "Data Science",
+        "tech_base": "",
+        "internal_tech": "DataScience",
+        "internal_tech_base": "DataScienceBaseGame",
+        "ap_classification": "Useful",
+        "version": "Bionic"
+    },
+    {
+        "name": "Remote Controller",
+        "internal_name": "RemoteWorkTerminal",
+        "research_level": "orbital",
+        "research_level_base": "orbital",
+        "tech": "Data Science",
+        "tech_base": "",
+        "internal_tech": "DataScience",
+        "internal_tech_base": "DataScienceBaseGame",
+        "ap_classification": "Useful",
+        "version": "Bionic"
+    },
+    {
+        "name": "Robo-Pilot Capsule",
+        "internal_name": "RoboPilotCommandModule",
+        "research_level": "None",
+        "research_level_base": "orbital",
+        "tech": "None",
+        "tech_base": "Data Science",
+        "internal_tech": "None",
+        "internal_tech_base": "DataScienceBaseGame",
+        "ap_classification": "Useful",
+        "version": "Bionic"
     }
 ]

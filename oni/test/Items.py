@@ -84,7 +84,7 @@ care_packages_bionic: typing.List[str] = [
     "Crop Tending Booster", # Booster_Farm1
     "Ranching Booster", # Booster_Ranch1
     "Researching Booster", # Booster_Research1
-    "Piloting Booster", # Booster_Pilot1 Booster_PilotVanilla1
+    "Piloting Booster" # Booster_Pilot1 Booster_PilotVanilla1
     ]
 
 all_items: typing.List[ItemData] = [
