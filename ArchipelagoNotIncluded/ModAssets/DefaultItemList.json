@@ -4300,9 +4300,9 @@
         "internal_name": "SelfChargingElectrobank",
         "research_level": "orbital",
         "research_level_base": "None",
-        "tech": "Materials Science Research",
+        "tech": "Radiation Refinement",
         "tech_base": "None",
-        "internal_tech": "NuclearResearch",
+        "internal_tech": "NuclearRefinement",
         "internal_tech_base": "None",
         "ap_classification": "Useful",
         "version": "Bionic"

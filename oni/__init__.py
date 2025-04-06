@@ -82,9 +82,10 @@ class ONIWorld(World):
     data_path = Utils.user_path("data", "ONI")
     if not os.path.exists(data_path):
         os.makedirs(data_path)
+    #print(data_path)
     folder = os.scandir(data_path)
 
-    default_item_list = json.loads(pkgutil.get_data(__name__, "DefaultItemList.json"), object_hook=item_decoder)
+    default_item_list = json.loads(pkgutil.get_data(__name__, "data\\DefaultItemList.json"), object_hook=item_decoder)
 
     for file in folder:
         if file.is_file():
@@ -131,13 +132,14 @@ class ONIWorld(World):
         count = 1
         if (tech != "None"):
             for location in complete_location_list:
-                if tech in location:
+                tech_name = location.split(" - ")[0]
+                if tech == tech_name:
                     count += 1
 
             location_name = f"{tech} - {count}"
             complete_location_list.append(location_name)
 
-        if (item.tech != item.tech_base):
+        if (item.tech != item.tech_base and item.tech_base != "None"):
             tech = item.tech_base
             count = 1
             for location in complete_location_list:
@@ -420,12 +422,13 @@ class ONIWorld(World):
             ]
             self.all_locations = basic_locations + advanced_locations + radbolt_locations + orbital_locations
 
-        '''print(f"{current_player_name} has {len(self.all_items[current_player_name])} items")
-        print(f"{current_player_name} has {len(self.basic_locations)} basic")
-        print(f"{current_player_name} has {len(self.advanced_locations)} advanced")
-        print(f"{current_player_name} has {len(self.radbolt_locations)} radbolt")
-        print(f"{current_player_name} has {len(self.orbital_locations)} orbital")
-        json_string = json.dumps(self.all_locations[current_player_name], default=lambda o: o.__dict__, indent=4)
+        '''print(f"{current_player_name} has {len(self.all_items)} items")
+        print(f"{current_player_name} has {len(basic_locations)} basic")
+        print(f"{current_player_name} has {len(advanced_locations)} advanced")
+        print(f"{current_player_name} has {len(radbolt_locations)} radbolt")
+        print(f"{current_player_name} has {len(orbital_locations)} orbital")
+        self.all_locations.sort()
+        json_string = json.dumps(self.all_locations, default=lambda o: o.__dict__, indent=4)
         output_file_path = os.path.join(__file__, f"..\\location_list.json")
         with open(output_file_path, "w") as file:
             file.write(json_string)'''
@@ -476,9 +479,12 @@ class ONIWorld(World):
             all_care_packages += care_packages_bionic.copy()
         item_count = len(self.all_items)
         location_count = len(self.all_locations)
-        logging.warning(f"Player: {self.multiworld.get_player_name(self.player)} Items: {item_count} Locations: {location_count}")
+        #logging.warning(f"Player: {self.multiworld.get_player_name(self.player)} Items: {item_count} Locations: {location_count}")
         if item_count < location_count:
             junk = location_count - item_count
+            junk = junk - len(self.local_items)
+            if self.bionic:
+                junk = junk + 1
             junk_list = self.multiworld.random.choices(all_care_packages, k = junk)
             for junk_item in junk_list:
                 self.multiworld.itempool.append(self.create_item(f"Care Package: {junk_item}"))
@@ -510,6 +516,15 @@ class ONIWorld(World):
         locs = list(loc_dict)
         world.random.shuffle(locs)
 
+        '''loc_list = []
+        for location in locs:
+            loc_list.append(location.name)
+        loc_list.sort()
+        json_string = json.dumps(loc_list, indent=4)
+        output_file_path = os.path.join(__file__, f"..\\world_location_list.json")
+        with open(output_file_path, "w") as file:
+            file.write(json_string)'''
+
         fill_restrictive(world, all_state, locs, local_items, True, True, name="ONI Add Local Item")
                          
         for item in local_items:
@@ -534,7 +549,7 @@ class ONIWorld(World):
         current_player_name = self.multiworld.get_player_name(self.player)
         #print(f"ModItems: {self.mod_items_exist}")
         location_list = self.multiworld.get_locations(self.player)
-        print(f"{current_player_name} has {len(self.all_items)} items and {len(location_list)} locations")
+        #print(f"{current_player_name} has {len(self.all_items)} items and {len(location_list)} locations")
         for location in location_list:     # location_name = tech + location number\
             #location = self.multiworld.get_location(location_name, self.player)
             #print(location.name)
