@@ -103,12 +103,13 @@ class ONIWorld(World):
     resource_checks: typing.List[str]
     mod_json: ModJson
     ap_mod_items: typing.List[str]
+    local_items: typing.List[str]
 
     internal_item_to_name = {}
     name_to_internal_name = {}
     complete_item_list = []
     complete_location_list = []
-    local_items = ["Atmo Suit", "Jet Suit Pattern", "Lead Suit", "Oxygen Mask Pattern"]
+    #local_items = ["Atmo Suit", "Jet Suit Pattern", "Lead Suit", "Oxygen Mask Pattern"]
 
     slot_data_ready = threading.Event()
     
@@ -200,14 +201,6 @@ class ONIWorld(World):
         Run before any general steps of the MultiWorld other than options. Useful for getting and adjusting option
         results and determining layouts for entrance rando etc. start inventory gets pushed after this step.
         """
-
-        if self.options.spaced_out:
-            self.base_only = False
-            self.spaced_out = True
-        if self.options.frosty:
-            self.frosty = True
-        if self.options.bionic:
-            self.bionic = True
             
         current_player_name = self.multiworld.get_player_name(self.player)
         basic_locations = []
@@ -221,10 +214,20 @@ class ONIWorld(World):
         self.all_regions = []
         self.all_locations = []
         self.ap_mod_items = []
+        self.local_items = []
 
-        if self.options.cluster.current_key != "custom" and self.base_only and self.options.cluster.has_basegame_equivalent == False:
-            logging.warning(f"Base Game doesn't have starting planet called \"{self.options.cluster.current_key}\". Changing option to default planet.")
-            self.options.cluster.value = 10         # If planet name not in base game, set to default
+        if self.options.spaced_out:
+            self.base_only = False
+            self.spaced_out = True
+        if self.options.frosty:
+            self.frosty = True
+        if self.options.bionic:
+            self.bionic = True
+            self.local_items.append("Crafting Station")
+
+        #if self.options.cluster.current_key != "custom" and self.base_only and self.options.cluster.has_basegame_equivalent == False:
+        #    logging.warning(f"Base Game doesn't have starting planet called \"{self.options.cluster.current_key}\". Changing option to default planet.")
+        #    self.options.cluster.value = 10         # If planet name not in base game, set to default
 
         
         for item in self.default_item_list:
@@ -236,15 +239,27 @@ class ONIWorld(World):
                 continue;
             if self.bionic == False and item.version == "Bionic":
                 continue;
+            if self.bionic == True and self.base_only == True and item.tech_base == "None":
+                continue;
+            if item.internal_name == "RoboPilotCommandModule":
+                if self.base_only == False or self.bionic == False:
+                    continue;
             
-            if self.options.cluster == "ceres" or self.options.cluster == "ceres_minor" or self.options.cluster == "ceres_mantle":
+            item_class = item.ap_classification
+            if "ceres" in self.options.cluster.current_key:
                 if item.internal_name == "WoodTile" or item.internal_name == "IceKettle":
-                    item.ap_classification = "Progression"
+                    self.items_by_name[item.name] = ItemData(item.name, ItemClassification.progression)
+                    item_class = "Progression"
+            
+            if self.bionic:
+                if item.internal_name == "Apothecary":
+                    self.items_by_name[item.name] = ItemData(item.name, ItemClassification.progression)
+                    item_class = "Progression"
 
             self.name_to_internal_name[item.name] = item.internal_name
 
             # Create list of Items
-            self.all_items.append(ItemData(item.name, convert_ap_class(item.ap_classification)))
+            self.all_items.append(ItemData(item.name, convert_ap_class(item_class)))
 
             # Add to correct list of locations
             location_name = ""
@@ -370,7 +385,7 @@ class ONIWorld(World):
         if self.options.resource_checks:
             planet = self.options.cluster.current_key
             if self.base_only:
-                planet += "_base"
+                planet = self.options.cluster_base.current_key
             if planet in resource_locations:
                 for resource in resource_locations[planet]["basic"]:
                     basic_locations.append(f"Discover Resource: {resource}")
@@ -451,22 +466,6 @@ class ONIWorld(World):
         to the MultiWorld after this step. If items need to be placed during pre_fill use `get_prefill_items`.
         """
         for item in self.all_items:
-            '''progressionStr = "None"
-            match item.classification:
-                case ItemClassification.filler:
-                    progressionStr = "Filler"
-                case ItemClassification.progression:
-                    progressionStr = "Progression"
-                case ItemClassification.useful:
-                    progressionStr = "Useful"
-                case ItemClassification.trap:
-                    progressionStr = "Trap"
-                case ItemClassification.skip_balancing:
-                    progressionStr = "SkipBalancing"
-                case ItemClassification.progression_skip_balancing:
-                    progressionStr = "ProgressionSkipBalancing"'''
-                    
-            #self.ap_items[item.itemName] = APItem(self.item_name_to_id.get(item.itemName, None), progressionStr)
             if item.itemName not in self.local_items:
                 self.multiworld.itempool.append(self.create_item(item.itemName))
 
@@ -502,21 +501,19 @@ class ONIWorld(World):
         world = self.multiworld
         player = self.player
         all_state = world.get_all_state(use_cache=True)
-        suits = [self.create_item(name) for name in ['Atmo Suit', 'Jet Suit Pattern', 'Oxygen Mask Pattern']]
-        if self.spaced_out == True:
-            suits.append(self.create_item('Lead Suit'))
+        local_items = [self.create_item(name) for name in self.local_items]
+        #suits = [self.create_item(name) for name in ['Atmo Suit', 'Jet Suit Pattern', 'Oxygen Mask Pattern']]
+        #if self.spaced_out == True:
+        #    local_items.append(self.create_item('Lead Suit'))
 
         loc_dict = world.get_locations(player)
         locs = list(loc_dict)
         world.random.shuffle(locs)
 
-        fill_restrictive(world, all_state, locs, suits, True, True, name="ONI Add Suits")
+        fill_restrictive(world, all_state, locs, local_items, True, True, name="ONI Add Local Items")
 
-        self.multiworld.local_items[self.player].value.add("Atmo Suit")
-        self.multiworld.local_items[self.player].value.add("Jet Suit Pattern")
-        if self.spaced_out == True:
-            self.multiworld.local_items[self.player].value.add("Lead Suit")
-        pass
+        for item in local_items:
+            self.options.local_items.value.add(item.name)
 
     def fill_hook(self,
                   progitempool: List["Item"],
@@ -586,6 +583,9 @@ class ONIWorld(World):
         The generation does not wait for `generate_output` to complete before calling this.
         `threading.Event` can be used if you need to wait for something from `generate_output`."""
         self.slot_data_ready.wait()
+        planet = self.options.cluster.current_key
+        if self.base_only:
+            planet = self.options.cluster_base.current_key
         slot_data = {
             "APWorld_Version": self.ap_version,
             "AP_seed": self.mod_json.AP_seed,
@@ -600,7 +600,7 @@ class ONIWorld(World):
             "technologies": self.mod_json.technologies,
             "apModItems": self.ap_mod_items,
             "goal": self.options.goal.current_key,
-            "planet": self.options.cluster.current_key,
+            "planet": planet,
             "resourceChecks": self.resource_checks
         }
         return slot_data

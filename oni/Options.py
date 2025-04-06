@@ -9,13 +9,13 @@ class Goal(Choice):
     space: Launch your first rocket
     """
     display_name = "Goal"
-    option_research_all = 0
+    option_launch_rocket = 0
     option_monument = 1
-    option_space = 2
+    option_research_all = 2
     option_home_sweet_home = 3
     option_great_escape = 4
     option_cosmic_archaeology = 5
-    default = 0
+    default = 2
 
 class SpacedOut(DefaultOnToggle):
     """
@@ -41,10 +41,35 @@ class ResourceChecks(DefaultOnToggle):
     """
     display_name = "Enable Resource Checks"
 
+class ClusterBase(Choice):
+    """
+    Choose your starting planet for Base Game
+    Names are based on the in-game name in planet selection menu
+    This option is ignored if you're using Spaced Out DLC
+    """
+    display_name = "Starting Planet (Base Game)"
+    option_terra_base = 0
+    option_ceres_base = 1
+    option_oceania_base = 2
+    option_rime_base = 3
+    option_verdante_base = 4
+    option_arboria_base = 5
+    option_volcanea_base = 6
+    option_badlands_base = 7
+    option_aridio_base = 8
+    option_oasisse_base = 9
+
+    option_skewed_base = 10
+    option_blasted_base = 11
+
+    option_custom = 50
+    default = 0
+
 class Cluster(Choice):
     """
-    Choose your starting planet
+    Choose your starting planet for Spaced Out
     Names are based on the in-game name in planet selection menu
+    This option is ignored if you're NOT using Spaced Out DLC
     """
     display_name = "Starting Planet"
     option_terrania = 0
@@ -94,6 +119,7 @@ class Cluster(Choice):
 class Teleporter(Toggle):
     """
     Enable resource checks on second planet, accessible via teleporter
+    This option doesn't do anything if you're NOT using Spaced Out DLC
     """
     display_name = "Enable Resource checks on Teleporter planet"
 
@@ -104,6 +130,7 @@ class ONIOptions(PerGameCommonOptions):
     frosty: Frosty
     bionic: Bionic
     resource_checks: ResourceChecks
+    cluster_base: ClusterBase
     cluster: Cluster
     teleporter: Teleporter
     

@@ -21,8 +21,7 @@ def can_nuclear_research(player, item_list: Dict, state: CollectionState, player
 
 
 def can_space_research(player, item_list: Dict, state: CollectionState, player_options: ONIOptions) -> bool:
-    return state.has_all([item_list["DLC1CosmicResearchCenter"], item_list["OrbitalResearchCenter"]], player) and \
-        can_reach_space(player, item_list, state) and can_make_plastic(player, item_list, state)
+    return state.has(item_list["DLC1CosmicResearchCenter"], player) and can_make_databanks(player, item_list, state, player_options)
 
 def can_space_research_base(player, item_list: Dict, state: CollectionState, player_options: ONIOptions) -> bool:
     return state.has_all([item_list["CosmicResearchCenter"], item_list["ResearchModule"],
@@ -32,6 +31,8 @@ def can_survive_basic(player, item_list: Dict, state: CollectionState, player_op
     running_state = state.has_any([item_list["PlanterBox"], item_list["FarmTile"]], player)
     if on_frosty_planet(player_options):
         running_state = running_state and state.has_all([item_list["IceKettle"], item_list["WoodTile"]], player)
+    if player_options.bionic:
+        running_state = running_state and state.has_all([item_list["Apothecary"], item_list["LubricationStick"]], player)
     return running_state
 
 def can_reach_space_base(player, item_list: Dict, state: CollectionState) -> bool:
@@ -78,6 +79,12 @@ def can_make_plastic(player, item_list: Dict, state: CollectionState) -> bool:
         running_state = running_state or state.has(item_list["Polymerizer"], player)
     return running_state
 
+def can_make_databanks(player, item_list: Dict, state: CollectionState, player_options: ONIOptions) -> bool:
+    running_state = can_reach_space(player, item_list, state) and state.has(item_list["OrbitalResearchCenter"], player)
+    if player_options.bionic:
+        running_state = running_state or state.has(item_list["DataMiner"], player)
+    running_state = running_state and can_make_plastic(player, item_list, state)
+    return running_state
 
 def can_refine_metal(player, item_list: Dict, state: CollectionState) -> bool:
     # Crusher, Refinery, or Smooth Hatches

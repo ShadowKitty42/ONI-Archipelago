@@ -31,10 +31,20 @@ namespace ArchipelagoNotIncluded
 {
     public class ArchipelagoNotIncluded : UserMod2
     {
+        /*
+         * Use Game Scheduler in 2 places, item queue and reconnection
+         * offline list of items in case network is down
+         * fix techitems in LoadGeneratedBuildings_Patch        - Done
+         * Create list of missing techitems in techs.init. create them in loadgeneratedbuildings    - Done
+         */
+
+
         //public KaitoKid.ArchipelagoUtilities.Net.Interfaces.ILogger logger;
         private static bool patched = false;
-        public static bool cheatmode = false;
+        public static bool cheatmode = true;
         public static bool allowResourceChecks = false;
+        public static bool hadBionicDupe = false;
+        public static bool skipUnlockedItems = false;
 
         private static int Counter = 0;
         public static APNetworkMonitor netmon = null;
@@ -49,7 +59,7 @@ namespace ArchipelagoNotIncluded
         public static List<KeyValuePair<string, string>> apItems = new List<KeyValuePair<string, string>>();
         public static List<DefaultItem> AllDefaultItems = new List<DefaultItem>();
         public static List<ModItem> AllModItems = new List<ModItem>();
-        public static List<string> TechList = new List<string>();
+        public static List<string> allTechList = new List<string>();
         public static string AtmoSuitTech = "";
         public static string JetSuitTech = "";
         public static string LeadSuitTech = "";
@@ -957,6 +967,28 @@ namespace ArchipelagoNotIncluded
                     //Debug.Log(info.spaced_out);
                     //Debug.Log(item.internal_tech + " " + item.internal_tech_base);
                     string InternalTech = info.spaced_out ? item.internal_tech : item.internal_tech_base;
+                    switch (item.version)
+                    {
+                        case "BaseOnly":
+                            if (info.spaced_out)
+                                break;
+                            goto default;
+                        case "SpacedOut":
+                            if (!info.spaced_out)
+                                break;
+                            goto default;
+                        case "Frosty":
+                            if (!info.frosty)
+                                break;
+                            goto default;
+                        case "Bionic":
+                            if (!info.bionic)
+                                break;
+                            goto default;
+                        default:
+                            allTechList.Add(item.internal_name);
+                            break;
+                    }
                     if (Sciences.Count > 0 && Sciences?.TryGetValue(InternalTech, out List<string> techList) == true)
                     {
                         if (techList == null)
@@ -992,11 +1024,27 @@ namespace ArchipelagoNotIncluded
             prefix = AccessTools.Method(typeof(Techs_Load_Patch), nameof(Techs_Load_Patch.Prefix));
             harmony.Patch(original, new HarmonyMethod(prefix));
 
+            original = AccessTools.Method(typeof(Database.Techs), nameof(Database.Techs.TryGetTechForTechItem));
+            prefix = AccessTools.Method(typeof(TryGetTechForTechItem_Patch), nameof(TryGetTechForTechItem_Patch.Prefix));
+            harmony.Patch(original, new HarmonyMethod(prefix));
+
             original = AccessTools.Method(typeof(Db), nameof(Db.Initialize));
             var postfix = AccessTools.Method(typeof(Db_Initialize_Patch), nameof(Db_Initialize_Patch.Postfix));
             harmony.Patch(original, postfix: new HarmonyMethod(postfix));
 
-            original = AccessTools.Method(typeof(CraftingTableConfig), nameof(CraftingTableConfig.ConfigureRecipes));
+            /*original = AccessTools.Method(typeof(Database.TechItems), nameof(Database.TechItems.AddTechItem), new[] { typeof(string), typeof(string), typeof(string), typeof(Func<string, bool, Sprite>), typeof(string[]), typeof(string[]), typeof(bool) });
+            prefix = AccessTools.Method(typeof(AddTechItem_Patch), nameof(AddTechItem_Patch.Prefix));
+            harmony.Patch(original, new HarmonyMethod(prefix));*/
+
+            original = AccessTools.Method(typeof(Database.TechItems), nameof(Database.TechItems.AddTechItem), new[] { typeof(string), typeof(string), typeof(string), typeof(Func<string, bool, Sprite>), typeof(string[]), typeof(string[]), typeof(bool) });
+            postfix = AccessTools.Method(typeof(AddTechItem_Patch), nameof(AddTechItem_Patch.Postfix));
+            harmony.Patch(original, postfix: new HarmonyMethod(postfix));
+
+            //original = AccessTools.Method(typeof(SuitFabricatorConfig), nameof(SuitFabricatorConfig.ConfigureRecipes));
+            //var transpiler = AccessTools.Method(typeof(ConfigureRecipes_Patch), nameof(ConfigureRecipes_Patch.Transpiler));
+            //harmony.Patch(original, transpiler: new HarmonyMethod(transpiler));
+
+            /*original = AccessTools.Method(typeof(CraftingTableConfig), nameof(CraftingTableConfig.ConfigureRecipes));
             var transpiler = AccessTools.Method(typeof(ConfigureRecipes2_Patch), nameof(ConfigureRecipes2_Patch.Transpiler));
             harmony.Patch(original, transpiler: new HarmonyMethod(transpiler));
 
@@ -1010,7 +1058,7 @@ namespace ArchipelagoNotIncluded
 
             original = AccessTools.Method(typeof(AdvancedCraftingTableConfig), nameof(AdvancedCraftingTableConfig.ConfigureRecipes));
             transpiler = AccessTools.Method(typeof(ConfigureRecipes3_Patch), nameof(ConfigureRecipes3_Patch.Transpiler));
-            harmony.Patch(original, transpiler: new HarmonyMethod(transpiler));
+            harmony.Patch(original, transpiler: new HarmonyMethod(transpiler));*/
             //ModUtil.AddBuildingToPlanScreen((HashedString)"test", "id");
 
             SceneManager.sceneLoaded += (scene, loadScene) => {
@@ -1068,7 +1116,7 @@ namespace ArchipelagoNotIncluded
                 {
                     netmon.TryConnectArchipelago();
                 }*/
-            };
+    };
         }
 
         [PLibMethod(RunAt.OnStartGame)]
