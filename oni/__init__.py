@@ -5,7 +5,9 @@ import threading
 import logging
 from typing import *
 import typing
+import pkgutil
 
+import Utils
 from BaseClasses import Item, Location, Tutorial, Region, ItemClassification
 from worlds.AutoWorld import WebWorld, World
 from worlds.generic.Rules import set_rule
@@ -77,23 +79,21 @@ class ONIWorld(World):
     default_item_list = {}
     mod_item_list = {}
     mod_items_exist = False
-    data_path = os.path.join(__file__, f"..\\data\\")
+    data_path = Utils.user_path("data", "ONI")
+    if not os.path.exists(data_path):
+        os.makedirs(data_path)
     folder = os.scandir(data_path)
+
+    default_item_list = json.loads(pkgutil.get_data(__name__, "DefaultItemList.json"), object_hook=item_decoder)
 
     for file in folder:
         if file.is_file():
-            if file.name == "DefaultItemList.json":
-                contents = open(file)
-                default_item_list = json.load(contents, object_hook=item_decoder)
-                contents.close()
-
             if file.name.endswith("ModItems.json"):
                 mod_items_exist = True
                 player_name = file.name.split("_")[0]
                 contents = open(file)
                 mod_item_list[player_name] = json.load(contents, object_hook=mod_item_decoder)
                 contents.close()
-    
 
     science_dicts: typing.Dict[str, typing.List[str]]
     location_name_to_internal: typing.Dict[str, str]
@@ -510,8 +510,8 @@ class ONIWorld(World):
         locs = list(loc_dict)
         world.random.shuffle(locs)
 
-        fill_restrictive(world, all_state, locs, local_items, True, True, name="ONI Add Local Items")
-
+        fill_restrictive(world, all_state, locs, local_items, True, True, name="ONI Add Local Item
+                         
         for item in local_items:
             self.options.local_items.value.add(item.name)
 
@@ -554,11 +554,11 @@ class ONIWorld(World):
         output_file_path = os.path.join(output_directory, f"{self.multiworld.get_out_file_name_base(self.player)}.json")
         with open(output_file_path, "w") as file:
             file.write(json_string)
-        
-        json_string = json.dumps(self.get_data_package_data(), default=lambda o: o.__dict__, indent=4)
-        output_file_path = os.path.join(__file__, f"..\\data_package.json")
-        with open(output_file_path, "w") as file:
-            file.write(json_string)
+
+        # json_string = json.dumps(self.get_data_package_data(), default=lambda o: o.__dict__, indent=4)
+        # output_file_path = os.path.join(__file__, f"..\\data_package.json")
+        # with open(output_file_path, "w") as file:
+        #     file.write(json_string)
 
         self.slot_data_ready.set()
 
