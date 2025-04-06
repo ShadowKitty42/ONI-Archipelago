@@ -510,7 +510,7 @@ class ONIWorld(World):
         locs = list(loc_dict)
         world.random.shuffle(locs)
 
-        fill_restrictive(world, all_state, locs, local_items, True, True, name="ONI Add Local Item
+        fill_restrictive(world, all_state, locs, local_items, True, True, name="ONI Add Local Item")
                          
         for item in local_items:
             self.options.local_items.value.add(item.name)
