@@ -92,7 +92,6 @@ namespace ArchipelagoNotIncluded
             Debug.Log($"OnSocketClosed: {reason}");
             session = null;
             TryConnectArchipelago();
-            //StartCoroutine(AttemptToReconnect());
         }
 
         private IEnumerator AttemptToReconnect()

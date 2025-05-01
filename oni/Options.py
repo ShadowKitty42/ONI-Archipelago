@@ -48,19 +48,19 @@ class ClusterBase(Choice):
     This option is ignored if you're using Spaced Out DLC
     """
     display_name = "Starting Planet (Base Game)"
-    option_terra_base = 0
-    option_ceres_base = 1
-    option_oceania_base = 2
-    option_rime_base = 3
-    option_verdante_base = 4
-    option_arboria_base = 5
-    option_volcanea_base = 6
-    option_badlands_base = 7
-    option_aridio_base = 8
-    option_oasisse_base = 9
+    option_terra = 0
+    option_ceres = 1
+    option_oceania = 2
+    option_rime = 3
+    option_verdante = 4
+    option_arboria = 5
+    option_volcanea = 6
+    option_badlands = 7
+    option_aridio = 8
+    option_oasisse = 9
 
-    option_skewed_base = 10
-    option_blasted_base = 11
+    option_skewed = 10
+    option_blasted = 11
 
     option_custom = 50
     default = 0

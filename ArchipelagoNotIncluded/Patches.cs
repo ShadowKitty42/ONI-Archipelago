@@ -136,17 +136,107 @@ namespace ArchipelagoNotIncluded
             }
         }
 
+        [HarmonyPatch(typeof(SaveGame))]
+        [HarmonyPatch(nameof(SaveGame.OnPrefabInit))]
+        public class Load_Techs_Patch
+        {
+            [HarmonyPriority(Priority.First)]
+            public static void Postfix()
+            {
+                Techs instance = Db.Get().Techs;
+                if (!ArchipelagoNotIncluded.Options.CreateModList)
+                {
+                    foreach (KeyValuePair<string, List<string>> pair in ArchipelagoNotIncluded.info?.technologies)
+                    {
+                        Debug.Log($"Generating research for {pair.Key}, ({pair.Value.Join(s => s, ",")})");
+                        Tech tech = instance.TryGet(pair.Key);
+                        Dictionary<string, float> researchCost = null;
+                        //List<string> idList = new List<string>();
+                        if (ArchipelagoNotIncluded.cheatmode)
+                            researchCost = new Dictionary<string, float>
+                            {
+                                {"basic", 1f },
+                                {"advanced", 0f },
+                                {"nuclear", 0f },
+                                {"orbital", 0f }
+                            };
+                        if (tech == null)
+                            tech = new Tech(pair.Key, new List<string>(), instance, researchCost);
+                        else
+                        {
+                            if (researchCost != null)
+                                tech.costsByResearchTypeID = researchCost;
+                            tech.unlockedItemIDs = new List<string>();
+                            tech.unlockedItems = new List<TechItem>();
+                        }
+                        foreach (string techitemidplayer in pair.Value)
+                        {
+                            string[] splits = techitemidplayer.Split(new string[] { ">>" }, StringSplitOptions.RemoveEmptyEntries);
+                            string techitemid = splits[0];
+                            int playerid = int.Parse(splits[1]);
+                            //idList.Add(techitemid);
+                            //Debug.Log($"Player: {ArchipelagoNotIncluded.info.AP_PlayerID} ItemID: {techitemid} PlayerID: {playerid}");
+                            if (ArchipelagoNotIncluded.info.AP_PlayerID == playerid && !techitemid.StartsWith("Care Package"))
+                            {
+                                //Debug.Log("Item was given default sprite");
+                                TechItem item = Db.Get().TechItems.TryGet(techitemid);
+                                if (item != null)
+                                {
+                                    item.parentTechId = pair.Key;
+                                    tech.unlockedItems.Add(item);
+                                    //InjectionMethods.MoveItemToNewTech(techitemid, item.parentTechId, pair.Key);
+                                }
+                                else
+                                {
+                                    Debug.Log($"TechItem for {techitemid} does not exist");
+                                    //tech.unlockedItems.Add(Db.Get().TechItems.AddTechItem(techitemid, techitemid, techitemid, Db.Get().TechItems.GetPrefabSpriteFnBuilder(techitemid.ToTag())));
+                                    InjectionMethods.AddItemToTechnologyKanim(techitemid, pair.Key, techitemid, techitemid, techitemid + "_kanim");
+                                }
+                                tech.AddUnlockedItemIDs(new string[] { techitemid });
+                                //InjectionMethods.AddBuildingToTechnology(pair.Key, techitemid);
+                                ArchipelagoNotIncluded.allTechList.Remove(techitemid);
+                            }
+                            else
+                            {
+                                //Debug.Log("Item was given custom sprite");
+                                techitemid += playerid;
+                                if (ArchipelagoNotIncluded.cheatmode)
+                                    InjectionMethods.AddItemToTechnologyKanim(techitemid, pair.Key, techitemid, "A mysterious item from another world", "apItemSprite_kanim");
+                                else
+                                    InjectionMethods.AddItemToTechnologyKanim(techitemid, pair.Key, "Unknown Artifact", "A mysterious item from another world", "apItemSprite_kanim");
+                            }
+                        }
+
+                        //ArchipelagoNotIncluded.TechList.Add(tech.Id, new List<string>(tech.unlockedItemIDs));
+                        //new Tech(pair.Key, pair.Value.ToList(), __instance);
+                    }
+                }
+
+                foreach (KeyValuePair<string, List<string>> pair in ArchipelagoNotIncluded.Sciences)
+                {
+                    if (ArchipelagoNotIncluded.Options.CreateModList || !ArchipelagoNotIncluded.info.technologies.ContainsKey(pair.Key))
+                    {
+                        Debug.Log($"Generating Default Research for {pair.Key}, ({pair.Value.Join(s => s, ",")})");
+                        new Tech(pair.Key, pair.Value.ToList(), instance);
+                    }
+                }
+
+                //Tech preUnlockedTechs = new Tech("PreUnlockedTechs", ArchipelagoNotIncluded.PreUnlockedTech, __instance);
+                //Db.Get().Techs.resources.Add(preUnlockedTechs);
+            }
+        }
+
         [HarmonyPatch(typeof(Techs))]
         [HarmonyPatch(nameof(Techs.TryGetTechForTechItem))]
         public static class TryGetTechForTechItem_Patch
         {
             public static bool Prefix(string itemId, ref Tech __result)
             {
-                if (ArchipelagoNotIncluded.allTechList.Contains(itemId))
+                /*if (ArchipelagoNotIncluded.allTechList.Contains(itemId))
                 {
                     __result = Db.Get().Techs.TryGet("Jobs");
                     return false;
-                }
+                }*/
                 return true;
             }
         }
@@ -164,11 +254,11 @@ namespace ArchipelagoNotIncluded
             {
                 //if (__result != null)
                 //    Debug.Log($"TechItem: {__result.Id}");
-                if (__result != null && ArchipelagoNotIncluded.allTechList.Contains(__result.Id))
+                /*if (__result != null && ArchipelagoNotIncluded.allTechList.Contains(__result.Id))
                 {
                     //Debug.Log($"TechItem: {__result.Id}");
                     Db.Get().Techs.TryGet(__result.parentTechId).unlockedItems.Remove(__result);
-                }
+                }*/
             }
         }
 
@@ -215,38 +305,52 @@ namespace ArchipelagoNotIncluded
         }
 
         [HarmonyPatch(typeof(DestinationSelectPanel))]
-        [HarmonyPatch(nameof(DestinationSelectPanel.RePlaceAsteroids))]
-        public static class RePlaceAsteroids_Patch
+        [HarmonyPatch(nameof(DestinationSelectPanel.UpdateDisplayedClusters))]
+        public static class UpdateDisplayedClusters_Patch
         {
             public static bool Prefix(DestinationSelectPanel __instance)
             {
-                string planet = ArchipelagoNotIncluded.info.planet;
-                string cluster = string.Empty;
-                if (DlcManager.IsExpansion1Active())
+                if (ArchipelagoNotIncluded.Options.CreateModList)
+                    return true;
+
+                if (ArchipelagoNotIncluded.info != null)
                 {
-                    if (ArchipelagoNotIncluded.ClassicPlanets.ContainsKey(planet))
-                        cluster = ArchipelagoNotIncluded.ClassicPlanets[planet];
-                    else if (ArchipelagoNotIncluded.SpacedOutPlanets.ContainsKey(planet))
-                        cluster = ArchipelagoNotIncluded.SpacedOutPlanets[planet];
-                    else if (ArchipelagoNotIncluded.ClassicLabPlanets.ContainsKey(planet))
-                        cluster = ArchipelagoNotIncluded.ClassicLabPlanets[planet];
-                }
-                else
-                {
-                    if (ArchipelagoNotIncluded.BasePlanets.ContainsKey(planet))
-                        cluster = ArchipelagoNotIncluded.BasePlanets[planet];
-                    else if (ArchipelagoNotIncluded.BaseLabPlanets.ContainsKey(planet))
-                        cluster = ArchipelagoNotIncluded.BaseLabPlanets[planet];
-                }
-                if (!cluster.IsNullOrWhiteSpace())
-                {
-                    __instance.clusterKeys.Clear();
-                    __instance.clusterKeys.Add(cluster);
-                    __instance.dragTarget.onBeginDrag -= new System.Action(__instance.BeginDrag);
-                    __instance.dragTarget.onDrag -= new System.Action(__instance.Drag);
-                    __instance.dragTarget.onEndDrag -= new System.Action(__instance.EndDrag);
-                    __instance.leftArrowButton.gameObject.SetActive(false);
-                    __instance.rightArrowButton.gameObject.SetActive(false);
+                    string planet = ArchipelagoNotIncluded.info.planet;
+                    string cluster = string.Empty;
+                    if (DlcManager.IsExpansion1Active())
+                    {
+                        if (ArchipelagoNotIncluded.ClassicPlanets.ContainsKey(planet))
+                            cluster = ArchipelagoNotIncluded.ClassicPlanets[planet];
+                        else if (ArchipelagoNotIncluded.SpacedOutPlanets.ContainsKey(planet))
+                            cluster = ArchipelagoNotIncluded.SpacedOutPlanets[planet];
+                        else if (ArchipelagoNotIncluded.ClassicLabPlanets.ContainsKey(planet))
+                            cluster = ArchipelagoNotIncluded.ClassicLabPlanets[planet];
+                    }
+                    else
+                    {
+                        if (ArchipelagoNotIncluded.BasePlanets.ContainsKey(planet))
+                            cluster = ArchipelagoNotIncluded.BasePlanets[planet];
+                        else if (ArchipelagoNotIncluded.BaseLabPlanets.ContainsKey(planet))
+                            cluster = ArchipelagoNotIncluded.BaseLabPlanets[planet];
+                    }
+                    if (!cluster.IsNullOrWhiteSpace())
+                    {
+                        __instance.clusterKeys.Clear();
+                        __instance.clusterStartWorlds.Clear();
+                        __instance.asteroidData.Clear();
+                        __instance.clusterKeys.Add(cluster);
+                        string layout = SettingsCache.clusterLayouts.clusterCache[cluster].GetStartWorld();
+                        ColonyDestinationAsteroidBeltData value = new ColonyDestinationAsteroidBeltData(layout, 0, cluster);
+                        __instance.asteroidData[cluster] = value;
+                        __instance.clusterStartWorlds.Add(cluster, layout);
+
+                        // Prevent UI crashes caused by having 1 planet listed
+                        __instance.dragTarget.onBeginDrag -= new System.Action(__instance.BeginDrag);
+                        __instance.dragTarget.onDrag -= new System.Action(__instance.Drag);
+                        __instance.dragTarget.onEndDrag -= new System.Action(__instance.EndDrag);
+                        __instance.leftArrowButton.gameObject.SetActive(false);
+                        __instance.rightArrowButton.gameObject.SetActive(false);
+                    }
                 }
                 //foreach (string cluster in __instance.clusterKeys)
                 //    Debug.Log($"Cluster name: {cluster}");
@@ -257,7 +361,7 @@ namespace ArchipelagoNotIncluded
                 ArchipelagoNotIncluded.lastIndexSaved = 0;
                 ArchipelagoNotIncluded.runCount = 0;
                 ArchipelagoNotIncluded.planetText = string.Empty;
-                return true;
+                return false;
             }
         }
 
@@ -313,6 +417,8 @@ namespace ArchipelagoNotIncluded
         {
             public static void Postfix()
             {
+                if (ArchipelagoNotIncluded.Options.CreateModList)
+                    return;
                 if (ArchipelagoNotIncluded.info.teleporter)
                     CustomGameSettings.Instance.SetQualitySetting(CustomGameSettingConfigs.Teleporters, "Enabled");
             }
@@ -559,6 +665,8 @@ namespace ArchipelagoNotIncluded
                 char[] delimiters = { '<', '>' };
                 string name = instance.tech.Name.Split(delimiters)[2];
                 Debug.Log($"Name: {name}");
+                if (name == "Cryofuel Propulsion")
+                    name = "CryoFuel Propulsion";
                 List<DefaultItem> defItems = ArchipelagoNotIncluded.info.spaced_out ? ArchipelagoNotIncluded.AllDefaultItems.FindAll(i => i.tech == name) : ArchipelagoNotIncluded.AllDefaultItems.FindAll(i => i.tech_base == name);
                 int modItems = 0;
                 if (ArchipelagoNotIncluded.info.apModItems.Count > 0)
@@ -1654,8 +1762,6 @@ namespace ArchipelagoNotIncluded
         {
             public static void Postfix(string dlcId, ref bool __result)
             {
-                //Debug.Log("Found update method");
-                //Debug.Log(__instance.PrefabID);
                 //if (dlcId == "DLC3_ID")
                 //    __result = false;
             }

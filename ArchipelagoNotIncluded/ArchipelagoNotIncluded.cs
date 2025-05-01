@@ -857,7 +857,7 @@ namespace ArchipelagoNotIncluded
             {"frozen_forest", "expansion1::clusters/MiniClusterForestFrozenStart" },
             {"flipped", "expansion1::clusters/MiniClusterFlippedStart" },
             {"radioactive_ocean", "expansion1::clusters/MiniClusterRadioactiveOceanStart" },
-            {"ceres_mantle", "expansion1::clusters/CeresSpacedOutShatteredCluster" }
+            {"ceres_mantle", "dlc2::clusters/CeresSpacedOutShatteredCluster" }
         };
 
         public static Dictionary<string, string> ClassicLabPlanets = new Dictionary<string, string>()
@@ -1018,11 +1018,11 @@ namespace ArchipelagoNotIncluded
 
             var original = AccessTools.Method(typeof(Database.Techs), nameof(Database.Techs.Init));
             var prefix = AccessTools.Method(typeof(Techs_Init_Patch), nameof(Techs_Init_Patch.Prefix));
-            harmony.Patch(original, new HarmonyMethod(prefix));
+            //harmony.Patch(original, new HarmonyMethod(prefix));
 
-            original = AccessTools.Method(typeof(Database.Techs), nameof(Database.Techs.Load));
-            prefix = AccessTools.Method(typeof(Techs_Load_Patch), nameof(Techs_Load_Patch.Prefix));
-            harmony.Patch(original, new HarmonyMethod(prefix));
+            //original = AccessTools.Method(typeof(Database.Techs), nameof(Database.Techs.Load));
+            //prefix = AccessTools.Method(typeof(Techs_Load_Patch), nameof(Techs_Load_Patch.Prefix));
+            //harmony.Patch(original, new HarmonyMethod(prefix));
 
             original = AccessTools.Method(typeof(Database.Techs), nameof(Database.Techs.TryGetTechForTechItem));
             prefix = AccessTools.Method(typeof(TryGetTechForTechItem_Patch), nameof(TryGetTechForTechItem_Patch.Prefix));
@@ -1040,25 +1040,29 @@ namespace ArchipelagoNotIncluded
             postfix = AccessTools.Method(typeof(AddTechItem_Patch), nameof(AddTechItem_Patch.Postfix));
             harmony.Patch(original, postfix: new HarmonyMethod(postfix));
 
+            if (info?.bionic == false)
+            {
+                original = AccessTools.Method(typeof(AdvancedCraftingTableConfig), nameof(AdvancedCraftingTableConfig.ConfigureRecipes));
+                var transpiler = AccessTools.Method(typeof(ConfigureRecipes3_Patch), nameof(ConfigureRecipes3_Patch.Transpiler));
+                harmony.Patch(original, transpiler: new HarmonyMethod(transpiler));
+
+                original = AccessTools.Method(typeof(LubricationStickConfig), nameof(LubricationStickConfig.CreatePrefab));
+                transpiler = AccessTools.Method(typeof(CreatePrefab_Patch), nameof(CreatePrefab_Patch.Transpiler));
+                harmony.Patch(original, transpiler: new HarmonyMethod(transpiler));
+
+                original = AccessTools.Method(typeof(CraftingTableConfig), nameof(CraftingTableConfig.ConfigureRecipes));
+                transpiler = AccessTools.Method(typeof(ConfigureRecipes2_Patch), nameof(ConfigureRecipes2_Patch.Transpiler));
+                harmony.Patch(original, transpiler: new HarmonyMethod(transpiler));
+
+                original = AccessTools.Method(typeof(SupermaterialRefineryConfig), nameof(SupermaterialRefineryConfig.ConfigureBuildingTemplate));
+                transpiler = AccessTools.Method(typeof(ConfigureBuildingTemplate_Patch), nameof(ConfigureBuildingTemplate_Patch.Transpiler));
+                harmony.Patch(original, transpiler: new HarmonyMethod(transpiler));
+            }
             //original = AccessTools.Method(typeof(SuitFabricatorConfig), nameof(SuitFabricatorConfig.ConfigureRecipes));
             //var transpiler = AccessTools.Method(typeof(ConfigureRecipes_Patch), nameof(ConfigureRecipes_Patch.Transpiler));
             //harmony.Patch(original, transpiler: new HarmonyMethod(transpiler));
 
-            /*original = AccessTools.Method(typeof(CraftingTableConfig), nameof(CraftingTableConfig.ConfigureRecipes));
-            var transpiler = AccessTools.Method(typeof(ConfigureRecipes2_Patch), nameof(ConfigureRecipes2_Patch.Transpiler));
-            harmony.Patch(original, transpiler: new HarmonyMethod(transpiler));
 
-            original = AccessTools.Method(typeof(LubricationStickConfig), nameof(LubricationStickConfig.CreatePrefab));
-            transpiler = AccessTools.Method(typeof(CreatePrefab_Patch), nameof(CreatePrefab_Patch.Transpiler));
-            harmony.Patch(original, transpiler: new HarmonyMethod(transpiler));
-
-            original = AccessTools.Method(typeof(SupermaterialRefineryConfig), nameof(SupermaterialRefineryConfig.ConfigureBuildingTemplate));
-            transpiler = AccessTools.Method(typeof(ConfigureBuildingTemplate_Patch), nameof(ConfigureBuildingTemplate_Patch.Transpiler));
-            harmony.Patch(original, transpiler: new HarmonyMethod(transpiler));
-
-            original = AccessTools.Method(typeof(AdvancedCraftingTableConfig), nameof(AdvancedCraftingTableConfig.ConfigureRecipes));
-            transpiler = AccessTools.Method(typeof(ConfigureRecipes3_Patch), nameof(ConfigureRecipes3_Patch.Transpiler));
-            harmony.Patch(original, transpiler: new HarmonyMethod(transpiler));*/
             //ModUtil.AddBuildingToPlanScreen((HashedString)"test", "id");
 
             SceneManager.sceneLoaded += (scene, loadScene) => {
@@ -1116,7 +1120,7 @@ namespace ArchipelagoNotIncluded
                 {
                     netmon.TryConnectArchipelago();
                 }*/
-    };
+            };
         }
 
         [PLibMethod(RunAt.OnStartGame)]

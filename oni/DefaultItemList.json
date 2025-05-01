@@ -576,7 +576,7 @@
         "version": "Base"
     },
     {
-        "name": "Mini gas Pump",
+        "name": "Mini Gas Pump",
         "internal_name": "GasMiniPump",
         "research_level": "radbolt",
         "research_level_base": "advanced",
@@ -1634,7 +1634,7 @@
     {
         "name": "Basic Nosecone",
         "internal_name": "NoseconeBasic",
-        "research_level": "advanced",
+        "research_level": "radbolt",
         "research_level_base": "advanced",
         "tech": "Durable Life Support",
         "tech_base": "Durable Life Support",
@@ -1646,7 +1646,7 @@
     {
         "name": "Spacefarer Module",
         "internal_name": "HabitatModuleMedium",
-        "research_level": "advanced",
+        "research_level": "radbolt",
         "research_level_base": "advanced",
         "tech": "Durable Life Support",
         "tech_base": "Durable Life Support",
@@ -1658,7 +1658,7 @@
     {
         "name": "Artifact Analysis Station",
         "internal_name": "ArtifactAnalysisStation",
-        "research_level": "advanced",
+        "research_level": "radbolt",
         "research_level_base": "advanced",
         "tech": "Durable Life Support",
         "tech_base": "Durable Life Support",
@@ -1670,7 +1670,7 @@
     {
         "name": "Artifact Transport Module",
         "internal_name": "ArtifactCargoBay",
-        "research_level": "advanced",
+        "research_level": "radbolt",
         "research_level_base": "advanced",
         "tech": "Durable Life Support",
         "tech_base": "Durable Life Support",
@@ -1682,7 +1682,7 @@
     {
         "name": "Critter Cargo Bay",
         "internal_name": "SpecialCargoBayCluster",
-        "research_level": "advanced",
+        "research_level": "radbolt",
         "research_level_base": "advanced",
         "tech": "Durable Life Support",
         "tech_base": "Durable Life Support",

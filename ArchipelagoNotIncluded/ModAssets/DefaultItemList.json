@@ -576,7 +576,7 @@
         "version": "Base"
     },
     {
-        "name": "Mini gas Pump",
+        "name": "Mini Gas Pump",
         "internal_name": "GasMiniPump",
         "research_level": "radbolt",
         "research_level_base": "advanced",
