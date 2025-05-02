@@ -50,8 +50,8 @@ namespace ArchipelagoNotIncluded
                         if (modItem != null)
                         {
                             Tech tech = Db.Get().Techs.TryGet(modItem.internal_tech);
-                            if (tech != null)
-                                tech.RemoveUnlockedItemIDs(modItemID);
+                            //if (tech != null)
+                            //    tech.RemoveUnlockedItemIDs(modItemID);
                         }
                     }
                 }
@@ -136,7 +136,7 @@ namespace ArchipelagoNotIncluded
             }
         }
 
-        [HarmonyPatch(typeof(SaveGame))]
+        /*[HarmonyPatch(typeof(SaveGame))]
         [HarmonyPatch(nameof(SaveGame.OnPrefabInit))]
         public class Load_Techs_Patch
         {
@@ -224,7 +224,7 @@ namespace ArchipelagoNotIncluded
                 //Tech preUnlockedTechs = new Tech("PreUnlockedTechs", ArchipelagoNotIncluded.PreUnlockedTech, __instance);
                 //Db.Get().Techs.resources.Add(preUnlockedTechs);
             }
-        }
+        }*/
 
         [HarmonyPatch(typeof(Techs))]
         [HarmonyPatch(nameof(Techs.TryGetTechForTechItem))]
@@ -1269,7 +1269,7 @@ namespace ArchipelagoNotIncluded
             }
         }
 
-        /*[HarmonyPatch(typeof(GeneratedBuildings))]
+        [HarmonyPatch(typeof(GeneratedBuildings))]
         [HarmonyPatch(nameof(GeneratedBuildings.LoadGeneratedBuildings))]
         public static class LoadGeneratedBuildings_Patch
         {
@@ -1277,7 +1277,7 @@ namespace ArchipelagoNotIncluded
             {
                     BuildingConfigManager.Instance.RegisterBuilding(Activator.CreateInstance(typeof(CraftingTableConfig)) as IBuildingConfig);
             }
-        }*/
+        }
 
         [HarmonyReversePatch]
         [HarmonyPatch(typeof(PlanScreen))]
@@ -1299,6 +1299,86 @@ namespace ArchipelagoNotIncluded
             {
                 if (ArchipelagoNotIncluded.Options.CreateModList)
                     return;
+                Techs instance = Db.Get().Techs;
+                if (!ArchipelagoNotIncluded.Options.CreateModList)
+                {
+                    Dictionary<string, int> idCounts = new Dictionary<string, int>();
+                    foreach (KeyValuePair<string, List<string>> pair in ArchipelagoNotIncluded.info?.technologies)
+                    {
+                        Debug.Log($"Generating research for {pair.Key}, ({pair.Value.Join(s => s, ",")})");
+                        Tech tech = instance.TryGet(pair.Key);
+                        Dictionary<string, float> researchCost = null;
+                        if (ArchipelagoNotIncluded.cheatmode)
+                            researchCost = new Dictionary<string, float>
+                            {
+                                {"basic", 1f },
+                                {"advanced", 0f },
+                                {"nuclear", 0f },
+                                {"orbital", 0f }
+                            };
+                        if (tech == null)
+                            tech = new Tech(pair.Key, new List<string>(), instance, researchCost);
+                        else
+                        {
+                            if (researchCost != null)
+                                tech.costsByResearchTypeID = researchCost;
+                            tech.unlockedItemIDs = new List<string>();
+                            tech.unlockedItems = new List<TechItem>();
+                        }
+                        foreach (string techitemidplayer in pair.Value)
+                        {
+                            string[] splits = techitemidplayer.Split(new string[] { ">>" }, StringSplitOptions.RemoveEmptyEntries);
+                            string techitemid = splits[0];
+                            int playerid = int.Parse(splits[1]);
+                            if (idCounts.ContainsKey(techitemid))
+                                idCounts[techitemid]++;
+                            else
+                                idCounts[techitemid] = 0;
+                            //Debug.Log($"Player: {ArchipelagoNotIncluded.info.AP_PlayerID} ItemID: {techitemid} PlayerID: {playerid}");
+                            if (ArchipelagoNotIncluded.info.AP_PlayerID == playerid && !techitemid.StartsWith("Care Package"))
+                            {
+                                //Debug.Log("Item was given default sprite");
+                                TechItem item = Db.Get().TechItems.TryGet(techitemid);
+                                if (item != null)
+                                {
+                                    item.parentTechId = pair.Key;
+                                    tech.unlockedItems.Add(item);
+                                    //InjectionMethods.MoveItemToNewTech(techitemid, item.parentTechId, pair.Key);
+                                }
+                                else
+                                {
+                                    Debug.Log($"TechItem for {techitemid} does not exist");
+                                    //tech.unlockedItems.Add(Db.Get().TechItems.AddTechItem(techitemid, techitemid, techitemid, Db.Get().TechItems.GetPrefabSpriteFnBuilder(techitemid.ToTag())));
+                                    //InjectionMethods.AddItemToTechnologyKanim(techitemid, pair.Key, techitemid, techitemid, techitemid + "_kanim");
+                                }
+                                tech.AddUnlockedItemIDs(new string[] { techitemid });
+                                //InjectionMethods.AddBuildingToTechnology(pair.Key, techitemid);
+                                ArchipelagoNotIncluded.allTechList.Remove(techitemid);
+                            }
+                            else
+                            {
+                                //Debug.Log("Item was given custom sprite");
+                                techitemid += idCounts[techitemid];
+                                if (ArchipelagoNotIncluded.cheatmode)
+                                    InjectionMethods.AddItemToTechnologyKanim(techitemid, pair.Key, techitemid, "A mysterious item from another world", "apItemSprite_kanim");
+                                else
+                                    InjectionMethods.AddItemToTechnologyKanim(techitemid, pair.Key, "Unknown Artifact", "A mysterious item from another world", "apItemSprite_kanim");
+                            }
+                        }
+
+                        //ArchipelagoNotIncluded.TechList.Add(tech.Id, new List<string>(tech.unlockedItemIDs));
+                        //new Tech(pair.Key, pair.Value.ToList(), __instance);
+                    }
+                }
+
+                foreach (KeyValuePair<string, List<string>> pair in ArchipelagoNotIncluded.Sciences)
+                {
+                    if (ArchipelagoNotIncluded.Options.CreateModList || !ArchipelagoNotIncluded.info.technologies.ContainsKey(pair.Key))
+                    {
+                        Debug.Log($"Generating Default Research for {pair.Key}, ({pair.Value.Join(s => s, ",")})");
+                        new Tech(pair.Key, pair.Value.ToList(), instance);
+                    }
+                }
 
                 //Debug.Log("Found update method");
                 int apItems = ArchipelagoNotIncluded.netmon.session.Items.AllItemsReceived.Count;
