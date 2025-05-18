@@ -34,49 +34,6 @@ namespace ArchipelagoNotIncluded
     
     public class Patches
     {
-
-        [HarmonyPatch(typeof(SelectModuleSideScreen))]
-        [HarmonyPatch(nameof(SelectModuleSideScreen.SpawnButtons))]
-        public static class SpawnButtons_Patch
-        {   
-            public static bool Prefix(SelectModuleSideScreen __instance)
-            {
-                __instance.ClearButtons();
-                GameObject gameObject1 = Util.KInstantiateUI(__instance.categoryPrefab, __instance.categoryContent, true);
-                HierarchyReferences component = gameObject1.GetComponent<HierarchyReferences>();
-                __instance.categories.Add(gameObject1);
-                component.GetReference<LocText>("label");
-                Transform reference = component.GetReference<Transform>("content");
-                List<GameObject> prefabsWithComponent = Assets.GetPrefabsWithComponent<RocketModuleCluster>();
-                foreach (string id in SelectModuleSideScreen.moduleButtonSortOrder)
-                {
-                    if (!CheckItemList(id))
-                        continue;
-                    GameObject part = prefabsWithComponent.Find((GameObject p) => p.PrefabID().Name == id);
-                    if (part == null)
-                    {
-                        Debug.LogWarning(("Found an id [" + id + "] in moduleButtonSortOrder in SelectModuleSideScreen.cs that doesn't have a corresponding rocket part!"));
-                    }
-                    else
-                    {
-                        GameObject gameObject2 = Util.KInstantiateUI(__instance.moduleButtonPrefab, reference.gameObject, force_active: true);
-                        gameObject2.GetComponentsInChildren<UnityEngine.UI.Image>()[1].sprite = Def.GetUISprite(part).first;
-                        LocText componentInChildren = gameObject2.GetComponentInChildren<LocText>();
-                        componentInChildren.text = part.GetProperName();
-                        componentInChildren.alignment = TextAlignmentOptions.Bottom;
-                        componentInChildren.enableWordWrapping = true;
-                        MultiToggle component2 = gameObject2.GetComponent<MultiToggle>();
-                        component2.onClick += (System.Action)(() => __instance.SelectModule(part.GetComponent<Building>().Def));
-                        __instance.buttons.Add(part.GetComponent<Building>().Def, gameObject2);
-                        if (__instance.selectedModuleDef != null)
-                            __instance.SelectModule(__instance.selectedModuleDef);
-                    }
-                }
-                __instance.UpdateBuildableStates();
-                return false;
-            }
-        }
-
         [HarmonyPatch(typeof(DestinationSelectPanel))]
         [HarmonyPatch(nameof(DestinationSelectPanel.UpdateDisplayedClusters))]
         public static class UpdateDisplayedClusters_Patch
@@ -433,6 +390,19 @@ namespace ArchipelagoNotIncluded
                     return;
                 __result = __result | CheckItemList(__instance);
                 //__result = true;
+            }
+        }
+
+        [HarmonyPatch(typeof(TechItem))]
+        [HarmonyPatch(nameof(TechItem.IsComplete))]
+        public static class IsComplete_Patch
+        {
+            public static bool Prefix(TechItem __instance, ref bool __result)
+            {
+                if (isModItem(__instance.Id))
+                    return true;
+                __result = CheckItemList(__instance);
+                return false;
             }
         }
 

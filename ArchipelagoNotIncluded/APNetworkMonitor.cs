@@ -18,7 +18,7 @@ using System.Collections.Concurrent;
 
 namespace ArchipelagoNotIncluded
 {
-    public class APNetworkMonitor : KMonoBehaviour
+    public class APNetworkMonitor
     {
         public ArchipelagoSession session = null;
         private string URL = "localhost";
@@ -231,14 +231,14 @@ namespace ArchipelagoNotIncluded
             if (defItem != null)
             {
                 itemId = defItem.internal_name;
-                if (!ArchipelagoNotIncluded.allTechList.Contains(defItem.internal_name))
-                    itemTech = Db.Get().Techs.TryGetTechForTechItem(defItem.internal_name);
+                if (!ArchipelagoNotIncluded.allTechList.Contains(itemId))
+                    itemTech = Db.Get().Techs.TryGetTechForTechItem(itemId);
             }
             if (modItem != null)
             {
                 itemId = modItem.internal_name;
-                if (!ArchipelagoNotIncluded.allTechList.Contains(modItem.internal_name))
-                    itemTech = Db.Get().Techs.TryGetTechForTechItem(modItem.internal_name);
+                if (!ArchipelagoNotIncluded.allTechList.Contains(itemId))
+                    itemTech = Db.Get().Techs.TryGetTechForTechItem(itemId);
             }
             BuildingDef buildingDef = Assets.GetBuildingDef(itemId);
             if (buildingDef != null)
