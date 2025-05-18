@@ -40,6 +40,7 @@ namespace ArchipelagoNotIncluded
         [JsonProperty]
         public string Password { get; set; }
 
+
         public ANIOptions()
         {
             CreateModList = false;
@@ -52,6 +53,10 @@ namespace ArchipelagoNotIncluded
         public void OnOptionsChanged()
         {
             APNetworkMonitor netmon = new APNetworkMonitor(URL, Port, SlotName, Password);
+            var dialogue = ((ConfirmDialogScreen)KScreenManager.Instance.StartScreen(ScreenPrefabs.Instance.ConfirmDialogScreen.gameObject, Global.Instance.globalCanvas));
+            string text = "Connection to Archipelago failed.\nPlease check your connection settings and try again.";
+            string title = "Archipelago";
+            System.Action confirm = null;
             LoginResult result = netmon.TryConnectArchipelago(ItemsHandlingFlags.NoItems);
             if (result.Successful)
             {
@@ -59,27 +64,30 @@ namespace ArchipelagoNotIncluded
                 ArchipelagoNotIncluded.info = JsonConvert.DeserializeObject<APSeedInfo>(JsonConvert.SerializeObject(success.SlotData), [new VersionConverter()]);
                 Debug.Log($"SlotData Received - AP World Version: {ArchipelagoNotIncluded.info.APWorld_Version}");
 
-                var dialogue = ((ConfirmDialogScreen)KScreenManager.Instance.StartScreen(ScreenPrefabs.Instance.ConfirmDialogScreen.gameObject, Global.Instance.globalCanvas));
-                string text = "Connection to Archipelago was successful!";
-                string title = "Archipelago";
+                text = "Connection to Archipelago was successful!";
                 if (ArchipelagoNotIncluded.info.spaced_out && !DlcManager.IsExpansion1Active())
                 {
                     if (DlcManager.IsContentOwned("EXPANSION1_ID"))
                     {
-                        text = "The game will now restart to enable Spaced Out DLC";
+                        text += "\nThe game will now restart to enable\nSpaced Out DLC.";
                         title = "Spaced Out DLC";
-                        dialogue.PopupConfirmDialog(text, new System.Action( () => DlcManager.ToggleDLC("EXPANSION1_ID")), null, title_text: title);
+                        confirm = new System.Action(() => DlcManager.ToggleDLC("EXPANSION1_ID"));
                     }
                     else
                     {
-                        text = "Spaced Out DLC has been enabled on Archipelago but is not in your Steam Library. You will need to purchase it or change your Archipelago settings.";
+                        text += "\nSpaced Out DLC has been enabled on Archipelago but is not in your Steam Library. You will need to purchase it or change your Archipelago settings.";
                         title = "DLC Warning";
-                        dialogue.PopupConfirmDialog(text, null, null, title_text: title);
                     }
 
                 }
-                dialogue.PopupConfirmDialog(text, null, null, title_text: title);
+                else if (!ArchipelagoNotIncluded.info.spaced_out && DlcManager.IsExpansion1Active())
+                {
+                    text += "\nThe game will now restart to enable\nSpaced Out DLC.";
+                    title = "Spaced Out DLC";
+                    confirm = new System.Action(() => DlcManager.ToggleDLC("EXPANSION1_ID"));
+                }
             }
+            dialogue.PopupConfirmDialog(text, confirm, null, title_text: title);
         }
 
         public IEnumerable<IOptionsEntry> CreateOptions()

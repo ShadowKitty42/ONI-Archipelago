@@ -6,6 +6,7 @@ import logging
 from typing import *
 import typing
 import pkgutil
+import sys
 
 import Utils
 from BaseClasses import Item, Location, Tutorial, Region, ItemClassification
@@ -87,6 +88,10 @@ class ONIWorld(World):
 
     default_item_list = json.loads(pkgutil.get_data(__name__, "data/DefaultItemList.json"), object_hook=item_decoder)
 
+    #modules = pkgutil.iter_modules([os.path.dirname(sys.modules[__name__].__file__)])
+    #for module in modules:
+    #    print(module)
+
     for file in folder:
         if file.is_file():
             if file.name.endswith("ModItems.json"):
@@ -105,6 +110,7 @@ class ONIWorld(World):
     mod_json: ModJson
     ap_mod_items: typing.List[str]
     local_items: typing.List[str]
+    filler_item_names: typing.List[str]
 
     internal_item_to_name = {}
     name_to_internal_name = {}
@@ -226,6 +232,12 @@ class ONIWorld(World):
         if self.options.bionic:
             self.bionic = True
             self.local_items.append("Crafting Station")
+            
+        self.filler_item_names = care_packages_base.copy()
+        if self.options.frosty:
+            self.filler_item_names += care_packages_frosty.copy()
+        if self.options.bionic:
+            self.filler_item_names += care_packages_bionic.copy()
 
         #if self.options.cluster.current_key != "custom" and self.base_only and self.options.cluster.has_basegame_equivalent == False:
         #    logging.warning(f"Base Game doesn't have starting planet called \"{self.options.cluster.current_key}\". Changing option to default planet.")
@@ -472,11 +484,6 @@ class ONIWorld(World):
             if item.itemName not in self.local_items:
                 self.multiworld.itempool.append(self.create_item(item.itemName))
 
-        all_care_packages = care_packages_base.copy()
-        if self.options.frosty:
-            all_care_packages += care_packages_frosty.copy()
-        if self.options.bionic:
-            all_care_packages += care_packages_bionic.copy()
         item_count = len(self.all_items)
         location_count = len(self.all_locations)
         #logging.warning(f"Player: {self.multiworld.get_player_name(self.player)} Items: {item_count} Locations: {location_count}")
@@ -485,7 +492,7 @@ class ONIWorld(World):
             junk = junk - len(self.local_items)
             if self.bionic:
                 junk = junk + 1
-            junk_list = self.multiworld.random.choices(all_care_packages, k = junk)
+            junk_list = self.multiworld.random.choices(self.filler_item_names, k = junk)
             for junk_item in junk_list:
                 self.multiworld.itempool.append(self.create_item(f"Care Package: {junk_item}"))
 
@@ -549,7 +556,7 @@ class ONIWorld(World):
         current_player_name = self.multiworld.get_player_name(self.player)
         #print(f"ModItems: {self.mod_items_exist}")
         location_list = self.multiworld.get_locations(self.player)
-        #print(f"{current_player_name} has {len(self.all_items)} items and {len(location_list)} locations")
+        print(f"{current_player_name} has {len(self.all_items)} items and {len(location_list)} locations. {len(self.ap_mod_items)} items are added by mods")
         for location in location_list:     # location_name = tech + location number\
             #location = self.multiworld.get_location(location_name, self.player)
             #print(location.name)
@@ -637,3 +644,6 @@ class ONIWorld(World):
         item = self.items_by_name[name]
         return ONIItem(item.itemName, item.progression, self.item_name_to_id[name], self.player)
         #return self.items_by_name[name]
+
+    def get_filler_item_name(self) -> str:
+        return self.random.choice(self.filler_item_names)

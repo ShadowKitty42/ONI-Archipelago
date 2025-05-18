@@ -48,12 +48,12 @@ namespace ArchipelagoNotIncluded
             //if (this.Password == "")
             //    result = session.TryConnectAndLogin("Oxygen Not Included", SlotName, flags);
             //else
-                result = session.TryConnectAndLogin("Oxygen Not Included", SlotName, flags, password: this.Password);
+                result = session.TryConnectAndLogin("Oxygen Not Included", SlotName, flags, password: Password);
             if (result.Successful)
             {
                 Debug.Log("Connection successful");
-                if (flags != ItemsHandlingFlags.AllItems)
-                    initialSyncComplete = false;
+                //if (flags != ItemsHandlingFlags.AllItems)
+                    //initialSyncComplete = false;
                 session.Items.ItemReceived += OnItemReceived;
                 session.Socket.PacketReceived += OnPacketReceived;
                 session.Socket.SocketClosed += OnSocketClosed;
@@ -177,11 +177,11 @@ namespace ArchipelagoNotIncluded
             {
                 PopulateCarePackages();
                 //session.ConnectionInfo.UpdateConnectionOptions(ItemsHandlingFlags.AllItems);
-                ConnectUpdatePacket packet = new ConnectUpdatePacket
+                /*ConnectUpdatePacket packet = new ConnectUpdatePacket
                 {
                     ItemsHandling = ItemsHandlingFlags.AllItems
                 };
-                session.Socket.SendPacket(packet);
+                session.Socket.SendPacket(packet);*/
                 initialSyncComplete = true;
             }
             else
@@ -216,6 +216,8 @@ namespace ArchipelagoNotIncluded
                 {
                     Debug.Log($"Sending Care Package: {item.ItemName}");
                     SendCarePackage(item);
+                    MostRecentCount++;
+                    return;
                 }
             }
             MostRecentCount++;
@@ -225,17 +227,29 @@ namespace ArchipelagoNotIncluded
             DefaultItem defItem = ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.name == item.ItemName);
             ModItem modItem = ArchipelagoNotIncluded.AllModItems.Find(i => i.name == item.ItemName);
             Tech itemTech = null;
+            string itemId = null;
             if (defItem != null)
             {
+                itemId = defItem.internal_name;
                 if (!ArchipelagoNotIncluded.allTechList.Contains(defItem.internal_name))
                     itemTech = Db.Get().Techs.TryGetTechForTechItem(defItem.internal_name);
             }
             if (modItem != null)
             {
+                itemId = modItem.internal_name;
                 if (!ArchipelagoNotIncluded.allTechList.Contains(modItem.internal_name))
                     itemTech = Db.Get().Techs.TryGetTechForTechItem(modItem.internal_name);
             }
+            BuildingDef buildingDef = Assets.GetBuildingDef(itemId);
+            if (buildingDef != null)
+            {
+                PlanScreen.Instance.AddResearchedBuildingCategory(buildingDef);
 
+                HashSet<HashedString> hashSet = new HashSet<HashedString>();
+                HashedString hashedString = BuildMenu.Instance.tagCategoryMap[buildingDef.Tag];
+                hashSet.Add(hashedString);
+                BuildMenu.Instance.AddParentCategories(hashedString, hashSet);
+            }
             if (itemTech != null)
             {
                 Game.Instance.Trigger(11390976, (object)itemTech);
@@ -336,6 +350,22 @@ namespace ArchipelagoNotIncluded
             }
             
             packageQueue.Enqueue(packageName);
+
+            GameScheduler.Instance.Schedule("SendCarePackage", 3f, (object data) =>
+            {
+                if (packageQueue.IsEmpty)
+                    return;
+
+                //CarePackageInfo package = new CarePackageInfo(ElementLoader.FindElementByHash(SimHashes.Dirt).tag.ToString(), 500f, (Func<bool>)null);
+                Telepad telepad = Components.Telepads[0];
+                telepad.smi.sm.openPortal.Trigger(telepad.smi);
+                //package.Deliver(telepad.transform.GetPosition());
+                while (packageQueue.TryDequeue(out string package))
+                {
+                    ArchipelagoNotIncluded.netmon.CarePackages[package].Deliver(telepad.transform.GetPosition());
+                }
+                telepad.smi.sm.closePortal.Trigger(telepad.smi);
+            });
         }
     }
 }

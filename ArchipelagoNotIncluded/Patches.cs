@@ -27,240 +27,13 @@ using PeterHan.PLib.Options;
 using ProcGen;
 using TMPro;
 using Klei.CustomSettings;
+using UnityEngine.Device;
 
 namespace ArchipelagoNotIncluded
 {
     
     public class Patches
     {
-        [HarmonyPatch(typeof(Db))]
-        [HarmonyPatch(nameof(Db.Initialize))]
-        public class Db_Initialize_Patch
-        {
-            [HarmonyPriority(Priority.Last)]
-            public static void Postfix()
-            {
-                //Debug.Log("DB_Intitialize");
-                if (ArchipelagoNotIncluded.info?.apModItems.Count > 0)
-                {
-                    Debug.Log($"There are {ArchipelagoNotIncluded.info.apModItems.Count} items added by mods");
-                    foreach (string modItemID in ArchipelagoNotIncluded.info.apModItems)
-                    {
-                        ModItem modItem = ArchipelagoNotIncluded.AllModItems.Find(i => i.internal_name == modItemID);
-                        if (modItem != null)
-                        {
-                            Tech tech = Db.Get().Techs.TryGet(modItem.internal_tech);
-                            //if (tech != null)
-                            //    tech.RemoveUnlockedItemIDs(modItemID);
-                        }
-                    }
-                }
-            }
-        }
-
-        [HarmonyPatch(typeof(Techs))]
-        [HarmonyPatch(nameof(Techs.Init))]
-        public class Techs_Init_Patch
-        {
-            [HarmonyPriority(Priority.First)]
-            public static bool Prefix(Techs __instance)
-            {
-                Debug.Log("Techs_Init");
-                //If there is no info, run the normal tech init function
-                if (ArchipelagoNotIncluded.info is null || ArchipelagoNotIncluded.info.technologies is null)
-                {
-                    Debug.Log("No mod json could be loaded. Skipping mod override");
-                    return true;
-                }
-
-                if (!ArchipelagoNotIncluded.Options.CreateModList)
-                {
-                    foreach (KeyValuePair<string, List<string>> pair in ArchipelagoNotIncluded.info.technologies)
-                    {
-                        Debug.Log($"Generating research for {pair.Key}, ({pair.Value.Join(s => s, ",")})");
-                        Tech tech = __instance.TryGet(pair.Key);
-                        Dictionary<string, float> researchCost = null;
-                        //List<string> idList = new List<string>();
-                        if (ArchipelagoNotIncluded.cheatmode)
-                            researchCost = new Dictionary<string, float>
-                            {
-                                {"basic", 1f },
-                                {"advanced", 0f },
-                                {"nuclear", 0f },
-                                {"orbital", 0f }
-                            };
-                        if (tech == null)
-                            tech = new Tech(pair.Key, new List<string>(), __instance, researchCost);
-                        foreach (string techitemidplayer in pair.Value)
-                        {
-                            string[] splits = techitemidplayer.Split(new string[] { ">>" }, StringSplitOptions.RemoveEmptyEntries);
-                            string techitemid = splits[0];
-                            int playerid = int.Parse(splits[1]);
-                            //idList.Add(techitemid);
-                            //Debug.Log($"Player: {ArchipelagoNotIncluded.info.AP_PlayerID} ItemID: {techitemid} PlayerID: {playerid}");
-                            if (ArchipelagoNotIncluded.info.AP_PlayerID == playerid && !techitemid.StartsWith("Care Package"))
-                            {
-                                //Debug.Log("Item was given default sprite");
-                                tech.AddUnlockedItemIDs(new string[] { techitemid });
-                                ArchipelagoNotIncluded.allTechList.Remove(techitemid);
-                            }
-                            else
-                            {
-                                //Debug.Log("Item was given custom sprite");
-                                techitemid += playerid;
-                                if (ArchipelagoNotIncluded.cheatmode)
-                                    InjectionMethods.AddItemToTechnologyKanim(techitemid, pair.Key, techitemid, "A mysterious item from another world", "apItemSprite_kanim");
-                                else
-                                    InjectionMethods.AddItemToTechnologyKanim(techitemid, pair.Key, "Unknown Artifact", "A mysterious item from another world", "apItemSprite_kanim");
-                            }
-                        }
-
-                        //ArchipelagoNotIncluded.TechList.Add(tech.Id, new List<string>(tech.unlockedItemIDs));
-                        //new Tech(pair.Key, pair.Value.ToList(), __instance);
-                    }
-                }
-
-                foreach (KeyValuePair<string, List<string>> pair in ArchipelagoNotIncluded.Sciences)
-                {
-                    if (ArchipelagoNotIncluded.Options.CreateModList || !ArchipelagoNotIncluded.info.technologies.ContainsKey(pair.Key))
-                    {
-                        Debug.Log($"Generating Default Research for {pair.Key}, ({pair.Value.Join(s => s, ",")})");
-                        new Tech(pair.Key, pair.Value.ToList(), __instance);
-                    }
-                }
-
-                Tech preUnlockedTechs = new Tech("PreUnlockedTechs", ArchipelagoNotIncluded.PreUnlockedTech, __instance);
-                Db.Get().Techs.resources.Add(preUnlockedTechs);
-                
-                return false;
-            }
-        }
-
-        /*[HarmonyPatch(typeof(SaveGame))]
-        [HarmonyPatch(nameof(SaveGame.OnPrefabInit))]
-        public class Load_Techs_Patch
-        {
-            [HarmonyPriority(Priority.First)]
-            public static void Postfix()
-            {
-                Techs instance = Db.Get().Techs;
-                if (!ArchipelagoNotIncluded.Options.CreateModList)
-                {
-                    foreach (KeyValuePair<string, List<string>> pair in ArchipelagoNotIncluded.info?.technologies)
-                    {
-                        Debug.Log($"Generating research for {pair.Key}, ({pair.Value.Join(s => s, ",")})");
-                        Tech tech = instance.TryGet(pair.Key);
-                        Dictionary<string, float> researchCost = null;
-                        //List<string> idList = new List<string>();
-                        if (ArchipelagoNotIncluded.cheatmode)
-                            researchCost = new Dictionary<string, float>
-                            {
-                                {"basic", 1f },
-                                {"advanced", 0f },
-                                {"nuclear", 0f },
-                                {"orbital", 0f }
-                            };
-                        if (tech == null)
-                            tech = new Tech(pair.Key, new List<string>(), instance, researchCost);
-                        else
-                        {
-                            if (researchCost != null)
-                                tech.costsByResearchTypeID = researchCost;
-                            tech.unlockedItemIDs = new List<string>();
-                            tech.unlockedItems = new List<TechItem>();
-                        }
-                        foreach (string techitemidplayer in pair.Value)
-                        {
-                            string[] splits = techitemidplayer.Split(new string[] { ">>" }, StringSplitOptions.RemoveEmptyEntries);
-                            string techitemid = splits[0];
-                            int playerid = int.Parse(splits[1]);
-                            //idList.Add(techitemid);
-                            //Debug.Log($"Player: {ArchipelagoNotIncluded.info.AP_PlayerID} ItemID: {techitemid} PlayerID: {playerid}");
-                            if (ArchipelagoNotIncluded.info.AP_PlayerID == playerid && !techitemid.StartsWith("Care Package"))
-                            {
-                                //Debug.Log("Item was given default sprite");
-                                TechItem item = Db.Get().TechItems.TryGet(techitemid);
-                                if (item != null)
-                                {
-                                    item.parentTechId = pair.Key;
-                                    tech.unlockedItems.Add(item);
-                                    //InjectionMethods.MoveItemToNewTech(techitemid, item.parentTechId, pair.Key);
-                                }
-                                else
-                                {
-                                    Debug.Log($"TechItem for {techitemid} does not exist");
-                                    //tech.unlockedItems.Add(Db.Get().TechItems.AddTechItem(techitemid, techitemid, techitemid, Db.Get().TechItems.GetPrefabSpriteFnBuilder(techitemid.ToTag())));
-                                    InjectionMethods.AddItemToTechnologyKanim(techitemid, pair.Key, techitemid, techitemid, techitemid + "_kanim");
-                                }
-                                tech.AddUnlockedItemIDs(new string[] { techitemid });
-                                //InjectionMethods.AddBuildingToTechnology(pair.Key, techitemid);
-                                ArchipelagoNotIncluded.allTechList.Remove(techitemid);
-                            }
-                            else
-                            {
-                                //Debug.Log("Item was given custom sprite");
-                                techitemid += playerid;
-                                if (ArchipelagoNotIncluded.cheatmode)
-                                    InjectionMethods.AddItemToTechnologyKanim(techitemid, pair.Key, techitemid, "A mysterious item from another world", "apItemSprite_kanim");
-                                else
-                                    InjectionMethods.AddItemToTechnologyKanim(techitemid, pair.Key, "Unknown Artifact", "A mysterious item from another world", "apItemSprite_kanim");
-                            }
-                        }
-
-                        //ArchipelagoNotIncluded.TechList.Add(tech.Id, new List<string>(tech.unlockedItemIDs));
-                        //new Tech(pair.Key, pair.Value.ToList(), __instance);
-                    }
-                }
-
-                foreach (KeyValuePair<string, List<string>> pair in ArchipelagoNotIncluded.Sciences)
-                {
-                    if (ArchipelagoNotIncluded.Options.CreateModList || !ArchipelagoNotIncluded.info.technologies.ContainsKey(pair.Key))
-                    {
-                        Debug.Log($"Generating Default Research for {pair.Key}, ({pair.Value.Join(s => s, ",")})");
-                        new Tech(pair.Key, pair.Value.ToList(), instance);
-                    }
-                }
-
-                //Tech preUnlockedTechs = new Tech("PreUnlockedTechs", ArchipelagoNotIncluded.PreUnlockedTech, __instance);
-                //Db.Get().Techs.resources.Add(preUnlockedTechs);
-            }
-        }*/
-
-        [HarmonyPatch(typeof(Techs))]
-        [HarmonyPatch(nameof(Techs.TryGetTechForTechItem))]
-        public static class TryGetTechForTechItem_Patch
-        {
-            public static bool Prefix(string itemId, ref Tech __result)
-            {
-                /*if (ArchipelagoNotIncluded.allTechList.Contains(itemId))
-                {
-                    __result = Db.Get().Techs.TryGet("Jobs");
-                    return false;
-                }*/
-                return true;
-            }
-        }
-
-        [HarmonyPatch(typeof(TechItems))]
-        [HarmonyPatch(nameof(TechItems.AddTechItem), new[] { typeof(string), typeof(string), typeof(string), typeof(Func<string, bool, Sprite>), typeof(string[]), typeof(string[]), typeof(bool) })]
-        public static class AddTechItem_Patch
-        {
-            /*public static bool Prefix(string id)
-            {
-                Debug.Log($"Trying to add TechItem: {id}");
-                return true;
-            }*/
-            public static void Postfix(ref TechItem __result)
-            {
-                //if (__result != null)
-                //    Debug.Log($"TechItem: {__result.Id}");
-                /*if (__result != null && ArchipelagoNotIncluded.allTechList.Contains(__result.Id))
-                {
-                    //Debug.Log($"TechItem: {__result.Id}");
-                    Db.Get().Techs.TryGet(__result.parentTechId).unlockedItems.Remove(__result);
-                }*/
-            }
-        }
 
         [HarmonyPatch(typeof(SelectModuleSideScreen))]
         [HarmonyPatch(nameof(SelectModuleSideScreen.SpawnButtons))]
@@ -597,67 +370,33 @@ namespace ArchipelagoNotIncluded
         }
 
         [HarmonyPatch(typeof(Research))]
-        [HarmonyPatch("CheckBuyResearch")]
+        [HarmonyPatch(nameof(Research.CheckBuyResearch))]
         public static class Research_CheckBuyResearch_Patch
         {
-            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
             {
-                bool startPatch = false;
-                var fieldInfo = typeof(Research).GetFields(AccessTools.all).First(field => field.FieldType == typeof(TechInstance));
+                CodeMatcher matcher = new CodeMatcher(instructions);
+                MethodInfo techPurchased = AccessTools.Method(typeof(TechInstance), nameof(TechInstance.Purchased));
+                FieldInfo activeResearch = AccessTools.Field(typeof(Research), nameof(Research.activeResearch));
+                MethodInfo sendCheck = AccessTools.Method(typeof(Research_CheckBuyResearch_Patch), nameof(Research_CheckBuyResearch_Patch.SendArchipelagoCheck));
+                MethodInfo kmonoTrigger = AccessTools.Method(typeof(KMonoBehaviour), nameof(KMonoBehaviour.Trigger));
 
-                foreach (CodeInstruction instruction in instructions)
-                {
-                    if (!startPatch && instruction.Calls(AccessTools.Method(typeof(TechInstance), nameof(TechInstance.Purchased))))
-                    {
-                        //Debug.Log("Found method");
-                        startPatch = true;
-                        yield return instruction;
-                        yield return new CodeInstruction(OpCodes.Ldarg_0);
-                        yield return new CodeInstruction(OpCodes.Ldfld, fieldInfo);
-                        yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Research_CheckBuyResearch_Patch), nameof(Research_CheckBuyResearch_Patch.SendArchipelagoCheck)));
-                        continue;
-                    }
-                    if (startPatch)
-                    {
-                        if (instruction.Calls(AccessTools.Method(typeof(KMonoBehaviour), nameof(KMonoBehaviour.Trigger))))
-                            //if (instruction.Calls(AccessTools.Method(typeof(Research), nameof(Research.GetNextTech))))
-                            startPatch = false;
-                        yield return instruction;
-                        continue;
-                    }
-                    yield return instruction;
-                }
+                int startRemove = matcher.MatchStartForward( new CodeMatch(OpCodes.Callvirt, techPurchased) )
+                    .ThrowIfNotMatch($"Could not find entry point for CheckBuyResearch")
+                    .Advance(1)
+                    .InsertAndAdvance(
+                        new CodeInstruction(OpCodes.Ldarg_0),
+                        new CodeInstruction(OpCodes.Ldfld, activeResearch),
+                        new CodeInstruction(OpCodes.Call, sendCheck)
+                    ).Pos;
 
-                /*var startIndex = -1;
-                var endIndex = -1;
+                int endRemove = matcher.MatchStartForward(
+                    new CodeMatch(OpCodes.Callvirt, kmonoTrigger)
+                    ).Pos;
 
-                List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
-                for (var i = 0; i < codes.Count - 1; i++)
-                {
-                    // Debug.Log(i);
-                    // Debug.Log(codes[i].operand);
-                    if (codes[i].operand == null)
-                        continue;
-                    var strOperand = codes[i].operand.ToString();
-                    // Find Unique line right before code to be removed
-                    if (strOperand.Contains("Purchased"))
-                        startIndex = i + 1;
+                matcher.RemoveInstructionsInRange(startRemove, endRemove);
 
-                    // Find Unique line at the end of what needs to be removed
-                    if (strOperand.Contains("Trigger"))
-                        endIndex = i;
-                }
-                Debug.Log(startIndex);
-                Debug.Log(endIndex);
-                if (startIndex > -1 && endIndex > -1)
-                {
-                    // we cannot remove the first code of our range since some jump actually jumps to
-                    // it, so we replace it with a no-op instead of fixing that jump (easier).
-                    codes[startIndex].opcode = OpCodes.Nop;
-                    codes.RemoveRange(startIndex + 1, endIndex - startIndex);
-                }
-
-                return codes.AsEnumerable();*/
+                return matcher.InstructionEnumeration();
             }
 
             static void SendArchipelagoCheck(TechInstance instance)
@@ -711,440 +450,54 @@ namespace ArchipelagoNotIncluded
             }
         }
 
-        /*[HarmonyPatch(typeof(BuildMenu))]
-        [HarmonyPatch("BuildableState")]
-        public static class BuildableState_Patch
+        [HarmonyPatch]
+        public static class Event_Subscribe_Patch
         {
-            public static void Postfix(ref PlanScreen.RequirementsState __result, BuildingDef def)
+            public static IEnumerable<MethodBase> TargetMethods()
             {
-                if (__result == PlanScreen.RequirementsState.Tech)
+                Dictionary<Type, string> MethodDict = new Dictionary<Type, string>()
                 {
-                    Debug.Log($"ID: {def.PrefabID}");
-                }
+                    {typeof(PlanBuildingToggle), nameof(PlanBuildingToggle.Config)},
+                    //{typeof(PlanScreen), nameof(PlanScreen.OnPrefabInit)},
+                    {typeof(BuildMenuBuildingsScreen), nameof(BuildMenuBuildingsScreen.OnSpawn)},
+                    //{typeof(BuildMenu), nameof(BuildMenu.OnCmpEnable)},
+                    {typeof(ConsumerManager), nameof(ConsumerManager.OnSpawn)},
+                    {typeof(MaterialSelectionPanel), nameof(MaterialSelectionPanel.OnPrefabInit)},
+                    {typeof(SelectModuleSideScreen), nameof(SelectModuleSideScreen.OnCmpEnable)},
+                };
+                foreach (KeyValuePair<Type, string> pair in MethodDict)
+                    yield return AccessTools.Method(pair.Key, pair.Value);
             }
-        }*/
-
-        [HarmonyPatch(typeof(PlanBuildingToggle))]
-        [HarmonyPatch("Config")]
-        public static class Config_Patch
-        {
-            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            public static void Postfix(object __instance, MethodBase __originalMethod)
             {
-                bool startPatch = false;
-                bool patchDone = false;
-                var fieldInfo = typeof(PlanBuildingToggle).GetFields(AccessTools.all).First(field => field.FieldType == typeof(TechItem));
-                var copy = new List<CodeInstruction>();
-
-                foreach (CodeInstruction instruction in instructions)
+                int eventid = 11390976;
+                switch (__instance)
                 {
-                    if (patchDone)
-                    {
-                        yield return instruction;
-                        continue;
-                    }
-                    if (!startPatch && instruction.StoresField(fieldInfo))
-                    {
-                        //Debug.Log("Found method");
-                        startPatch = true;
-                        yield return instruction;
-                        continue;
-                    }
-                    if (startPatch)
-                    {
-                        if (instruction.Calls(AccessTools.Method(typeof(List<int>), nameof(List<int>.Add))))
-                        {
-                            //if (instruction.Calls(AccessTools.Method(typeof(Research), nameof(Research.GetNextTech))))
-                            startPatch = false;
-                            yield return instruction;
-                            foreach (CodeInstruction call in copy)
-                                yield return call;
-                            patchDone = true;
-                        }
-                        if (instruction.opcode == OpCodes.Ldc_I4)
-                            copy.Add(new CodeInstruction(OpCodes.Ldc_I4, (int)11390976));
+                    case PlanBuildingToggle toggle:
+                        toggle.gameSubscriptions.Add(Game.Instance.Subscribe(eventid, toggle.CheckResearch));
+                        break;
+                    case PlanScreen screen:
+                        if (!BuildMenu.UseHotkeyBuildMenu())
+                            Game.Instance.Subscribe(eventid, screen.OnResearchComplete);
+                        break;
+                    case BuildMenuBuildingsScreen screen:
+                        Game.Instance.Subscribe(eventid, screen.OnResearchComplete);
+                        break;
+                    case BuildMenu menu:
+                        if (__originalMethod.Name == nameof(BuildMenu.OnCmpEnable))
+                            Game.Instance.Subscribe(eventid, menu.OnResearchComplete);
                         else
-                            copy.Add(instruction);
-                        yield return instruction;
-                        continue;
-                    }
-                    yield return instruction;
-                }
-            }
-        }
-
-        /*[HarmonyPatch(typeof(BuildMenuBuildingsScreen))]
-        [HarmonyPatch("RefreshToggle")]
-        public static class RefreshToggle_Patch
-        {
-            public static bool Prefix(KIconToggleMenu.ToggleInfo info)
-            {
-                if (info == null || (UnityEngine.Object)info.toggle == (UnityEngine.Object)null)
-                    return false;
-                BuildingDef def = (info.userData as BuildMenuBuildingsScreen.UserData).def;
-                TechItem techItem = Db.Get().TechItems.TryGet(def.PrefabID);
-            }
-        }*/
-
-        [HarmonyPatch(typeof(PlanScreen))]
-        [HarmonyPatch("OnPrefabInit")]
-        public static class OnPrefabInit_Patch
-        {
-            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-            {
-                bool startPatch = false;
-                bool patchDone = false;
-                var copy = new List<CodeInstruction>();
-
-                foreach (CodeInstruction instruction in instructions)
-                {
-                    if (patchDone)
-                    {
-                        yield return instruction;
-                        continue;
-                    }
-                    if (!startPatch && instruction.Calls(AccessTools.DeclaredPropertyGetter(typeof(Game), nameof(Game.Instance))))
-                    {
-                        //Debug.Log("Found method");
-                        startPatch = true;
-                        copy.Add(instruction);
-                        yield return instruction;
-                        continue;
-                    }
-                    if (startPatch)
-                    {
-                        if (instruction.opcode == OpCodes.Pop)
-                        {
-                            //if (instruction.Calls(AccessTools.Method(typeof(Research), nameof(Research.GetNextTech))))
-                            startPatch = false;
-                            yield return instruction;
-                            foreach (CodeInstruction call in copy)
-                                yield return call;
-                            patchDone = true;
-                        }
-                        if (instruction.opcode == OpCodes.Ldc_I4)
-                            copy.Add(new CodeInstruction(OpCodes.Ldc_I4, (int)11390976));
-                        else
-                            copy.Add(instruction);
-                        yield return instruction;
-                        continue;
-                    }
-                    yield return instruction;
-                }
-            }
-        }
-
-        [HarmonyPatch(typeof(BuildMenuBuildingsScreen))]
-        [HarmonyPatch("OnSpawn")]
-        public static class OnSpawn_Patch
-        {
-            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-            {
-                bool startPatch = false;
-                bool patchDone = false;
-                var copy = new List<CodeInstruction>();
-
-                foreach (CodeInstruction instruction in instructions)
-                {
-                    if (patchDone)
-                    {
-                        yield return instruction;
-                        continue;
-                    }
-                    if (!startPatch && instruction.Calls(AccessTools.DeclaredPropertyGetter(typeof(Game), nameof(Game.Instance))))
-                    {
-                        //Debug.Log("Found method");
-                        startPatch = true;
-                        copy.Add(instruction);
-                        yield return instruction;
-                        continue;
-                    }
-                    if (startPatch)
-                    {
-                        if (instruction.opcode == OpCodes.Pop)
-                        {
-                            //if (instruction.Calls(AccessTools.Method(typeof(Research), nameof(Research.GetNextTech))))
-                            startPatch = false;
-                            yield return instruction;
-                            foreach (CodeInstruction call in copy)
-                                yield return call;
-                            patchDone = true;
-                        }
-                        if (instruction.opcode == OpCodes.Ldc_I4)
-                            copy.Add(new CodeInstruction(OpCodes.Ldc_I4, (int)11390976));
-                        else
-                            copy.Add(instruction);
-                        yield return instruction;
-                        continue;
-                    }
-                    yield return instruction;
-                }
-            }
-        }
-
-        [HarmonyPatch(typeof(BuildMenuBuildingsScreen))]
-        [HarmonyPatch("RefreshToggle")]
-        public static class RefreshToggle_Patch
-        {
-            /*static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-            {
-                bool startPatch = false;
-                bool patchDone = false;
-                var fieldInfo = typeof(DebugHandler).GetFields(AccessTools.all).First(field => field.Name == "InstantBuildMode");
-                var copy = new List<CodeInstruction>();
-
-                foreach (CodeInstruction instruction in instructions)
-                {
-                    if (patchDone)
-                    {
-                        yield return instruction;
-                        continue;
-                    }
-                    if (!startPatch && instruction.Calls(AccessTools.Method(typeof(TechItem), nameof(TechItem.IsComplete))))
-                    {
-                        Debug.Log("Found method");
-                        startPatch = true;
-                        yield return instruction;
-                        continue;
-                    }
-                    if (startPatch)
-                    {
-                        if (instruction.opcode == OpCodes.Pop)
-                        {
-                            //if (instruction.Calls(AccessTools.Method(typeof(Research), nameof(Research.GetNextTech))))
-                            startPatch = false;
-                            yield return instruction;
-                            foreach (CodeInstruction call in copy)
-                                yield return call;
-                            patchDone = true;
-                        }
-                        if (instruction.opcode == OpCodes.Ldc_I4)
-                            copy.Add(new CodeInstruction(OpCodes.Ldc_I4, (int)11390976));
-                        else
-                            copy.Add(instruction);
-                        //Debug.Log(instruction.opcode.ToString());
-                        if (instruction.opcode == OpCodes.Brfalse_S)
-                        {
-                            instruction.opcode = OpCodes.Brtrue_S;
-                            patchDone = true;
-                        }
-                        yield return instruction;
-                        continue;
-                    }
-                    yield return instruction;
-                }
-            }*/
-        }
-
-        [HarmonyPatch(typeof(BuildMenu))]
-        [HarmonyPatch("OnCmpEnable")]
-        public static class OnCmpEnable_Patch
-        {
-            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-            {
-                bool startPatch = false;
-                bool patchDone = false;
-                var copy = new List<CodeInstruction>();
-
-                foreach (CodeInstruction instruction in instructions)
-                {
-                    if (patchDone)
-                    {
-                        yield return instruction;
-                        continue;
-                    }
-                    if (!startPatch && instruction.Calls(AccessTools.DeclaredPropertyGetter(typeof(Game), nameof(Game.Instance))))
-                    {
-                        //Debug.Log("Found method");
-                        startPatch = true;
-                        copy.Add(instruction);
-                        yield return instruction;
-                        continue;
-                    }
-                    if (startPatch)
-                    {
-                        if (instruction.opcode == OpCodes.Pop)
-                        {
-                            //if (instruction.Calls(AccessTools.Method(typeof(Research), nameof(Research.GetNextTech))))
-                            startPatch = false;
-                            yield return instruction;
-                            foreach (CodeInstruction call in copy)
-                                yield return call;
-                            patchDone = true;
-                        }
-                        if (instruction.opcode == OpCodes.Ldc_I4)
-                            copy.Add(new CodeInstruction(OpCodes.Ldc_I4, (int)11390976));
-                        else
-                            copy.Add(instruction);
-                        yield return instruction;
-                        continue;
-                    }
-                    yield return instruction;
-                }
-            }
-        }
-
-        [HarmonyPatch(typeof(BuildMenu))]
-        [HarmonyPatch("OnCmpDisable")]
-        public static class OnCmpDisable_Patch
-        {
-            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-            {
-                bool startPatch = false;
-                bool patchDone = false;
-                var copy = new List<CodeInstruction>();
-
-                foreach (CodeInstruction instruction in instructions)
-                {
-                    if (patchDone)
-                    {
-                        yield return instruction;
-                        continue;
-                    }
-                    if (!startPatch && instruction.Calls(AccessTools.DeclaredPropertyGetter(typeof(Game), nameof(Game.Instance))))
-                    {
-                        //Debug.Log("Found method");
-                        startPatch = true;
-                        copy.Add(instruction);
-                        yield return instruction;
-                        continue;
-                    }
-                    if (startPatch)
-                    {
-                        if (instruction.operand != (object)null && instruction.operand.ToString().Contains("Unsubscribe"))
-                        {
-                            //if (instruction.Calls(AccessTools.Method(typeof(Research), nameof(Research.GetNextTech))))
-                            startPatch = false;
-                            yield return instruction;
-                            foreach (CodeInstruction call in copy)
-                                yield return call;
-                            patchDone = true;
-                        }
-                        if (instruction.opcode == OpCodes.Ldc_I4)
-                            copy.Add(new CodeInstruction(OpCodes.Ldc_I4, (int)11390976));
-                        else
-                            copy.Add(instruction);
-                        yield return instruction;
-                        continue;
-                    }
-                    yield return instruction;
-                }
-            }
-        }
-
-        [HarmonyPatch(typeof(ConsumerManager))]
-        [HarmonyPatch("OnSpawn")]
-        public static class Consumer_OnSpawn_Patch
-        {
-            public static void Postfix(ConsumerManager __instance)
-            {
-                //Debug.Log("Found update method");
-                Game.Instance.Subscribe(11390976, new Action<object>(__instance.RefreshDiscovered));
-            }
-        }
-
-        [HarmonyPatch(typeof(MaterialSelectionPanel))]
-        [HarmonyPatch("OnPrefabInit")]
-        public static class MaterialSelectionPanel_OnPrefabInit_Patch
-        {
-            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-            {
-                bool startPatch = false;
-                bool patchDone = false;
-                bool fixLdarg = false;
-                var fieldInfo = typeof(MaterialSelectionPanel).GetFields(AccessTools.all).First(field => field.FieldType == typeof(List<int>));
-                var copy = new List<CodeInstruction>();
-
-                foreach (CodeInstruction instruction in instructions)
-                {
-                    if (patchDone)
-                    {
-                        yield return instruction;
-                        continue;
-                    }
-                    if (!startPatch && instruction.operand != (object)null && instruction.operand.ToString().Contains("SetAsLastSibling"))
-                    //if (!startPatch && instruction.opcode.Name == "Label2")
-                    {
-                        //Debug.Log("Found method");
-                        startPatch = true;
-                        yield return instruction;
-                        continue;
-                    }
-                    if (startPatch)
-                    {
-                        if (instruction.Calls(AccessTools.Method(typeof(List<int>), nameof(List<int>.Add))))
-                        {
-                            //if (instruction.Calls(AccessTools.Method(typeof(Research), nameof(Research.GetNextTech))))
-                            startPatch = false;
-                            yield return instruction;
-                            foreach (CodeInstruction call in copy)
-                                yield return call;
-                            patchDone = true;
-                        }
-                        if (!fixLdarg && instruction.opcode == OpCodes.Ldarg_0)
-                        {
-                            var code = new CodeInstruction(OpCodes.Ldarg_0);
-                            copy.Add(code);
-                            yield return instruction;
-                            fixLdarg = true;
-                            continue;
-                        }
-                        if (instruction.opcode == OpCodes.Ldc_I4)
-                            copy.Add(new CodeInstruction(OpCodes.Ldc_I4, (int)11390976));
-                        else
-                            copy.Add(instruction);
-                        yield return instruction;
-                        continue;
-                    }
-                    yield return instruction;
-                }
-            }
-        }
-
-        [HarmonyPatch(typeof(SelectModuleSideScreen))]
-        [HarmonyPatch("OnCmpEnable")]
-        public static class SelectModuleSideScreen_OnCmpEnable_Patch
-        {
-            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-            {
-                bool startPatch = false;
-                bool patchDone = false;
-                var fieldInfo = typeof(MaterialSelectionPanel).GetFields(AccessTools.all).First(field => field.FieldType == typeof(List<int>));
-                var copy = new List<CodeInstruction>();
-
-                foreach (CodeInstruction instruction in instructions)
-                {
-                    if (patchDone)
-                    {
-                        yield return instruction;
-                        continue;
-                    }
-                    if (!startPatch && instruction.Calls(AccessTools.Method(typeof(SelectModuleSideScreen), "ClearSubscriptionHandles")))
-                    //if (!startPatch && instruction.opcode.Name == "Label2")
-                    {
-                        //Debug.Log("Found method");
-                        startPatch = true;
-                        yield return instruction;
-                        continue;
-                    }
-                    if (startPatch)
-                    {
-                        if (instruction.Calls(AccessTools.Method(typeof(List<int>), nameof(List<int>.Add))))
-                        {
-                            //if (instruction.Calls(AccessTools.Method(typeof(Research), nameof(Research.GetNextTech))))
-                            startPatch = false;
-                            yield return instruction;
-                            foreach (CodeInstruction call in copy)
-                                yield return call;
-                            patchDone = true;
-                        }
-                        if (instruction.opcode == OpCodes.Ldc_I4)
-                            copy.Add(new CodeInstruction(OpCodes.Ldc_I4, (int)11390976));
-                        else
-                            copy.Add(instruction);
-                        yield return instruction;
-                        continue;
-                    }
-                    yield return instruction;
+                            Game.Instance.Unsubscribe(eventid, menu.OnResearchComplete);
+                        break;
+                    case ConsumerManager manager:
+                        Game.Instance.Subscribe(eventid, manager.RefreshDiscovered);
+                        break;
+                    case MaterialSelectionPanel panel:
+                        panel.gameSubscriptionHandles.Add(Game.Instance.Subscribe(eventid, delegate { panel.RefreshSelectors(); }));
+                        break;
+                    case SelectModuleSideScreen screen:
+                        screen.gameSubscriptionHandles.Add(Game.Instance.Subscribe(eventid, screen.UpdateBuildableStates));
+                        break;
                 }
             }
         }
@@ -1245,52 +598,6 @@ namespace ArchipelagoNotIncluded
             }
         }
 
-        [HarmonyPatch(typeof(PlayerController))]
-        [HarmonyPatch(nameof(PlayerController.Update))]
-        //[HarmonyPatch(typeof(AutoDisinfectableManager))]
-        //[HarmonyPatch(nameof(AutoDisinfectableManager.Sim1000ms))]
-        public static class PlayerController_Update_Patch
-        {
-            public static void Postfix()
-            {
-                //Debug.Log("Found update method");
-                if (APNetworkMonitor.packageQueue.Count == 0)
-                    return;
-
-                //CarePackageInfo package = new CarePackageInfo(ElementLoader.FindElementByHash(SimHashes.Dirt).tag.ToString(), 500f, (Func<bool>)null);
-                Telepad telepad = Components.Telepads[0];
-                telepad.smi.sm.openPortal.Trigger(telepad.smi);
-                //package.Deliver(telepad.transform.GetPosition());
-                while (APNetworkMonitor.packageQueue.TryDequeue(out string package))
-                {
-                    ArchipelagoNotIncluded.netmon.CarePackages[package].Deliver(telepad.transform.GetPosition());
-                }
-                telepad.smi.sm.closePortal.Trigger(telepad.smi);
-            }
-        }
-
-        [HarmonyPatch(typeof(GeneratedBuildings))]
-        [HarmonyPatch(nameof(GeneratedBuildings.LoadGeneratedBuildings))]
-        public static class LoadGeneratedBuildings_Patch
-        {
-            public static void PostFix()
-            {
-                    BuildingConfigManager.Instance.RegisterBuilding(Activator.CreateInstance(typeof(CraftingTableConfig)) as IBuildingConfig);
-            }
-        }
-
-        [HarmonyReversePatch]
-        [HarmonyPatch(typeof(PlanScreen))]
-        [HarmonyPatch("OnResearchComplete")]
-        public class OnResearchComplete_Patch
-        {
-            public static void AddTechItem(object instance, object data)
-            {
-                //Debug.Log("Found update method");
-
-            }
-        }
-
         //[HarmonyPatch(typeof(SaveLoader), nameof(SaveLoader.Load), new[] {typeof(IReader)})]
         [HarmonyPatch(typeof(Game), nameof(Game.OnSpawn))]
         public static class SaveLoader_Load_Patch
@@ -1299,88 +606,86 @@ namespace ArchipelagoNotIncluded
             {
                 if (ArchipelagoNotIncluded.Options.CreateModList)
                     return;
+
                 Techs instance = Db.Get().Techs;
-                if (!ArchipelagoNotIncluded.Options.CreateModList)
+
+                Dictionary<string, int> idCounts = new Dictionary<string, int>();
+                foreach (KeyValuePair<string, List<string>> pair in ArchipelagoNotIncluded.info?.technologies)
                 {
-                    Dictionary<string, int> idCounts = new Dictionary<string, int>();
-                    foreach (KeyValuePair<string, List<string>> pair in ArchipelagoNotIncluded.info?.technologies)
+                    Debug.Log($"Generating research for {pair.Key}, ({pair.Value.Join(s => s, ",")})");
+                    Tech tech = instance.TryGet(pair.Key);
+                    Dictionary<string, float> researchCost = null;
+                    if (ArchipelagoNotIncluded.cheatmode)
+                        researchCost = new Dictionary<string, float>
+                        {
+                            {"basic", 1f },
+                            {"advanced", 0f },
+                            {"nuclear", 0f },
+                            {"orbital", 0f }
+                        };
+                    if (tech == null)
+                        tech = new Tech(pair.Key, new List<string>(), instance, researchCost);
+                    else
                     {
-                        Debug.Log($"Generating research for {pair.Key}, ({pair.Value.Join(s => s, ",")})");
-                        Tech tech = instance.TryGet(pair.Key);
-                        Dictionary<string, float> researchCost = null;
-                        if (ArchipelagoNotIncluded.cheatmode)
-                            researchCost = new Dictionary<string, float>
-                            {
-                                {"basic", 1f },
-                                {"advanced", 0f },
-                                {"nuclear", 0f },
-                                {"orbital", 0f }
-                            };
-                        if (tech == null)
-                            tech = new Tech(pair.Key, new List<string>(), instance, researchCost);
+                        if (researchCost != null)
+                            tech.costsByResearchTypeID = researchCost;
+                        tech.unlockedItemIDs = new List<string>();
+                        tech.unlockedItems = new List<TechItem>();
+                    }
+                    foreach (string techitemidplayer in pair.Value)
+                    {
+                        string[] splits = techitemidplayer.Split(new string[] { ">>" }, StringSplitOptions.RemoveEmptyEntries);
+                        string techitemid = splits[0];
+                        int playerid = int.Parse(splits[1]);
+                        if (idCounts.ContainsKey(techitemid))
+                            idCounts[techitemid]++;
                         else
+                            idCounts[techitemid] = 0;
+                        //Debug.Log($"Player: {ArchipelagoNotIncluded.info.AP_PlayerID} ItemID: {techitemid} PlayerID: {playerid}");
+                        if (ArchipelagoNotIncluded.info.AP_PlayerID == playerid && !techitemid.StartsWith("Care Package"))
                         {
-                            if (researchCost != null)
-                                tech.costsByResearchTypeID = researchCost;
-                            tech.unlockedItemIDs = new List<string>();
-                            tech.unlockedItems = new List<TechItem>();
-                        }
-                        foreach (string techitemidplayer in pair.Value)
-                        {
-                            string[] splits = techitemidplayer.Split(new string[] { ">>" }, StringSplitOptions.RemoveEmptyEntries);
-                            string techitemid = splits[0];
-                            int playerid = int.Parse(splits[1]);
-                            if (idCounts.ContainsKey(techitemid))
-                                idCounts[techitemid]++;
-                            else
-                                idCounts[techitemid] = 0;
-                            //Debug.Log($"Player: {ArchipelagoNotIncluded.info.AP_PlayerID} ItemID: {techitemid} PlayerID: {playerid}");
-                            if (ArchipelagoNotIncluded.info.AP_PlayerID == playerid && !techitemid.StartsWith("Care Package"))
+                            //Debug.Log("Item was given default sprite");
+                            TechItem item = Db.Get().TechItems.TryGet(techitemid);
+                            if (item != null)
                             {
-                                //Debug.Log("Item was given default sprite");
-                                TechItem item = Db.Get().TechItems.TryGet(techitemid);
-                                if (item != null)
-                                {
-                                    item.parentTechId = pair.Key;
-                                    tech.unlockedItems.Add(item);
-                                    //InjectionMethods.MoveItemToNewTech(techitemid, item.parentTechId, pair.Key);
-                                }
-                                else
-                                {
-                                    Debug.Log($"TechItem for {techitemid} does not exist");
-                                    //tech.unlockedItems.Add(Db.Get().TechItems.AddTechItem(techitemid, techitemid, techitemid, Db.Get().TechItems.GetPrefabSpriteFnBuilder(techitemid.ToTag())));
-                                    //InjectionMethods.AddItemToTechnologyKanim(techitemid, pair.Key, techitemid, techitemid, techitemid + "_kanim");
-                                }
-                                tech.AddUnlockedItemIDs(new string[] { techitemid });
-                                //InjectionMethods.AddBuildingToTechnology(pair.Key, techitemid);
-                                ArchipelagoNotIncluded.allTechList.Remove(techitemid);
+                                item.parentTechId = pair.Key;
+                                tech.unlockedItems.Add(item);
+                                //InjectionMethods.MoveItemToNewTech(techitemid, item.parentTechId, pair.Key);
                             }
                             else
                             {
-                                //Debug.Log("Item was given custom sprite");
-                                techitemid += idCounts[techitemid];
+                                Debug.Log($"TechItem for {techitemid} does not exist");
+                                //tech.unlockedItems.Add(Db.Get().TechItems.AddTechItem(techitemid, techitemid, techitemid, Db.Get().TechItems.GetPrefabSpriteFnBuilder(techitemid.ToTag())));
+                                //InjectionMethods.AddItemToTechnologyKanim(techitemid, pair.Key, techitemid, techitemid, techitemid + "_kanim");
+                            }
+                            tech.AddUnlockedItemIDs(new string[] { techitemid });
+                            //InjectionMethods.AddBuildingToTechnology(pair.Key, techitemid);
+                            ArchipelagoNotIncluded.allTechList.Remove(techitemid);
+                        }
+                        else
+                        {
+                            //Debug.Log("Item was given custom sprite");
+                            techitemid += idCounts[techitemid];
+                            TechItem item = Db.Get().TechItems.TryGet(techitemid);
+                            if (item != null)
+                            {
+                                item.parentTechId = pair.Key;
+                                tech.unlockedItems.Add(item);
+                            }
+                            else
+                            {
                                 if (ArchipelagoNotIncluded.cheatmode)
                                     InjectionMethods.AddItemToTechnologyKanim(techitemid, pair.Key, techitemid, "A mysterious item from another world", "apItemSprite_kanim");
                                 else
                                     InjectionMethods.AddItemToTechnologyKanim(techitemid, pair.Key, "Unknown Artifact", "A mysterious item from another world", "apItemSprite_kanim");
                             }
                         }
-
-                        //ArchipelagoNotIncluded.TechList.Add(tech.Id, new List<string>(tech.unlockedItemIDs));
-                        //new Tech(pair.Key, pair.Value.ToList(), __instance);
                     }
+
+                    //ArchipelagoNotIncluded.TechList.Add(tech.Id, new List<string>(tech.unlockedItemIDs));
+                    //new Tech(pair.Key, pair.Value.ToList(), __instance);
                 }
 
-                foreach (KeyValuePair<string, List<string>> pair in ArchipelagoNotIncluded.Sciences)
-                {
-                    if (ArchipelagoNotIncluded.Options.CreateModList || !ArchipelagoNotIncluded.info.technologies.ContainsKey(pair.Key))
-                    {
-                        Debug.Log($"Generating Default Research for {pair.Key}, ({pair.Value.Join(s => s, ",")})");
-                        new Tech(pair.Key, pair.Value.ToList(), instance);
-                    }
-                }
-
-                //Debug.Log("Found update method");
                 int apItems = ArchipelagoNotIncluded.netmon.session.Items.AllItemsReceived.Count;
                 Debug.Log($"apItems: {apItems}, lastItem: {ArchipelagoNotIncluded.lastItem}");
                 /*if (apItems == 0)
@@ -1411,46 +716,6 @@ namespace ArchipelagoNotIncluded
 
                 writer.Write(ArchipelagoNotIncluded.getLastIndex());
             }
-            /*static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-            {
-                bool methodFound = false;
-                bool patchDone = false;
-                MethodInfo firstMethod = AccessTools.Method(typeof(IDisposable), nameof(IDisposable.Dispose));
-                MethodInfo secondMethod = AccessTools.Method(typeof(BinaryWriter), nameof(BinaryWriter.Write), parameters: new[] { typeof(int) });
-                MethodInfo myMethod = AccessTools.Method(typeof(ArchipelagoNotIncluded), nameof(ArchipelagoNotIncluded.getLastIndex));
-                
-                foreach (CodeInstruction instruction in instructions)
-                {
-                    if (instruction.Calls(myMethod))
-                        patchDone = true;
-                }
-
-                foreach (CodeInstruction instruction in instructions)
-                {
-                    if (patchDone)
-                    {
-                        yield return instruction;
-                        continue;
-                    }
-                    if (!methodFound && instruction.Calls(firstMethod))
-                    {
-                        methodFound = true;
-                        yield return instruction;
-                        continue;
-                    }
-                    if (methodFound && instruction.Calls(secondMethod))
-                    {
-                        //Debug.Log("Found method");
-                        patchDone = true;
-                        yield return instruction;
-                        yield return new CodeInstruction(OpCodes.Ldarg_1);
-                        yield return new CodeInstruction(OpCodes.Call, myMethod);
-                        yield return new CodeInstruction(OpCodes.Callvirt, secondMethod);
-                        continue;
-                    }
-                    yield return instruction;
-                }
-            }*/
         }
 
         [HarmonyPatch(typeof(SaveLoader))]
@@ -1474,319 +739,9 @@ namespace ArchipelagoNotIncluded
                 }
                 catch { }
             }
-            /*public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-            {
-                if (ArchipelagoNotIncluded.Options.CreateModList)
-                {
-                    foreach (CodeInstruction instruction in instructions)
-                        yield return instruction;
-                    yield break;
-                }
-
-                bool methodFound = false;
-                bool startPatch = false;
-                bool patchDone = false;
-                MethodInfo firstMethod = AccessTools.Method(typeof(SaveManager), "ClearScene");
-                MethodInfo secondMethod = AccessTools.Method(typeof(IReader), nameof(IReader.ReadInt32));
-                MethodInfo myMethod = AccessTools.Method(typeof(ArchipelagoNotIncluded), nameof(ArchipelagoNotIncluded.setLastIndex));
-
-                foreach (CodeInstruction instruction in instructions)
-                {
-                    if (instruction.Calls(myMethod))
-                        patchDone = true;
-                }
-
-                foreach (CodeInstruction instruction in instructions)
-                {
-                    if (patchDone)
-                    {
-                        yield return instruction;
-                        continue;
-                    }
-                    if (startPatch)
-                    {
-                        yield return instruction;
-                        yield return new CodeInstruction(OpCodes.Ldarg_1);
-                        yield return new CodeInstruction(OpCodes.Callvirt, secondMethod);
-                        yield return new CodeInstruction(OpCodes.Callvirt, myMethod);
-                        patchDone = true;
-                        continue;
-                    }
-                    if (!methodFound && instruction.Calls(firstMethod))
-                    {
-                        methodFound = true;
-                        yield return instruction;
-                        continue;
-                    }
-                    if (methodFound && instruction.Calls(secondMethod))
-                    {
-                        //Debug.Log("Found method");
-                        startPatch = true;
-                        yield return instruction;
-                        continue;
-                    }
-                    yield return instruction;
-                }
-            }*/
         }
 
-        //[HarmonyDebug]
-        [HarmonyPatch(typeof(SuitFabricatorConfig))]
-        [HarmonyPatch("ConfigureRecipes")]
-        public class ConfigureRecipes_Patch
-        {
-            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-            {
-                //bool methodFound = false;
-                bool startPatch = false;
-                string tech = "Jobs";
-                MethodInfo method = AccessTools.Method(typeof(Db), nameof(Db.Get));
-                FieldInfo atmosuit = AccessTools.Field(typeof(TechItems), nameof(TechItems.atmoSuit));
-                FieldInfo jetsuit = AccessTools.Field(typeof(TechItems), nameof(TechItems.jetSuit));
-                FieldInfo leadsuit = AccessTools.Field(typeof(TechItems), nameof(TechItems.leadSuit));
-                FieldInfo field = AccessTools.Field(typeof(TechItem), nameof(TechItem.parentTechId));
-                /*string atmo = ArchipelagoNotIncluded.info.technologies.FirstOrDefault(p => p.Value.Contains("AtmoSuit")).Key;
-                string jet = ArchipelagoNotIncluded.info.technologies.FirstOrDefault(p => p.Value.Contains("JetSuit")).Key;
-                string lead = ArchipelagoNotIncluded.info.technologies.FirstOrDefault(p => p.Value.Contains("LeadSuit")).Key;*/
-
-                foreach (CodeInstruction instruction in instructions)
-                {
-                    if (!startPatch && instruction.Calls(method))
-                    {
-                        //Debug.Log("Found method");
-                        startPatch = true;
-                    }
-                    if (startPatch)
-                    {
-                        if (instruction.LoadsField(atmosuit) || instruction.LoadsField(jetsuit) || instruction.LoadsField(leadsuit))
-                            yield return new CodeInstruction(OpCodes.Ldstr, tech);
-                        /*if (instruction.LoadsField(jetsuit))
-                            yield return new CodeInstruction(OpCodes.Ldstr, jet);
-                        if (instruction.LoadsField(leadsuit))
-                            yield return new CodeInstruction(OpCodes.Ldstr, lead);*/
-                        if (instruction.LoadsField(field))
-                            startPatch = false;
-                        continue;
-                    }
-                    yield return instruction;
-                }
-            }
-        }
-
-        //[HarmonyDebug]
-        [HarmonyPatch(typeof(CraftingTableConfig))]
-        [HarmonyPatch("ConfigureRecipes")]
-        public class ConfigureRecipes2_Patch
-        {
-            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-            {
-                //bool methodFound = false;
-                //bool firstLineFound = false;
-                //bool secondLineFound = false;
-                bool startPatch = false;
-                string tech = "Jobs";
-                MethodInfo method = AccessTools.Method(typeof(Db), nameof(Db.Get));
-                FieldInfo electrobank = AccessTools.Field(typeof(TechItems), nameof(TechItems.disposableElectrobankUraniumOre));
-                FieldInfo oxygenmask = AccessTools.Field(typeof(TechItems), nameof(TechItems.oxygenMask));
-                FieldInfo field = AccessTools.Field(typeof(TechItem), nameof(TechItem.parentTechId));
-
-                foreach (CodeInstruction instruction in instructions)
-                {
-                    // BEGIN SKIP FOR BIONIC RECIPES
-                    /*if (!firstLineFound)
-                    {
-                        if (instruction.LoadsField(field))
-                            firstLineFound = true;
-                        continue;
-                    }
-                    if (!secondLineFound)
-                    {
-                        if (instruction.opcode == OpCodes.Ldc_I4_1)
-                        {
-                            secondLineFound = true;
-                            yield return instruction;
-                        }
-                        continue;
-                    }*/
-                    // END SKIP
-                    if (!startPatch && instruction.Calls(method))
-                    {
-                        //Debug.Log("Found method");
-                        startPatch = true;
-                    }
-                    if (startPatch)
-                    {
-                        if (instruction.LoadsField(electrobank))
-                            yield return new CodeInstruction(OpCodes.Ldstr, tech);
-                        if (instruction.LoadsField(oxygenmask))
-                            yield return new CodeInstruction(OpCodes.Ldstr, tech);
-                        if (instruction.LoadsField(field))
-                            startPatch = false;
-                        continue;
-                    }
-                    yield return instruction;
-                }
-            }
-        }
-
-        [HarmonyPatch(typeof(AdvancedCraftingTableConfig))]
-        [HarmonyPatch("ConfigureRecipes")]
-        public class ConfigureRecipes3_Patch
-        {
-            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-            {
-                //bool methodFound = false;
-                //bool firstLineFound = false;
-                //bool secondLineFound = false;
-                bool startPatch = false;
-                string tech = "Jobs";
-                MethodInfo method = AccessTools.Method(typeof(Db), nameof(Db.Get));
-                FieldInfo electrobank = AccessTools.Field(typeof(TechItems), nameof(TechItems.electrobank));
-                FieldInfo fetchdrone = AccessTools.Field(typeof(TechItems), nameof(TechItems.fetchDrone));
-                FieldInfo field = AccessTools.Field(typeof(TechItem), nameof(TechItem.parentTechId));
-
-                foreach (CodeInstruction instruction in instructions)
-                {
-                    // BEGIN SKIP FOR BIONIC RECIPES
-                    /*if (!firstLineFound)
-                    {
-                        if (instruction.LoadsField(field))
-                            firstLineFound = true;
-                        continue;
-                    }
-                    if (!secondLineFound)
-                    {
-                        if (instruction.opcode == OpCodes.Ldc_I4_1)
-                        {
-                            secondLineFound = true;
-                            yield return instruction;
-                        }
-                        continue;
-                    }*/
-                    // END SKIP
-                    if (!startPatch && instruction.Calls(method))
-                    {
-                        //Debug.Log("Found method");
-                        startPatch = true;
-                    }
-                    if (startPatch)
-                    {
-                        if (instruction.LoadsField(electrobank))
-                            yield return new CodeInstruction(OpCodes.Ldstr, tech);
-                        if (instruction.LoadsField(fetchdrone))
-                            yield return new CodeInstruction(OpCodes.Ldstr, tech);
-                        if (instruction.LoadsField(field))
-                            startPatch = false;
-                        continue;
-                    }
-                    yield return instruction;
-                }
-            }
-        }
-
-        [HarmonyPatch(typeof(LubricationStickConfig))]
-        [HarmonyPatch("CreatePrefab")]
-        public class CreatePrefab_Patch
-        {
-            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-            {
-                //bool methodFound = false;
-                //bool firstLineFound = false;
-                //bool secondLineFound = false;
-                bool startPatch = false;
-                string tech = "Jobs";
-                MethodInfo method = AccessTools.Method(typeof(Db), nameof(Db.Get));
-                FieldInfo electrobank = AccessTools.Field(typeof(TechItems), nameof(TechItems.lubricationStick));
-                FieldInfo field = AccessTools.Field(typeof(TechItem), nameof(TechItem.parentTechId));
-
-                foreach (CodeInstruction instruction in instructions)
-                {
-                    // BEGIN SKIP FOR BIONIC RECIPES
-                    /*if (!firstLineFound)
-                    {
-                        if (instruction.LoadsField(field))
-                            firstLineFound = true;
-                        continue;
-                    }
-                    if (!secondLineFound)
-                    {
-                        if (instruction.opcode == OpCodes.Ldc_I4_1)
-                        {
-                            secondLineFound = true;
-                            yield return instruction;
-                        }
-                        continue;
-                    }*/
-                    // END SKIP
-                    if (!startPatch && instruction.Calls(method))
-                    {
-                        //Debug.Log("Found method");
-                        startPatch = true;
-                    }
-                    if (startPatch)
-                    {
-                        if (instruction.LoadsField(electrobank))
-                            yield return new CodeInstruction(OpCodes.Ldstr, tech);
-                        if (instruction.LoadsField(field))
-                            startPatch = false;
-                        continue;
-                    }
-                    yield return instruction;
-                }
-            }
-        }
-
-        [HarmonyPatch(typeof(SupermaterialRefineryConfig))]
-        [HarmonyPatch("ConfigureBuildingTemplate")]
-        public class ConfigureBuildingTemplate_Patch
-        {
-            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-            {
-                //bool methodFound = false;
-                //bool firstLineFound = false;
-                //bool secondLineFound = false;
-                bool startPatch = false;
-                string tech = "Jobs";
-                MethodInfo method = AccessTools.Method(typeof(Db), nameof(Db.Get));
-                FieldInfo electrobank = AccessTools.Field(typeof(TechItems), nameof(TechItems.selfChargingElectrobank));
-                FieldInfo field = AccessTools.Field(typeof(TechItem), nameof(TechItem.parentTechId));
-
-                foreach (CodeInstruction instruction in instructions)
-                {
-                    // BEGIN SKIP FOR BIONIC RECIPES
-                    /*if (!firstLineFound)
-                    {
-                        if (instruction.LoadsField(field))
-                            firstLineFound = true;
-                        continue;
-                    }
-                    if (!secondLineFound)
-                    {
-                        if (instruction.opcode == OpCodes.Ldc_I4_1)
-                        {
-                            secondLineFound = true;
-                            yield return instruction;
-                        }
-                        continue;
-                    }*/
-                    // END SKIP
-                    if (!startPatch && instruction.Calls(method))
-                    {
-                        //Debug.Log("Found method");
-                        startPatch = true;
-                    }
-                    if (startPatch)
-                    {
-                        if (instruction.LoadsField(electrobank))
-                            yield return new CodeInstruction(OpCodes.Ldstr, tech);
-                        if (instruction.LoadsField(field))
-                            startPatch = false;
-                        continue;
-                    }
-                    yield return instruction;
-                }
-            }
-        }
+        
 
         [HarmonyPatch(typeof(BuildingDef))]
         [HarmonyPatch(nameof(BuildingDef.IsAvailable))]
@@ -1802,37 +757,12 @@ namespace ArchipelagoNotIncluded
             }
         }
 
-        /*[HarmonyPatch(typeof(DlcManager))]
-        [HarmonyPatch("ShouldLoadDLCAssets")]
-        public static class ShouldLoadDLCAssets_Patch
-        {
-            public static void Postfix(ref bool __result)
-            {
-                //Debug.Log("Found update method");
-                //Debug.Log(__instance.PrefabID);
-                __result = true;
-            }
-        }*/
-
         [HarmonyPatch(typeof(SpeedControlScreen))]
         [HarmonyPatch(nameof(SpeedControlScreen.Unpause))]
         public static class Unpause_Patch
         {
             public static void Postfix()
             {
-                /*if (APNetworkMonitor.packageQueue.Count == 0)
-                    return;
-
-                //CarePackageInfo package = new CarePackageInfo(ElementLoader.FindElementByHash(SimHashes.Dirt).tag.ToString(), 500f, (Func<bool>)null);
-                Telepad telepad = Components.Telepads[0];
-                telepad.smi.sm.openPortal.Trigger(telepad.smi);
-                //package.Deliver(telepad.transform.GetPosition());
-                while (APNetworkMonitor.packageQueue.TryDequeue(out string package))
-                {
-                    ArchipelagoNotIncluded.lastItem++;
-                    ArchipelagoNotIncluded.netmon.CarePackages[package].Deliver(telepad.transform.GetPosition());
-                }
-                telepad.smi.sm.closePortal.Trigger(telepad.smi);*/
             }
         }
 
@@ -1891,12 +821,8 @@ namespace ArchipelagoNotIncluded
         {
             public static bool Prefix(ComplexRecipe __instance, ref bool __result)
             {
-                //Debug.Log("Found update method");
-                //Debug.Log(___def.PrefabID);
-                //if (!CheckItemList(___def.PrefabID))
-                //requirementsState = PlanScreen.RequirementsState.Invalid;
                 string search = null;
-                foreach (ComplexRecipe.RecipeElement element in __instance.ingredients)
+                foreach (ComplexRecipe.RecipeElement element in __instance.results)
                 {
                     switch (element.material.Name)
                     {
@@ -1915,23 +841,22 @@ namespace ArchipelagoNotIncluded
                     }
                 }
                 if (!String.IsNullOrEmpty(search) && CheckItemList(search))
-                {
                     __result = true;
-                    return false;
-                }
-                return true;
+                else
+                    __result = false;
+                return false;
             }
         }
 
-        [HarmonyPatch(typeof(Techs))]
+        /*[HarmonyPatch(typeof(Techs))]
         [HarmonyPatch(nameof(Techs.Load))]
         public static class Techs_Load_Patch
         {
-            /*public static MethodInfo TargetMethod()
+            public static MethodInfo TargetMethod()
             {
                 return AccessTools.Method(typeof(ResourceLoader<ResourceTreeNode>), "Load", new Type[] { typeof(TextAsset) });
                 return typeof(ResourceTreeLoader<>).GetMethod("Load", new Type[] { typeof(TextAsset) });
-            }*/
+            }
             public static bool Prefix(Techs __instance, List<List<Tuple<string, float>>> ___TECH_TIERS)
             {
                 TextAsset tree_file = Db.Get().researchTreeFileExpansion1;
@@ -1941,7 +866,7 @@ namespace ArchipelagoNotIncluded
                     techTreeTitleList.Add(Db.Get().TechTreeTitles[idx]);
                 techTreeTitleList.Sort((Comparison<TechTreeTitle>)((a, b) => a.center.y.CompareTo(b.center.y)));
 
-                /*ResourceTreeNode newnode = new ResourceTreeNode
+                ResourceTreeNode newnode = new ResourceTreeNode
                 {
                     Id = "_TestId",
                     Name = "Test",
@@ -1959,7 +884,7 @@ namespace ArchipelagoNotIncluded
                     height = 72f,
                     width = 250f
                 });
-                resourceTreeLoader.resources.Add(newnode);*/
+                resourceTreeLoader.resources.Add(newnode);
                 foreach (ResourceTreeNode node in (ResourceLoader<ResourceTreeNode>)resourceTreeLoader)
                 {
                     //Debug.Log(GetLogFor(node));
@@ -2029,7 +954,7 @@ namespace ArchipelagoNotIncluded
                 }
                 return false;
             }
-            /*{
+            {
                 //Debug.Log("Found update method");
                 //Debug.Log(___def.PrefabID);
                 //if (!CheckItemList(___def.PrefabID))
@@ -2046,8 +971,8 @@ namespace ArchipelagoNotIncluded
                 };
                 ___resources.Add(node);
                 Debug.Log("Code is ran");
-            }*/
-        }
+            }
+        }*/
         public static string GetLogFor(object objectToGetStateOf)
         {
             if (objectToGetStateOf == null)

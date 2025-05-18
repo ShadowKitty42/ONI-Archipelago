@@ -917,18 +917,6 @@ namespace ArchipelagoNotIncluded
             Options = POptions.ReadSettings<ANIOptions>() ?? new ANIOptions();
             new POptions().RegisterOptions(this, typeof(ANIOptions));
             //Options = ReloadOptions();
-            //if (Options.Password == "")
-            //    netmon = new APNetworkMonitor(Options.URL, Options.Port, Options.SlotName);
-            //else
-                netmon = new APNetworkMonitor(Options.URL, Options.Port, Options.SlotName, Options.Password);
-            LoginResult result = netmon.TryConnectArchipelago(ItemsHandlingFlags.NoItems);
-            if (result.Successful)
-            {
-                LoginSuccessful success = (LoginSuccessful)result;
-                info = JsonConvert.DeserializeObject<APSeedInfo>(JsonConvert.SerializeObject(success.SlotData), [new VersionConverter()]);
-                Debug.Log($"SlotData Received - AP World Version: {info.APWorld_Version}");
-                //netmon.session.Socket.DisconnectAsync();
-            }
 
             lastItem = 0;
 
@@ -960,116 +948,83 @@ namespace ArchipelagoNotIncluded
                     continue;
                 }
             }
-            if (info != null)
-            {
-                foreach (DefaultItem item in AllDefaultItems)
-                {
-                    //Debug.Log(info.spaced_out);
-                    //Debug.Log(item.internal_tech + " " + item.internal_tech_base);
-                    string InternalTech = info.spaced_out ? item.internal_tech : item.internal_tech_base;
-                    switch (item.version)
+
+            
+
+                    base.OnLoad(harmony);
+
+                    netmon = new APNetworkMonitor(Options.URL, Options.Port, Options.SlotName, Options.Password);
+                    LoginResult result = netmon.TryConnectArchipelago();
+                    if (result.Successful)
                     {
-                        case "BaseOnly":
-                            if (info.spaced_out)
-                                break;
-                            goto default;
-                        case "SpacedOut":
-                            if (!info.spaced_out)
-                                break;
-                            goto default;
-                        case "Frosty":
-                            if (!info.frosty)
-                                break;
-                            goto default;
-                        case "Bionic":
-                            if (!info.bionic)
-                                break;
-                            goto default;
-                        default:
-                            allTechList.Add(item.internal_name);
-                            break;
+                        LoginSuccessful success = (LoginSuccessful)result;
+                        info = JsonConvert.DeserializeObject<APSeedInfo>(JsonConvert.SerializeObject(success.SlotData), [new VersionConverter()]);
+                        Debug.Log($"SlotData Received - AP World Version: {info.APWorld_Version}");
+                        //netmon.session.Socket.DisconnectAsync();
                     }
-                    if (Sciences.Count > 0 && Sciences?.TryGetValue(InternalTech, out List<string> techList) == true)
+                    if (info != null)
                     {
-                        if (techList == null)
-                            techList = new List<string>();
-                        techList.Add(item.internal_name);
-                    }
-                    else
-                    {
-                        if (InternalTech == "None")
-                            continue;
-                        Sciences[InternalTech] = new List<string>
+                        foreach (DefaultItem item in AllDefaultItems)
                         {
-                            item.internal_name
-                        };
+                            //Debug.Log(info.spaced_out);
+                            //Debug.Log(item.internal_tech + " " + item.internal_tech_base);
+                            string InternalTech = info.spaced_out ? item.internal_tech : item.internal_tech_base;
+                            switch (item.version)
+                            {
+                                case "BaseOnly":
+                                    if (info.spaced_out)
+                                        break;
+                                    goto default;
+                                case "SpacedOut":
+                                    if (!info.spaced_out)
+                                        break;
+                                    goto default;
+                                case "Frosty":
+                                    if (!info.frosty)
+                                        break;
+                                    goto default;
+                                case "Bionic":
+                                    if (!info.bionic)
+                                        break;
+                                    goto default;
+                                default:
+                                    allTechList.Add(item.internal_name);
+                                    break;
+                            }
+                            if (Sciences.Count > 0 && Sciences?.TryGetValue(InternalTech, out List<string> techList) == true)
+                            {
+                                if (techList == null)
+                                    techList = new List<string>();
+                                techList.Add(item.internal_name);
+                            }
+                            else
+                            {
+                                if (InternalTech == "None")
+                                    continue;
+                                Sciences[InternalTech] = new List<string>
+                                {
+                                    item.internal_name
+                                };
+                            }
+                        }
+
+                        if (AllModItems != null)
+                        {
+                            foreach (ModItem item in AllModItems)
+                            {
+                                if (info?.apModItems.Contains(item.internal_name) == true)
+                                {
+                                    item.randomized = true;
+                                    allTechList.Add(item.internal_name);
+                                }
+                            }
+                        }
                     }
-                }
-
-                if (AllModItems != null)
-                {
-                    foreach (ModItem item in AllModItems)
-                    {
-                        if (info?.apModItems.Contains(item.internal_name) == true)
-                            item.randomized = true;
-                    }
-                }
-            }
-
-            var original = AccessTools.Method(typeof(Database.Techs), nameof(Database.Techs.Init));
-            var prefix = AccessTools.Method(typeof(Techs_Init_Patch), nameof(Techs_Init_Patch.Prefix));
-            //harmony.Patch(original, new HarmonyMethod(prefix));
-
-            //original = AccessTools.Method(typeof(Database.Techs), nameof(Database.Techs.Load));
-            //prefix = AccessTools.Method(typeof(Techs_Load_Patch), nameof(Techs_Load_Patch.Prefix));
-            //harmony.Patch(original, new HarmonyMethod(prefix));
-
-            original = AccessTools.Method(typeof(Database.Techs), nameof(Database.Techs.TryGetTechForTechItem));
-            prefix = AccessTools.Method(typeof(TryGetTechForTechItem_Patch), nameof(TryGetTechForTechItem_Patch.Prefix));
-            harmony.Patch(original, new HarmonyMethod(prefix));
-
-            original = AccessTools.Method(typeof(Db), nameof(Db.Initialize));
-            var postfix = AccessTools.Method(typeof(Db_Initialize_Patch), nameof(Db_Initialize_Patch.Postfix));
-            harmony.Patch(original, postfix: new HarmonyMethod(postfix));
-
-            /*original = AccessTools.Method(typeof(Database.TechItems), nameof(Database.TechItems.AddTechItem), new[] { typeof(string), typeof(string), typeof(string), typeof(Func<string, bool, Sprite>), typeof(string[]), typeof(string[]), typeof(bool) });
-            prefix = AccessTools.Method(typeof(AddTechItem_Patch), nameof(AddTechItem_Patch.Prefix));
-            harmony.Patch(original, new HarmonyMethod(prefix));*/
-
-            original = AccessTools.Method(typeof(Database.TechItems), nameof(Database.TechItems.AddTechItem), new[] { typeof(string), typeof(string), typeof(string), typeof(Func<string, bool, Sprite>), typeof(string[]), typeof(string[]), typeof(bool) });
-            postfix = AccessTools.Method(typeof(AddTechItem_Patch), nameof(AddTechItem_Patch.Postfix));
-            harmony.Patch(original, postfix: new HarmonyMethod(postfix));
-
-            if (info?.bionic == false)
-            {
-                original = AccessTools.Method(typeof(AdvancedCraftingTableConfig), nameof(AdvancedCraftingTableConfig.ConfigureRecipes));
-                var transpiler = AccessTools.Method(typeof(ConfigureRecipes3_Patch), nameof(ConfigureRecipes3_Patch.Transpiler));
-                harmony.Patch(original, transpiler: new HarmonyMethod(transpiler));
-
-                original = AccessTools.Method(typeof(LubricationStickConfig), nameof(LubricationStickConfig.CreatePrefab));
-                transpiler = AccessTools.Method(typeof(CreatePrefab_Patch), nameof(CreatePrefab_Patch.Transpiler));
-                harmony.Patch(original, transpiler: new HarmonyMethod(transpiler));
-
-                original = AccessTools.Method(typeof(CraftingTableConfig), nameof(CraftingTableConfig.ConfigureRecipes));
-                transpiler = AccessTools.Method(typeof(ConfigureRecipes2_Patch), nameof(ConfigureRecipes2_Patch.Transpiler));
-                harmony.Patch(original, transpiler: new HarmonyMethod(transpiler));
-
-                original = AccessTools.Method(typeof(SupermaterialRefineryConfig), nameof(SupermaterialRefineryConfig.ConfigureBuildingTemplate));
-                transpiler = AccessTools.Method(typeof(ConfigureBuildingTemplate_Patch), nameof(ConfigureBuildingTemplate_Patch.Transpiler));
-                harmony.Patch(original, transpiler: new HarmonyMethod(transpiler));
-            }
-            //original = AccessTools.Method(typeof(SuitFabricatorConfig), nameof(SuitFabricatorConfig.ConfigureRecipes));
-            //var transpiler = AccessTools.Method(typeof(ConfigureRecipes_Patch), nameof(ConfigureRecipes_Patch.Transpiler));
-            //harmony.Patch(original, transpiler: new HarmonyMethod(transpiler));
-
-
-            //ModUtil.AddBuildingToPlanScreen((HashedString)"test", "id");
-
             SceneManager.sceneLoaded += (scene, loadScene) => {
                 Debug.Log($"Scene: {scene.name}");
                 if (!patched)
                 {
-                    base.OnLoad(harmony);
+
                     patched = true;
                 }
                 if (scene.name == "backend")
@@ -1109,7 +1064,7 @@ namespace ArchipelagoNotIncluded
                         Options.CreateModList = false;
                         POptions.WriteSettings(Options);
                     }
-                    else if (netmon.session == null)
+                    else if (netmon == null)
                     {
                         //netmon.TryConnectArchipelago();
                     }
@@ -1123,12 +1078,12 @@ namespace ArchipelagoNotIncluded
             };
         }
 
-        [PLibMethod(RunAt.OnStartGame)]
+        /*[PLibMethod(RunAt.OnStartGame)]
         public static void Connect()
         {
             netmon.UpdateAllItems();
             
-        }
+        }*/
         
         [PLibMethod(RunAt.OnStartGame)]
         public static void ReloadOptions()
@@ -1150,25 +1105,5 @@ namespace ArchipelagoNotIncluded
             }
             return cleaned;
         }
-
-        /*private void SceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode loadSceneMode)
-        {
-            this.OnLoad(harmony);
-        }*/
-
-        /*public void Render1000ms(float _)
-        {
-            Debug.Log($"Render1000ms");
-            if (session == null)
-            {
-                Counter++;
-                if (Counter == 20)
-                {
-                    Debug.Log($"Attempting to reconnect");
-                    TryConnectArchipelago();
-                    Counter = 0;
-                }
-            }
-        }*/
     }
 }
