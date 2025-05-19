@@ -7,6 +7,7 @@ from typing import *
 import typing
 import pkgutil
 import sys
+import gc
 
 import Utils
 from BaseClasses import Item, Location, Tutorial, Region, ItemClassification
@@ -448,7 +449,9 @@ class ONIWorld(World):
     def create_regions(self) -> None:
         """Method for creating and connecting regions for the World."""
         regions_by_name = {}
-
+        print("\n+++++ pre-create +++++")
+        print(gc.get_referrers(self.multiworld))
+        print("+++++++++++++++++++++")
         for region_info in self.all_regions:
             region = Region(region_info.name, self.player, self.multiworld)
             regions_by_name[region_info.name] = region
@@ -474,6 +477,9 @@ class ONIWorld(World):
                 regions_by_name[RegionNames.Nuclear], None, lambda state: can_nuclear_research(self.player, self.internal_item_to_name, state, self.options))
             regions_by_name[RegionNames.Nuclear].connect(
                 regions_by_name[RegionNames.Space_DLC], None, lambda state: can_space_research(self.player, self.internal_item_to_name, state, self.options))
+        print("\n+++++ post-create +++++")
+        print(gc.get_referrers(self.multiworld))
+        print("+++++++++++++++++++++")
 
     def create_items(self) -> None:
         """
@@ -639,11 +645,8 @@ class ONIWorld(World):
     def create_item(self, name: str) -> "ONIItem":
         """Create an item for this world type and player.
         Warning: this may be called with self.world = None, for example by MultiServer"""
-        #self.items_by_name[name].code = self.item_name_to_id[name]
-        #self.items_by_name[name].player = self.player
         item = self.items_by_name[name]
         return ONIItem(item.itemName, item.progression, self.item_name_to_id[name], self.player)
-        #return self.items_by_name[name]
 
     def get_filler_item_name(self) -> str:
         return self.random.choice(self.filler_item_names)

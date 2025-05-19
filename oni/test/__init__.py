@@ -7,6 +7,7 @@ from typing import *
 import typing
 import pkgutil
 import sys
+import gc
 
 import Utils
 from BaseClasses import Item, Location, Tutorial, Region, ItemClassification
@@ -448,7 +449,9 @@ class ONIWorld(World):
     def create_regions(self) -> None:
         """Method for creating and connecting regions for the World."""
         regions_by_name = {}
-
+        print("\n+++++ pre-create +++++")
+        print(gc.get_referrers(self.multiworld))
+        print("+++++++++++++++++++++")
         for region_info in self.all_regions:
             region = Region(region_info.name, self.player, self.multiworld)
             regions_by_name[region_info.name] = region
@@ -474,6 +477,9 @@ class ONIWorld(World):
                 regions_by_name[RegionNames.Nuclear], None, lambda state: can_nuclear_research(self.player, self.internal_item_to_name, state, self.options))
             regions_by_name[RegionNames.Nuclear].connect(
                 regions_by_name[RegionNames.Space_DLC], None, lambda state: can_space_research(self.player, self.internal_item_to_name, state, self.options))
+        print("\n+++++ post-create +++++")
+        print(gc.get_referrers(self.multiworld))
+        print("+++++++++++++++++++++")
 
     def create_items(self) -> None:
         """
@@ -582,7 +588,7 @@ class ONIWorld(World):
         # with open(output_file_path, "w") as file:
         #     file.write(json_string)
 
-        self.slot_data_ready.set()
+        #self.slot_data_ready.set()
 
         '''ap_json = APJson(self.ap_items)
         json_string = ap_json.to_json(indent=4)
