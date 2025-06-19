@@ -374,5 +374,5 @@ Directory.Build.props.user
 /UtilLibs/
 /StatsUnlimited/
 /StatsUnlimitedImproved/
-/oni/env
-/oni/env1
+/oni/env/
+/oni/env1/
