@@ -15,21 +15,35 @@ using Newtonsoft.Json;
 using Archipelago.MultiClient.Net.Packets;
 using static STRINGS.ITEMS.BIONIC_BOOSTERS;
 using System.Collections.Concurrent;
+using HarmonyLib;
+using System.Threading;
+using static MathUtil;
+using PeterHan.PLib.Core;
 
 namespace ArchipelagoNotIncluded
 {
     public class APNetworkMonitor
     {
         public ArchipelagoSession session = null;
+
+        private readonly string game = "Oxygen Not Included";
         private string URL = "localhost";
         private int Port = 38281;
         public string SlotName = "Shadow";
         private string Password = "";
+        private ItemsHandlingFlags Flags = ItemsHandlingFlags.AllItems;
+
         private bool initialSyncComplete = false;
         public Dictionary<string, CarePackageInfo> CarePackages = new Dictionary<string, CarePackageInfo>();
+        public bool ReadyForItems = false;
+
+        public static ConcurrentQueue<ItemInfo> ItemQueue = new ConcurrentQueue<ItemInfo>();
         public static ConcurrentQueue<string> packageQueue = new ConcurrentQueue<string>();
-        private int MostRecentCount = 0;
+
         public static int HighestCount = 0;
+        public static string seed = string.Empty;
+
+        private bool attemptingConnection = false;
 
         public APNetworkMonitor(string URL, int port, string name, string password = "")
         {
@@ -37,41 +51,80 @@ namespace ArchipelagoNotIncluded
             this.Port = port;
             this.SlotName = name;
             this.Password = password;
+            session = ArchipelagoSessionFactory.CreateSession(URL, Port);
+            session.Socket.PacketReceived += OnPacketReceived;
+            session.Socket.SocketClosed += OnSocketClosed;
+            session.Socket.ErrorReceived += OnErrorReceived;
             //this.PopulateCarePackages();
         }
 
-        public LoginResult TryConnectArchipelago(ItemsHandlingFlags flags = ItemsHandlingFlags.AllItems)
+        public void TryConnectArchipelago(ItemsHandlingFlags flags = ItemsHandlingFlags.AllItems)
         {
-            MostRecentCount = 0;
-            session = ArchipelagoSessionFactory.CreateSession(URL, Port);
-            LoginResult result;
-            //if (this.Password == "")
-            //    result = session.TryConnectAndLogin("Oxygen Not Included", SlotName, flags);
-            //else
-                result = session.TryConnectAndLogin("Oxygen Not Included", SlotName, flags, password: Password);
+            attemptingConnection = true;
+            Flags = flags;
+            session.ConnectAsync().ContinueWith(t =>
+            {
+                Debug.Log("Connection failed");
+                if (APSaveData.Instance != null)
+                    TryReconnectArchipelago();
+            }, TaskContinuationOptions.OnlyOnCanceled);
+            /*result = session.TryConnectAndLogin(game, SlotName, flags, password: Password);
             if (result.Successful)
             {
                 Debug.Log("Connection successful");
                 //if (flags != ItemsHandlingFlags.AllItems)
-                    //initialSyncComplete = false;
+                //initialSyncComplete = false;
                 session.Items.ItemReceived += OnItemReceived;
                 session.Socket.PacketReceived += OnPacketReceived;
                 session.Socket.SocketClosed += OnSocketClosed;
                 session.Socket.ErrorReceived += OnErrorReceived;
+                if (APSaveData.Instance != null)
+                    ProcessLocationQueue();
                 //UpdateAllItems();
             }
             else
+            {
                 Debug.Log("Connection failed");
-            return result;
+                if (APSaveData.Instance != null)
+                    TryReconnectArchipelago();
+            }*/
         }
         
         private void OnPacketReceived(ArchipelagoPacketBase packet)
         {
             Debug.Log($"Received packet of type: {packet.PacketType.ToString()}");
-            if (packet.PacketType.ToString() == "ReceivedItems")
+            switch (packet)
             {
-                ReceivedItemsPacket packetReceived = (ReceivedItemsPacket)packet;
-                Debug.Log($"The packet has {packetReceived.Items.Length} Items Received");
+                case ReceivedItemsPacket packetReceived:
+                    Debug.Log($"The packet has {packetReceived.Items.Length} Items Received");
+                    break;
+                case RoomInfoPacket packetReceived:
+                    if (seed == string.Empty)
+                        seed = packetReceived.SeedName;
+                    else if (seed != packetReceived.SeedName)
+                        Debug.Log($"Seed Mismatch detected. Did you connect to the wrong Multiworld or Port?");
+
+                    session.Socket.SendPacketAsync(new ConnectPacket
+                    {
+                        Game = game,
+                        Name = SlotName,
+                        Password = Password,
+                        ItemsHandling = Flags,
+                        RequestSlotData = true,
+                        Tags = new string[] { "APNetworkMonitor" },
+                        Version = new NetworkVersion { Major = 0, Minor = 5, Build = 1 }
+                    });
+                    break;
+                case ConnectedPacket packetReceived:
+                    ArchipelagoNotIncluded.HandleSlotData(packetReceived.SlotData);
+                    Debug.Log("Connection successful");
+                    session.Items.ItemReceived += OnItemReceived;
+                    if (APSaveData.Instance != null)
+                        ProcessLocationQueue();
+                    break;
+                case ConnectionRefusedPacket packetReceived:
+                    Debug.Log($"Connection Refused: {packetReceived.Errors.Join(s => s.ToString(), ", ")}");
+                    break;
             }
         }
 
@@ -82,25 +135,55 @@ namespace ArchipelagoNotIncluded
             if (reason.Contains("closed the WebSocket connection"))
             {
                 //session.Socket.DisconnectAsync();
-                session = null;
-                //StartCoroutine(AttemptToReconnect());
+                //session = null;
+                TryReconnectArchipelago();
             }
         }
 
         private void OnSocketClosed(string reason)
         {
             Debug.Log($"OnSocketClosed: {reason}");
-            session = null;
+            //session = null;
+            TryReconnectArchipelago();
+            //TryConnectArchipelago();
+        }
+
+        private void TryReconnectArchipelago()
+        {
+            Thread.Sleep(30000);
             TryConnectArchipelago();
         }
 
-        private IEnumerator AttemptToReconnect()
+        public void ProcessItemQueue()
         {
-            yield return new WaitForSeconds(20);
-            Debug.Log("Attempting to reconnect...");
-            LoginResult result = TryConnectArchipelago();
-            //if (!result.Successful)
-            //    StartCoroutine(AttemptToReconnect());
+            ReadyForItems = true;
+            ArchipelagoNotIncluded.lastItem = 0;
+            if (CarePackages.Count == 0)
+                PopulateCarePackages();
+            if (APSaveData.Instance.LocalItemList.Count > 0)
+            {
+                GameScheduler.Instance.Schedule("UpdateLocalItems", 3f, (object data) =>
+                {
+                    foreach (string item in APSaveData.Instance.LocalItemList)
+                        UpdateTechItem(item);
+                });
+            }
+
+            if (ItemQueue.IsEmpty)
+                return;
+
+            foreach (var item in ItemQueue)
+                AddItem(item);
+        }
+
+        private void ProcessLocationQueue()
+        {
+            if (APSaveData.Instance.LocationQueue.IsEmpty)
+                return;
+
+            SendLocationChecks(APSaveData.Instance.LocationQueue.ToArray());
+            if (APSaveData.Instance.GoalComplete)
+                session.SetGoalAchieved();
         }
 
         private void OnItemReceived(ReceivedItemsHelper helper)
@@ -114,7 +197,10 @@ namespace ArchipelagoNotIncluded
 
             ItemInfo item = session.Items.PeekItem();
             //if (item.Player.Name == SlotName)
-            AddItem(item);
+            if (ReadyForItems)
+                AddItem(item);
+            else
+                ItemQueue.Enqueue(item);
             //Debug.Log($"Current Player: {SlotName} - Found {item.ItemName} for {item.Player.Name}");
 
             /*Debug.Log(item.ItemName);
@@ -172,7 +258,7 @@ namespace ArchipelagoNotIncluded
                 return;*/
             Debug.Log("UpdateAllItems Triggered");
             Debug.Log(this.session.Items.AllItemsReceived.Count);
-            MostRecentCount = 0;
+            ArchipelagoNotIncluded.lastItem = 0;
             if (!initialSyncComplete)
             {
                 PopulateCarePackages();
@@ -207,37 +293,45 @@ namespace ArchipelagoNotIncluded
 
         private void AddItem(ItemInfo item)
         {
+            bool newitem = !APSaveData.Instance.LocalItemList.Contains(item.ItemName);
+            APSaveData.Instance.LocalItemList.Add(item.ItemDisplayName);
             //string name = item.LocationName.Split('-')[0].Trim();
-            Debug.Log($"AddItem: {item.ItemName} MostRecentCount: {MostRecentCount} lastItem: {ArchipelagoNotIncluded.lastItem}");
-            if (MostRecentCount == ArchipelagoNotIncluded.lastItem || ArchipelagoNotIncluded.lastItem == 0)
+            Debug.Log($"AddItem: {item.ItemName} MostRecentCount: {APSaveData.Instance.LastItemIndex} lastItem: {ArchipelagoNotIncluded.lastItem}");
+            if (APSaveData.Instance.LastItemIndex <= session.Items.AllItemsReceived.Count)
             {
                 ArchipelagoNotIncluded.lastItem++;
                 if (item.ItemName.StartsWith("Care Package"))
                 {
                     Debug.Log($"Sending Care Package: {item.ItemName}");
                     SendCarePackage(item);
-                    MostRecentCount++;
+                    APSaveData.Instance.LastItemIndex++;
                     return;
                 }
             }
-            MostRecentCount++;
+            APSaveData.Instance.LastItemIndex++;
             //DefaultItem defItem = ArchipelagoNotIncluded.info.spaced_out ? ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.tech == name) : ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.tech_base == name);
             
+            if (newitem)
+                UpdateTechItem(item.ItemName);
+        }
 
-            DefaultItem defItem = ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.name == item.ItemName);
-            ModItem modItem = ArchipelagoNotIncluded.AllModItems.Find(i => i.name == item.ItemName);
+        private void UpdateTechItem(string ItemName)
+        {
+            Debug.Log($"Update Techitem: {ItemName}");
+            DefaultItem defItem = ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.name == ItemName);
+            ModItem modItem = ArchipelagoNotIncluded.AllModItems.Find(i => i.name == ItemName);
             Tech itemTech = null;
             string itemId = null;
             if (defItem != null)
             {
                 itemId = defItem.internal_name;
-                if (!ArchipelagoNotIncluded.allTechList.Contains(itemId))
+                if (!ArchipelagoNotIncluded.allTechList.ContainsKey(itemId))
                     itemTech = Db.Get().Techs.TryGetTechForTechItem(itemId);
             }
             if (modItem != null)
             {
                 itemId = modItem.internal_name;
-                if (!ArchipelagoNotIncluded.allTechList.Contains(itemId))
+                if (!ArchipelagoNotIncluded.allTechList.ContainsKey(itemId))
                     itemTech = Db.Get().Techs.TryGetTechForTechItem(itemId);
             }
             BuildingDef buildingDef = Assets.GetBuildingDef(itemId);
@@ -246,10 +340,15 @@ namespace ArchipelagoNotIncluded
                 PlanScreen.Instance.AddResearchedBuildingCategory(buildingDef);
 
                 HashSet<HashedString> hashSet = new HashSet<HashedString>();
-                HashedString hashedString = BuildMenu.Instance.tagCategoryMap[buildingDef.Tag];
-                hashSet.Add(hashedString);
-                BuildMenu.Instance.AddParentCategories(hashedString, hashSet);
+                if (BuildMenu.Instance != null)
+                {
+                    HashedString hashedString = BuildMenu.Instance.tagCategoryMap[(buildingDef as BuildingDef).Tag];
+                    hashSet.Add(hashedString);
+                    BuildMenu.Instance.AddParentCategories(hashedString, hashSet);
+                }
             }
+            else
+                Debug.Log($"Error: BuildingDef not found for: {itemId}");
             if (itemTech != null)
             {
                 Game.Instance.Trigger(11390976, (object)itemTech);
@@ -258,10 +357,14 @@ namespace ArchipelagoNotIncluded
             }
         }
 
-        public void SendResourceCheck(string ResourceName)
+        public void SendLocationChecks(params string[] LocationNames)
         {
-            long id = ArchipelagoNotIncluded.netmon.session.Locations.GetLocationIdFromName("Oxygen Not Included", ResourceName);
-            ArchipelagoNotIncluded.netmon.session.Locations.CompleteLocationChecks([id]);
+            long[] locationIds = new long[LocationNames.Length];
+            for (int i = 0; i < LocationNames.Length; i++)
+            {
+                locationIds[i] = ArchipelagoNotIncluded.netmon.session.Locations.GetLocationIdFromName(game, LocationNames[i]);
+            }
+            session.Locations.CompleteLocationChecks(locationIds);
         }
 
         public void PopulateCarePackages()
@@ -362,7 +465,7 @@ namespace ArchipelagoNotIncluded
                 //package.Deliver(telepad.transform.GetPosition());
                 while (packageQueue.TryDequeue(out string package))
                 {
-                    ArchipelagoNotIncluded.netmon.CarePackages[package].Deliver(telepad.transform.GetPosition());
+                    CarePackages[package].Deliver(telepad.transform.GetPosition());
                 }
                 telepad.smi.sm.closePortal.Trigger(telepad.smi);
             });

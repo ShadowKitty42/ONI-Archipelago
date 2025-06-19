@@ -2,10 +2,8 @@
 
 ## What is this?
 
-This is a continuation of a project started by digiholic [ArchipelagoNotIncluded](https://github.com/digiholic/ArchipelagoNotIncluded)
-
 As of right now, the bare minimum has been completed to enable Multiworld functionality. The goal is to add it to the large list of games for [Archipelago Multiworld Randomizer](https://archipelago.gg)
-It is currently up-to-date with all DLC except for Bionic (which came out recently) and any combination of DLC can be enabled/disabled.
+It is currently up-to-date with all DLC except for Prehistoric Planet Pack (which came out recently) and any combination of DLC can be enabled/disabled.
 There are some known visual bugs that haven't been fixed yet, but nothing should affect gameplay. (See [Known Bugs](#known-bugs) below)
 
 ## Usage
@@ -13,10 +11,6 @@ There are some known visual bugs that haven't been fixed yet, but nothing should
 The randomization logic is handled by the Archipelago randomizer, so you have to have that installed to create the seed information and/or viewing items sent/recieved while playing. The mod does not change any of the standard planetoid or dupe generation and can work with any setting (see below note about logical requirements if you find an unwinnable scenario).
 
 This mod should be compatible with any other mod ~~that does not modify the tech tree in any way. Any mods that add technologies will not be included in the randomization and will not appear in your tech tree.~~
-
-### Important Note
-
-~~The Research Tree currently ignores items from other games and will not display them. This does NOT affect how many items a Research topic will give you. This means if a Research topic gives 4 items in vanilla, it will still send 4 items to the Multiworld. You will only see items listed that are in ONI. If you don't remember how many items a Research Topic will give, I recommend using the wiki page for reference. Use either [Base Game](https://oxygennotincluded.fandom.com/wiki/Category:Research) or [Spaced Out (and later)](https://oxygennotincluded.fandom.com/wiki/Category:Research).~~
 
 ## Logic
 
@@ -67,10 +61,9 @@ If you want to randomize buildings added by mods, perform the following steps. I
 NOTE: The next step is required for the game to load enough information needed to create the Mod List
 7. After the game restarts, load any existing save file OR start a new game (at a minimum, click through the menus until you get the 3 starting Duplicants).
 8. Either close the game or return to the main menu.
-9. Navigate to the ONI Mods Folder. On Windows, this is either<br/>`C:/Users/[YOUR NAME]/Documents/Klei/OxygenNotIncluded/mods` OR<br/>`C:/Users/[YOUR NAME]/OneDrive/Documents/Klei/OxygenNotIncluded/mods`
-10. From here, if you installed from `Steam Workshop`, navigate to `Steam/3415553359`. If you installed manually, navigate to `Local/ArchipelagoNotIncluded`
-11. You should see a file called `[Player Name]_ModItems.json`.
-12. Copy this file somewhere easily accessed, it will be needed in `Seed Generation`
+9. Navigate to the ONI Mods Folder. On Windows, this is either<br/>`C:/Users/[YOUR NAME]/Documents/Klei/OxygenNotIncluded/mods/config/ArchipelagoNotIncluded` OR<br/>`C:/Users/[YOUR NAME]/OneDrive/Documents/Klei/OxygenNotIncluded/mods/config/ArchipelagoNotIncluded`
+10. You should see a file called `[Player Name]_ModItems.json`.
+11. Copy this file somewhere easily accessed, it will be needed in `Seed Generation`
 
 ## Seed Generation
 
@@ -104,7 +97,7 @@ Required files can be found on the [Releases](https://github.com/ShadowKitty42/O
 
 ### Known Bugs
 
-- [ ] When research is completed, the original tech category gets a <!> icon even if nothing was added to it.
+- [x] ~~When research is completed, the original tech category gets a <!> icon even if nothing was added to it.~~
 - [ ] When research is completed, a research complete notification is generated and has incorrect information about what was unlocked.
 - [x] ~~If your game includes items from other games, they will not appear in the Research Tree. Despite this, every Research topic still unlocks the same number of items as normal.~~
 - [ ] Building Categories appear at the bottom even if there are no buildings listed for it.

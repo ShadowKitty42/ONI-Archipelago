@@ -57,7 +57,7 @@ namespace ArchipelagoNotIncluded
             string text = "Connection to Archipelago failed.\nPlease check your connection settings and try again.";
             string title = "Archipelago";
             System.Action confirm = null;
-            LoginResult result = netmon.TryConnectArchipelago(ItemsHandlingFlags.NoItems);
+            LoginResult result = netmon.session.TryConnectAndLogin("Oxygen Not Included", SlotName, ItemsHandlingFlags.NoItems, password: Password);
             if (result.Successful)
             {
                 LoginSuccessful success = (LoginSuccessful)result;

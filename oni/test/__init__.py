@@ -588,7 +588,7 @@ class ONIWorld(World):
         # with open(output_file_path, "w") as file:
         #     file.write(json_string)
 
-        #self.slot_data_ready.set()
+        self.slot_data_ready.set()
 
         '''ap_json = APJson(self.ap_items)
         json_string = ap_json.to_json(indent=4)
@@ -645,11 +645,8 @@ class ONIWorld(World):
     def create_item(self, name: str) -> "ONIItem":
         """Create an item for this world type and player.
         Warning: this may be called with self.world = None, for example by MultiServer"""
-        #self.items_by_name[name].code = self.item_name_to_id[name]
-        #self.items_by_name[name].player = self.player
         item = self.items_by_name[name]
         return ONIItem(item.itemName, item.progression, self.item_name_to_id[name], self.player)
-        #return self.items_by_name[name]
 
     def get_filler_item_name(self) -> str:
         return self.random.choice(self.filler_item_names)

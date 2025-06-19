@@ -245,6 +245,13 @@ class ONIWorld(World):
         #    self.options.cluster.value = 10         # If planet name not in base game, set to default
 
         
+        if "ceres" in self.options.cluster.current_key and not self.frosty:
+            logging.warning(f"Frosty DLC is not enabled and planet choice requires it. Changing option to default planet.")
+            if self.spaced_out:
+                self.options.cluster.value = 10         # set to default for spaced out
+            else:
+                self.options.cluster_base.value = 0         # set to default for base game
+        
         for item in self.default_item_list:
             if self.base_only == False and item.version == "BaseOnly":
                 continue;

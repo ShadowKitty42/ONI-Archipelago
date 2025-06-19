@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import random
 
 from Options import Choice, Toggle, DefaultOnToggle, Range, PerGameCommonOptions
 
@@ -99,22 +100,35 @@ class Cluster(Choice):
     option_blasted = 22
 
     option_custom = 50
-    default = 0
-
-    @property
-    def planet_type(self) -> str:
-        if self.value >= 0 and self.value < 10:
-            return "spaced_out"
-        if self.value >= 10 and self.value < 21:
-            return "classic"
-        if self.value >= 21 and self.value < 23:
-            return "the_lab"
+    option_random_classic = 51
+    option_random_spaced_out = 52
+    default = 10
 
     @property
     def has_basegame_equivalent(self) -> bool:
         if self.value >= 10 and self.value < 20:
             return True
         return False
+
+    @classmethod
+    def planet_type(cls, value: int) -> str:
+        if value >= 0 and value < 10:
+            return "spaced_out"
+        if value >= 10 and value < 21:
+            return "classic"
+        if value >= 21 and value < 23:
+            return "the_lab"
+
+    @classmethod
+    def from_text(cls, text: str) -> Choice:
+        text = text.lower()
+        if text == "random_classic":
+            choice_list = [option for option in cls.name_lookup if cls.planet_type(option) == "classic"]
+            return cls(random.choice(choice_list))
+        if text == "random_spaced_out":
+            choice_list = [option for option in cls.name_lookup if cls.planet_type(option) == "spaced_out"]
+            return cls(random.choice(choice_list))
+        return super().from_text(text)
 
 class Teleporter(Toggle):
     """

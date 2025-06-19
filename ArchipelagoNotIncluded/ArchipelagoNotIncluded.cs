@@ -38,12 +38,12 @@ namespace ArchipelagoNotIncluded
          * Create list of missing techitems in techs.init. create them in loadgeneratedbuildings    - Done
          */
 
+        public static ArchipelagoNotIncluded Instance { get; private set; } = null;
 
         //public KaitoKid.ArchipelagoUtilities.Net.Interfaces.ILogger logger;
         public static bool cheatmode = true;
-        public static bool allowResourceChecks = false;
-        public static bool hadBionicDupe = false;
         public static bool skipUnlockedItems = false;
+        public static bool AllowResourceChecks = false;
 
         public static APNetworkMonitor netmon = null;
         //public static ArchipelagoSession session = null;
@@ -57,7 +57,7 @@ namespace ArchipelagoNotIncluded
         public static List<KeyValuePair<string, string>> apItems = new List<KeyValuePair<string, string>>();
         public static List<DefaultItem> AllDefaultItems = new List<DefaultItem>();
         public static List<ModItem> AllModItems = new List<ModItem>();
-        public static List<string> allTechList = new List<string>();
+        public static Dictionary<string, string> allTechList = new Dictionary<string, string>();
         public static string AtmoSuitTech = "";
         public static string JetSuitTech = "";
         public static string LeadSuitTech = "";
@@ -160,6 +160,8 @@ namespace ArchipelagoNotIncluded
         public static int runCount = 0;
         public static string planetText = string.Empty;
 
+        public static StatusItemCategory ArchipelagoConnected = null;
+
         public static int getLastIndex()
         {
             //lastItem = netmon.session.Items.AllItemsReceived.Count;
@@ -174,9 +176,17 @@ namespace ArchipelagoNotIncluded
 
         public override void OnLoad(Harmony harmony)
         {
+            Instance = this;
+
             PUtil.InitLibrary();
             cheatmode = false;
-            
+            string configPath = Path.Combine(Manager.GetDirectory(), "config");
+            if (!System.IO.Directory.Exists(configPath))
+                System.IO.Directory.CreateDirectory(configPath);
+            string modItemsPath = Path.Combine(configPath, "ArchipelagoNotIncluded");
+            if (!System.IO.Directory.Exists(modItemsPath))
+                System.IO.Directory.CreateDirectory(modItemsPath);
+
             Options = POptions.ReadSettings<ANIOptions>() ?? new ANIOptions();
             new POptions().RegisterOptions(this, typeof(ANIOptions));
             //Options = ReloadOptions();
@@ -184,7 +194,7 @@ namespace ArchipelagoNotIncluded
             lastItem = 0;
 
             modDirectory = new DirectoryInfo(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-            foreach (FileInfo jsonFile in modDirectory.EnumerateFiles("*.json").OrderByDescending(f => f.LastWriteTime))
+            foreach (FileInfo jsonFile in modDirectory.EnumerateFiles("*.json"))
             {
                 try
                 {
@@ -192,11 +202,6 @@ namespace ArchipelagoNotIncluded
                     if (jsonFile.Name == "DefaultItemList.json")
                     {
                         AllDefaultItems = JsonConvert.DeserializeObject<List<DefaultItem>>(json);
-                        continue;
-                    }
-                    if (jsonFile.Name == $"{Options.SlotName}_ModItems.json")
-                    {
-                        AllModItems = JsonConvert.DeserializeObject<List<ModItem>>(json);
                         continue;
                     }
                     //if (info == null)
@@ -210,80 +215,36 @@ namespace ArchipelagoNotIncluded
                     continue;
                 }
             }
+            modDirectory = new DirectoryInfo(modItemsPath);
+            foreach (FileInfo jsonFile in modDirectory.EnumerateFiles("*.json"))
+            {
+                try
+                {
+                    string json = File.ReadAllText(jsonFile.FullName);
+                    if (jsonFile.Name == $"{Options.SlotName}_ModItems.json")
+                    {
+                        AllModItems = JsonConvert.DeserializeObject<List<ModItem>>(json);
+                        continue;
+                    }
+                    continue;
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                    Debug.LogWarning($"Failed to parse JSON file {jsonFile.FullName}");
+                    continue;
+                }
+            }
 
             base.OnLoad(harmony);
 
             netmon = new APNetworkMonitor(Options.URL, Options.Port, Options.SlotName, Options.Password);
-            LoginResult result = netmon.TryConnectArchipelago();
-            if (result.Successful)
-            {
-                LoginSuccessful success = (LoginSuccessful)result;
-                info = JsonConvert.DeserializeObject<APSeedInfo>(JsonConvert.SerializeObject(success.SlotData), [new VersionConverter()]);
-                Debug.Log($"SlotData Received - AP World Version: {info.APWorld_Version}");
-                //netmon.session.Socket.DisconnectAsync();
-            }
-            if (info != null)
-            {
-                foreach (DefaultItem item in AllDefaultItems)
-                {
-                    //Debug.Log(info.spaced_out);
-                    //Debug.Log(item.internal_tech + " " + item.internal_tech_base);
-                    string InternalTech = info.spaced_out ? item.internal_tech : item.internal_tech_base;
-                    switch (item.version)
-                    {
-                        case "BaseOnly":
-                            if (info.spaced_out)
-                                break;
-                            goto default;
-                        case "SpacedOut":
-                            if (!info.spaced_out)
-                                break;
-                            goto default;
-                        case "Frosty":
-                            if (!info.frosty)
-                                break;
-                            goto default;
-                        case "Bionic":
-                            if (!info.bionic)
-                                break;
-                            goto default;
-                        default:
-                            allTechList.Add(item.internal_name);
-                            break;
-                    }
-                    if (Sciences.Count > 0 && Sciences?.TryGetValue(InternalTech, out List<string> techList) == true)
-                    {
-                        if (techList == null)
-                            techList = new List<string>();
-                        techList.Add(item.internal_name);
-                    }
-                    else
-                    {
-                        if (InternalTech == "None")
-                            continue;
-                        Sciences[InternalTech] = new List<string>
-                        {
-                            item.internal_name
-                        };
-                    }
-                }
-
-                if (AllModItems != null)
-                {
-                    foreach (ModItem item in AllModItems)
-                    {
-                        if (info?.apModItems.Contains(item.internal_name) == true)
-                        {
-                            item.randomized = true;
-                            allTechList.Add(item.internal_name);
-                        }
-                    }
-                }
-            }
+            netmon.TryConnectArchipelago();
             SceneManager.sceneLoaded += (scene, loadScene) => {
                 Debug.Log($"Scene: {scene.name}");
                 if (scene.name == "backend")
                 {
+
                     if (Options.CreateModList)
                     {
                         List<ModItem> modItems = new List<ModItem>();
@@ -300,7 +261,7 @@ namespace ArchipelagoNotIncluded
                         //File.WriteAllText(modDirectory.ToString() + "\\ModItems.json", JsonConvert.SerializeObject(modItems, Formatting.Indented));
                         if (modItems.Count > 0)
                         {
-                            using (FileStream fs = File.Open(modDirectory.ToString() + $"\\{Options.SlotName}_ModItems.json", FileMode.Create))
+                            using (FileStream fs = File.Open(Path.Combine(modItemsPath, $"{Options.SlotName}_ModItems.json"), FileMode.Create))
                             {
                                 using (StreamWriter sw = new StreamWriter(fs))
                                 {
@@ -329,6 +290,12 @@ namespace ArchipelagoNotIncluded
             Options = POptions.ReadSettings<ANIOptions>() ?? new ANIOptions();
         }
 
+        public static void HandleSlotData(Dictionary<string, object> data)
+        {
+            info = JsonConvert.DeserializeObject<APSeedInfo>(JsonConvert.SerializeObject(data), [new VersionConverter()]);
+            Debug.Log($"SlotData Received - AP World Version: {info.APWorld_Version}");
+        }
+
         public static string CleanName(string name)
         {
             char[] delimiters = { '<', '>' };
@@ -342,6 +309,20 @@ namespace ArchipelagoNotIncluded
                 cleaned = name;
             }
             return cleaned;
+        }
+
+        public static void AddLocationChecks(params string[] LocationNames)
+        {
+            if (!netmon.session.Socket.Connected)
+            {
+                Debug.Log("Network not connected, caching location checks.");
+                foreach (string name in LocationNames)
+                    APSaveData.Instance.LocationQueue.Enqueue(name);
+            }
+            else
+            {
+                netmon.SendLocationChecks(LocationNames);
+            }
         }
     }
 }

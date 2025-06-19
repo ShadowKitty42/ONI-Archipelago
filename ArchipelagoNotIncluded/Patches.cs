@@ -34,7 +34,7 @@ using Newtonsoft.Json.Converters;
 
 namespace ArchipelagoNotIncluded
 {
-    
+
     public class Patches
     {
         [HarmonyPatch(typeof(DestinationSelectPanel))]
@@ -104,7 +104,7 @@ namespace ArchipelagoNotIncluded
         {
             public static void Postfix(ClusterCategorySelectionScreen __instance)
             {
-                ArchipelagoNotIncluded.allowResourceChecks = true;
+                ArchipelagoNotIncluded.AllowResourceChecks = true;
                 __instance.closeButton.onClick += new System.Action(DisallowResourceChecks);
                 if (ArchipelagoNotIncluded.info == null)
                     return;
@@ -140,7 +140,7 @@ namespace ArchipelagoNotIncluded
             }
             public static void DisallowResourceChecks()
             {
-                ArchipelagoNotIncluded.allowResourceChecks = false;
+                ArchipelagoNotIncluded.AllowResourceChecks = false;
             }
         }
 
@@ -150,30 +150,33 @@ namespace ArchipelagoNotIncluded
         {
             public static void Postfix()
             {
-                if (ArchipelagoNotIncluded.Options.CreateModList)
+                APSeedInfo info = ArchipelagoNotIncluded.info;
+                if (ArchipelagoNotIncluded.Options.CreateModList || info == null)
                     return;
-                if (ArchipelagoNotIncluded.info.teleporter)
+                if (info.teleporter)
                     CustomGameSettings.Instance.SetQualitySetting(CustomGameSettingConfigs.Teleporters, "Enabled");
 
                 CustomGameSettings cgs = CustomGameSettings.Instance;
-                APSeedInfo info = ArchipelagoNotIncluded.info;
                 foreach (KeyValuePair<string, SettingConfig> keyValuePair in cgs.MixingSettings)    // DLC2_ID  DLC3_ID
                 {
                     DlcMixingSettingConfig dlcSetting = keyValuePair.Value as DlcMixingSettingConfig;
-                    switch (dlcSetting.id)
+                    if (dlcSetting != null)
                     {
-                        case DlcManager.DLC2_ID:
-                            if (!info.frosty)
-                                cgs.SetMixingSetting(dlcSetting, "Disabled");
-                            else
-                                cgs.SetMixingSetting(dlcSetting, "Enabled");
-                            break;
-                        case DlcManager.DLC3_ID:
-                            if (!info.bionic)
-                                cgs.SetMixingSetting(dlcSetting, "Disabled");
-                            else
-                                cgs.SetMixingSetting(dlcSetting, "Enabled");
-                            break;
+                        switch (dlcSetting.id)
+                        {
+                            case DlcManager.DLC2_ID:
+                                if (!info.frosty)
+                                    cgs.SetMixingSetting(dlcSetting, "Disabled");
+                                else
+                                    cgs.SetMixingSetting(dlcSetting, "Enabled");
+                                break;
+                            case DlcManager.DLC3_ID:
+                                if (!info.bionic)
+                                    cgs.SetMixingSetting(dlcSetting, "Disabled");
+                                else
+                                    cgs.SetMixingSetting(dlcSetting, "Enabled");
+                                break;
+                        }
                     }
                 }
             }
@@ -190,6 +193,11 @@ namespace ArchipelagoNotIncluded
                 string title = "Archipelago";
                 System.Action confirm = null;
                 System.Action cancel = new System.Action(() => __instance.FindOrAdd<NewGameFlow>().ClearCurrentScreen());
+                if (ArchipelagoNotIncluded.netmon.session.Socket.Connected)
+                {
+                    text = "Successfully connected to Archipelago.";
+                    cancel = null;
+                }
 
                 DlcManager.DlcInfo dlc2 = DlcManager.DLC_PACKS["DLC2_ID"];
                 DlcManager.DlcInfo dlc3 = DlcManager.DLC_PACKS["DLC3_ID"];
@@ -212,6 +220,16 @@ namespace ArchipelagoNotIncluded
             }
         }
 
+        [HarmonyPatch(typeof(PauseScreen))]
+        [HarmonyPatch(nameof(PauseScreen.RefreshDLCButton))]
+        public static class RefreshDLCButton_Patch
+        {
+            public static void Postfix(MultiToggle button)
+            {
+                button.onClick = null;
+            }
+        }
+
         [HarmonyPatch(typeof(DiscoveredResources))]
         [HarmonyPatch(nameof(DiscoveredResources.Discover), new[] { typeof(Tag), typeof(Tag) })]
         public static class Discover_Patch
@@ -224,15 +242,15 @@ namespace ArchipelagoNotIncluded
 
             public static void Postfix(DiscoveredResources __instance, Tag tag, int __state)
             {
-                if (ArchipelagoNotIncluded.allowResourceChecks && __instance.newDiscoveries.Count > __state)      // New Discovery was added
+                if (APSaveData.Instance.AllowResourceChecks && __instance.newDiscoveries.Count > __state && ArchipelagoNotIncluded.info != null)      // New Discovery was added
                 {
                     string ResourceName = tag.ProperNameStripLink();
                     Debug.Log($"New Discovery: Name: {tag.Name}, StripLink: {ResourceName}");
                     //foreach (string resource in ArchipelagoNotIncluded.info.resourceChecks)
                     //Debug.Log(resource);
                     string location = $"Discover Resource: {ResourceName}";
-                    if (ArchipelagoNotIncluded.info.resourceChecks.Contains( location ) )
-                        ArchipelagoNotIncluded.netmon.SendResourceCheck(location);
+                    if (ArchipelagoNotIncluded.info.resourceChecks.Contains(location))
+                        ArchipelagoNotIncluded.AddLocationChecks(location);
                 }
             }
         }
@@ -342,29 +360,33 @@ namespace ArchipelagoNotIncluded
         {
             public static void Postfix(string achievement)
             {
+                if (ArchipelagoNotIncluded.info == null)
+                    return;
+
                 string goal = ArchipelagoNotIncluded.info.goal;
+                APSaveData inst = APSaveData.Instance;
                 Debug.Log($"New Achievement: {achievement} Goal: {goal}");
                 switch (achievement)
                 {
                     case "CompleteResearchTree":
                         if (goal == "research_all")
-                            ArchipelagoNotIncluded.netmon.session.SetGoalAchieved();
+                            inst.GoalComplete = true;
                         goto default;
                     case "space_race":
                         if (goal == "launch_rocket")
-                            ArchipelagoNotIncluded.netmon.session.SetGoalAchieved();
+                            inst.GoalComplete = true;
                         goto default;
                     case "thriving":
                         if (goal == "home_sweet_home")
-                            ArchipelagoNotIncluded.netmon.session.SetGoalAchieved();
+                            inst.GoalComplete = true;
                         goto default;
                     case "ReachedDistantPlanet":
                         if (goal == "great_escape")
-                            ArchipelagoNotIncluded.netmon.session.SetGoalAchieved();
+                            inst.GoalComplete = true;
                         goto default;
                     case "CollectedArtifacts":
                         if (goal == "cosmic_archaeology")
-                            ArchipelagoNotIncluded.netmon.session.SetGoalAchieved();
+                            inst.GoalComplete = true;
                         goto default;
                     default:
                         break;
@@ -378,9 +400,43 @@ namespace ArchipelagoNotIncluded
         {
             public static void Postfix(bool __result)
             {
-                if (ArchipelagoNotIncluded.info.goal == "monument" && __result)
-                    ArchipelagoNotIncluded.netmon.session.SetGoalAchieved();
+                if (ArchipelagoNotIncluded.info == null)
+                    return;
 
+                if (ArchipelagoNotIncluded.info.goal == "monument" && __result)
+                    APSaveData.Instance.GoalComplete = true;
+
+            }
+        }
+
+        [HarmonyPatch(typeof(ChemicalRefineryConfig))]
+        [HarmonyPatch(nameof(ChemicalRefineryConfig.ConfigureBuildingTemplate))]
+        public static class ChemicalRefineryConfig_Patch
+        {
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                CodeMatcher matcher = new CodeMatcher(instructions);
+                MethodInfo dbGet = AccessTools.Method(typeof(Db), nameof(Db.Get));
+                FieldInfo techItems = AccessTools.Field(typeof(TechItems), nameof(Db.TechItems));
+                FieldInfo superLiquids = AccessTools.Field(typeof(TechItem), nameof(Db.TechItems.superLiquids));
+                FieldInfo parentTechId = AccessTools.Field(typeof(TechItem), nameof(TechItem.parentTechId));
+
+                matcher.MatchStartForward(
+                        new CodeMatch(OpCodes.Call),
+                        new CodeMatch(OpCodes.Ldfld, techItems),
+                        new CodeMatch(OpCodes.Ldfld, superLiquids),
+                        new CodeMatch(OpCodes.Ldfld, parentTechId)
+                    )
+                    .Repeat(matcher =>
+                    {
+                        matcher.RemoveInstructions(4);
+                        matcher.Insert(new CodeInstruction(OpCodes.Ldstr, "Jobs"));
+                    },
+                    notFoundMessage =>
+                    {
+                        Debug.LogError($"No matches found: {notFoundMessage}");
+                    });
+                return matcher.InstructionEnumeration();
             }
         }
 
@@ -391,31 +447,30 @@ namespace ArchipelagoNotIncluded
             public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
             {
                 CodeMatcher matcher = new CodeMatcher(instructions);
-                MethodInfo techPurchased = AccessTools.Method(typeof(TechInstance), nameof(TechInstance.Purchased));
+                MethodInfo getInstance = AccessTools.PropertyGetter(typeof(Game), nameof(Game.Instance));
                 FieldInfo activeResearch = AccessTools.Field(typeof(Research), nameof(Research.activeResearch));
                 MethodInfo sendCheck = AccessTools.Method(typeof(Research_CheckBuyResearch_Patch), nameof(Research_CheckBuyResearch_Patch.SendArchipelagoCheck));
                 MethodInfo kmonoTrigger = AccessTools.Method(typeof(KMonoBehaviour), nameof(KMonoBehaviour.Trigger));
 
-                int startRemove = matcher.MatchStartForward( new CodeMatch(OpCodes.Callvirt, techPurchased) )
-                    .ThrowIfNotMatch($"Could not find entry point for CheckBuyResearch")
-                    .Advance(1)
-                    .InsertAndAdvance(
+                matcher.MatchStartForward( new CodeMatch(OpCodes.Call, getInstance) )
+                    .RemoveInstructions(6)
+                    .Insert(
                         new CodeInstruction(OpCodes.Ldarg_0),
                         new CodeInstruction(OpCodes.Ldfld, activeResearch),
                         new CodeInstruction(OpCodes.Call, sendCheck)
-                    ).Pos;
-
-                int endRemove = matcher.MatchStartForward(
-                    new CodeMatch(OpCodes.Callvirt, kmonoTrigger)
-                    ).Pos;
-
-                matcher.RemoveInstructionsInRange(startRemove, endRemove);
+                    );
 
                 return matcher.InstructionEnumeration();
             }
 
             static void SendArchipelagoCheck(TechInstance instance)
             {
+                if (ArchipelagoNotIncluded.info == null)
+                {
+                    Game.Instance.Trigger(-107300940, instance.tech);
+                    return;
+                }
+
                 char[] delimiters = { '<', '>' };
                 string name = instance.tech.Name.Split(delimiters)[2];
                 Debug.Log($"Name: {name}");
@@ -427,14 +482,14 @@ namespace ArchipelagoNotIncluded
                     modItems = ArchipelagoNotIncluded.AllModItems.FindAll(i => i.tech == name).Count;
                 Debug.Log($"Count: {defItems.Count} {modItems}");
                 int count = defItems.Count + modItems;
-                long[] locationIds = new long[count];
+                string[] locationNames = new string[count];
                 for (int i = 0; i < count; i++)
                 {
-                    Debug.Log($"Location: {name} - {i + 1}");
-                    long id = ArchipelagoNotIncluded.netmon.session.Locations.GetLocationIdFromName("Oxygen Not Included", $"{name} - {i + 1}");
-                    locationIds[i] = id;
+                    string fullLocationName = $"{name} - {i + 1}";
+                    Debug.Log($"Location: {fullLocationName} - {i + 1}");
+                    locationNames[i] = fullLocationName;
                 }
-                ArchipelagoNotIncluded.netmon.session.Locations.CompleteLocationChecks(locationIds);
+                ArchipelagoNotIncluded.AddLocationChecks(locationNames);
             }
         }
 
@@ -444,9 +499,12 @@ namespace ArchipelagoNotIncluded
         {
             public static void Postfix(TechItem __instance, ref bool __result)
             {
+                if (ArchipelagoNotIncluded.info == null)
+                    return;
+
                 if (isModItem(__instance.Id))
                     return;
-                __result = __result | CheckItemList(__instance);
+                __result = CheckItemList(__instance);
                 //__result = true;
             }
         }
@@ -457,9 +515,28 @@ namespace ArchipelagoNotIncluded
         {
             public static bool Prefix(TechItem __instance, ref bool __result)
             {
+                if (ArchipelagoNotIncluded.info == null)
+                    return true;
+
                 if (isModItem(__instance.Id))
                     return true;
                 __result = CheckItemList(__instance);
+                return false;
+            }
+        }
+
+        [HarmonyPatch(typeof(PlanBuildingToggle))]
+        [HarmonyPatch(nameof(PlanBuildingToggle.StandardDisplayFilter))]
+        public static class DisplayFilter_Patch
+        {
+            public static bool Prefix(PlanBuildingToggle __instance, ref bool __result)
+            {
+                if (ArchipelagoNotIncluded.info == null)
+                    return true;
+
+                if (isModItem(__instance.def.PrefabID))
+                    return true;
+                __result = CheckItemList(__instance.def.PrefabID) && (__instance.planScreen.ActiveCategoryToggleInfo == null || __instance.buildingCategory == (HashedString)__instance.planScreen.ActiveCategoryToggleInfo.userData);
                 return false;
             }
         }
@@ -470,10 +547,13 @@ namespace ArchipelagoNotIncluded
         {
             public static bool Prefix(TechItem __instance, ref bool __result)
             {
+                if (ArchipelagoNotIncluded.info == null)
+                    return true;
+
                 if (isModItem(__instance.Id))
                     return true;
                 //__result = true;
-                __result = __result | CheckItemList(__instance);
+                __result = CheckItemList(__instance);
                 return false;
             }
         }
@@ -498,6 +578,9 @@ namespace ArchipelagoNotIncluded
             }
             public static void Postfix(object __instance, MethodBase __originalMethod)
             {
+                if (ArchipelagoNotIncluded.info == null)
+                    return;
+
                 int eventid = 11390976;
                 switch (__instance)
                 {
@@ -552,20 +635,20 @@ namespace ArchipelagoNotIncluded
                 return false;
 
             //Debug.Log($"InternalName: {InternalName} {ArchipelagoNotIncluded.hadBionicDupe}");
-            if (ArchipelagoNotIncluded.hadBionicDupe && InternalName == "CraftingTable")
+            if (APSaveData.Instance.HadBionicDupe && InternalName == "CraftingTable")
                 return true;
 
             DefaultItem defItem = ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.internal_name == InternalName);
             ModItem modItem = ArchipelagoNotIncluded.AllModItems.Find(i => i.internal_name == InternalName);
             if (defItem != null)
             {
-                bool ItemFound = (bool)ArchipelagoNotIncluded.netmon?.session?.Items?.AllItemsReceived.Any<ItemInfo>(i => i.ItemDisplayName == defItem.name/* && i.Player.Name == ArchipelagoNotIncluded.netmon.SlotName*/);
+                bool ItemFound = APSaveData.Instance.LocalItemList.Contains(defItem.name);
                 //Debug.Log($"CheckItemList: {ItemFound}");
                 return ItemFound;
             }
             else if (modItem != null)
             {
-                bool ItemFound = (bool)ArchipelagoNotIncluded.netmon?.session?.Items?.AllItemsReceived.Any<ItemInfo>(i => i.ItemDisplayName == modItem.name/* && i.Player.Name == ArchipelagoNotIncluded.netmon.SlotName*/);
+                bool ItemFound = APSaveData.Instance.LocalItemList.Contains(modItem.name);
                 //Debug.Log($"CheckItemList: {ItemFound}");
                 return ItemFound;
             }
@@ -589,7 +672,7 @@ namespace ArchipelagoNotIncluded
             char[] delimiters = { '<', '>' };
             string name = ArchipelagoNotIncluded.CleanName(TechItem.Name);
 
-            if (ArchipelagoNotIncluded.hadBionicDupe && TechItem.Id == "CraftingTable")
+            if (APSaveData.Instance.HadBionicDupe && TechItem.Id == "CraftingTable")
                 return true;
 
             /*if (ArchipelagoNotIncluded.session.Items.AllItemsReceived.SingleOrDefault(i => i.ItemDisplayName == name) != null)
@@ -603,7 +686,7 @@ namespace ArchipelagoNotIncluded
                 return false;
             }*/
             //return true;
-            return (bool)ArchipelagoNotIncluded.netmon?.session?.Items?.AllItemsReceived.Any<ItemInfo>(i => i.ItemDisplayName == name/* && i.Player.Name == ArchipelagoNotIncluded.netmon.SlotName*/);
+            return APSaveData.Instance.LocalItemList.Contains(name);
             /*if (ArchipelagoNotIncluded.netmon?.session?.Items?.AllItemsReceived == null)
                 return false;
             if (ArchipelagoNotIncluded.netmon?.session?.Items?.AllItemsReceived.Count() == 0)
@@ -621,7 +704,7 @@ namespace ArchipelagoNotIncluded
         {
             public static bool Prefix()
             {
-                ArchipelagoNotIncluded.hadBionicDupe = true;
+                APSaveData.Instance.HadBionicDupe = true;
                 return false;
             }
         }
@@ -634,11 +717,83 @@ namespace ArchipelagoNotIncluded
             {
                 if (ArchipelagoNotIncluded.Options.CreateModList)
                     return;
+                if (APSaveData.Instance.APSeedInfo != null)
+                    ArchipelagoNotIncluded.info = APSaveData.Instance.APSeedInfo;
+
+                List<PlanScreen.PlanInfo> storage = new List<PlanScreen.PlanInfo>();
+                /*foreach (PlanScreen.PlanInfo info in TUNING.BUILDINGS.PLANORDER)
+                {
+                    Debug.Log($"{info.category}: ");
+                    foreach (KeyValuePair<string, string> kvp in info.buildingAndSubcategoryData)
+                    {
+                        Debug.Log($"{kvp.Key}: {kvp.Value}");
+                    }
+                }*/
+                //foreach (PlanScreen.PlanInfo key in TUNING.BUILDINGS.PLANORDER)
+                //storage.Add(new PlanScreen.PlanInfo(key.category, key.hideIfNotResearched, key.data, ));
+                if (ArchipelagoNotIncluded.info == null)
+                    return;
+
+                foreach (DefaultItem item in ArchipelagoNotIncluded.AllDefaultItems)
+                {
+                    //Debug.Log(info.spaced_out);
+                    //Debug.Log(item.internal_tech + " " + item.internal_tech_base);
+                    string InternalTech = ArchipelagoNotIncluded.info.spaced_out ? item.internal_tech : item.internal_tech_base;
+                    switch (item.version)
+                    {
+                        case "BaseOnly":
+                            if (ArchipelagoNotIncluded.info.spaced_out)
+                                break;
+                            goto default;
+                        case "SpacedOut":
+                            if (!ArchipelagoNotIncluded.info.spaced_out)
+                                break;
+                            goto default;
+                        case "Frosty":
+                            if (!ArchipelagoNotIncluded.info.frosty)
+                                break;
+                            goto default;
+                        case "Bionic":
+                            if (!ArchipelagoNotIncluded.info.bionic)
+                                break;
+                            goto default;
+                        default:
+                            ArchipelagoNotIncluded.allTechList.Add(item.internal_name, "uncategorized");
+                            break;
+                    }
+                    if (ArchipelagoNotIncluded.Sciences.Count > 0 && ArchipelagoNotIncluded.Sciences?.TryGetValue(InternalTech, out List<string> techList) == true)
+                    {
+                        if (techList == null)
+                            techList = new List<string>();
+                        techList.Add(item.internal_name);
+                    }
+                    else
+                    {
+                        if (InternalTech == "None")
+                            continue;
+                        ArchipelagoNotIncluded.Sciences[InternalTech] = new List<string>
+                        {
+                            item.internal_name
+                        };
+                    }
+                }
+
+                if (ArchipelagoNotIncluded.AllModItems != null)
+                {
+                    foreach (ModItem item in ArchipelagoNotIncluded.AllModItems)
+                    {
+                        if (ArchipelagoNotIncluded.info?.apModItems.Contains(item.internal_name) == true)
+                        {
+                            item.randomized = true;
+                            ArchipelagoNotIncluded.allTechList.Add(item.internal_name, "uncategorized");
+                        }
+                    }
+                }
 
                 Techs instance = Db.Get().Techs;
 
                 Dictionary<string, int> idCounts = new Dictionary<string, int>();
-                foreach (KeyValuePair<string, List<string>> pair in ArchipelagoNotIncluded.info?.technologies)
+                foreach (KeyValuePair<string, List<string>> pair in ArchipelagoNotIncluded.info.technologies)
                 {
                     Debug.Log($"Generating research for {pair.Key}, ({pair.Value.Join(s => s, ",")})");
                     Tech tech = instance.TryGet(pair.Key);
@@ -713,8 +868,19 @@ namespace ArchipelagoNotIncluded
                     //ArchipelagoNotIncluded.TechList.Add(tech.Id, new List<string>(tech.unlockedItemIDs));
                     //new Tech(pair.Key, pair.Value.ToList(), __instance);
                 }
+                /*foreach (string item in ArchipelagoNotIncluded.allTechList.Keys)
+                {
+                    ModUtil.AddBuildingToPlanScreen(TUNING.BUILDINGS.PLANSUBCATEGORYSORTING[item], item);
+                }
 
-                int apItems = ArchipelagoNotIncluded.netmon.session.Items.AllItemsReceived.Count;
+                foreach (KeyValuePair<Tag, HashedString> kvp in PlanScreen.Instance.tagCategoryMap)
+                {
+                    Debug.Log($"{kvp.Key}: {kvp.Value}");
+                }*/
+                //PlanScreen.Instance.tagCategoryMap.Clear();
+                //foreach (KeyValuePair<Tag, HashedString> keyValuePair in storage)
+                //    PlanScreen.Instance.tagCategoryMap.Add(keyValuePair.Key, keyValuePair.Value);
+                int apItems = APSaveData.Instance.LocalItemList.Count;
                 Debug.Log($"apItems: {apItems}, lastItem: {ArchipelagoNotIncluded.lastItem}");
                 /*if (apItems == 0)
                     return;
@@ -722,11 +888,21 @@ namespace ArchipelagoNotIncluded
                 if (apItems == ArchipelagoNotIncluded.lastItem)
                     return;*/
 
-                ArchipelagoNotIncluded.netmon.UpdateAllItems(true);
+                ArchipelagoNotIncluded.netmon.ProcessItemQueue();
             }
         }
 
-        [HarmonyPatch(typeof(SaveLoader))]
+        [HarmonyPatch(typeof(SaveGame))]
+        [HarmonyPatch(nameof(SaveGame.OnPrefabInit))]
+        public class SaveGame_Patch
+        {
+            public static void Postfix(SaveGame __instance)
+            {
+                __instance.gameObject.AddOrGet<APSaveData>();
+            }
+        }
+
+        /*[HarmonyPatch(typeof(SaveLoader))]
         [HarmonyPatch(nameof(SaveLoader.Save), new[] { typeof(BinaryWriter) })]
         public class Save_Patch
         {
@@ -767,7 +943,7 @@ namespace ArchipelagoNotIncluded
                 }
                 catch { }
             }
-        }
+        }*/
 
         
 
@@ -777,11 +953,15 @@ namespace ArchipelagoNotIncluded
         {
             public static void Postfix(BuildingDef __instance, ref bool __result)
             {
+                if (ArchipelagoNotIncluded.info == null)
+                    return;
                 //Debug.Log("Found update method");
                 //Debug.Log(__instance.PrefabID);
                 if (isModItem(__instance.PrefabID))
                     return;
-                __result = __result & CheckItemList(__instance.PrefabID);
+                __result = CheckItemList(__instance.PrefabID);
+                //if (__result)
+                //    Debug.Log($"{__instance.PrefabID} isAvailable");
             }
         }
 
@@ -825,6 +1005,8 @@ namespace ArchipelagoNotIncluded
         {
             public static bool Prefix(PlanScreen __instance, BuildingDef def, ref PlanScreen.RequirementsState __result)
             {
+                if (ArchipelagoNotIncluded.info == null)
+                    return true;
                 if ((UnityEngine.Object)def == (UnityEngine.Object)null)
                     return true;
                 if (__instance._buildableStatesByID.ContainsKey(def.PrefabID) && __instance._buildableStatesByID[def.PrefabID] == PlanScreen.RequirementsState.Complete)
@@ -849,6 +1031,9 @@ namespace ArchipelagoNotIncluded
         {
             public static bool Prefix(ComplexRecipe __instance, ref bool __result)
             {
+                if (ArchipelagoNotIncluded.info == null)
+                    return true;
+
                 string search = null;
                 foreach (ComplexRecipe.RecipeElement element in __instance.results)
                 {
@@ -876,132 +1061,142 @@ namespace ArchipelagoNotIncluded
             }
         }
 
-        /*[HarmonyPatch(typeof(Techs))]
-        [HarmonyPatch(nameof(Techs.Load))]
-        public static class Techs_Load_Patch
+        [HarmonyPatch(typeof(Db))]
+        [HarmonyPatch(nameof(Db.Initialize))]
+        public static class Initialize_Patch
         {
-            public static MethodInfo TargetMethod()
+            public static void Postfix(Db __instance)
             {
-                return AccessTools.Method(typeof(ResourceLoader<ResourceTreeNode>), "Load", new Type[] { typeof(TextAsset) });
-                return typeof(ResourceTreeLoader<>).GetMethod("Load", new Type[] { typeof(TextAsset) });
+                ArchipelagoNotIncluded.ArchipelagoConnected = new("ArchipelagoConnected", __instance.StatusItemCategories, "ArchipelagoConnected");
             }
-            public static bool Prefix(Techs __instance, List<List<Tuple<string, float>>> ___TECH_TIERS)
-            {
-                TextAsset tree_file = Db.Get().researchTreeFileExpansion1;
-                ResourceTreeLoader<ResourceTreeNode> resourceTreeLoader = new ResourceTreeLoader<ResourceTreeNode>(tree_file);
-                List<TechTreeTitle> techTreeTitleList = new List<TechTreeTitle>();
-                for (int idx = 0; idx < Db.Get().TechTreeTitles.Count; ++idx)
-                    techTreeTitleList.Add(Db.Get().TechTreeTitles[idx]);
-                techTreeTitleList.Sort((Comparison<TechTreeTitle>)((a, b) => a.center.y.CompareTo(b.center.y)));
+        }
 
-                ResourceTreeNode newnode = new ResourceTreeNode
+            /*[HarmonyPatch(typeof(Techs))]
+            [HarmonyPatch(nameof(Techs.Load))]
+            public static class Techs_Load_Patch
+            {
+                public static MethodInfo TargetMethod()
                 {
-                    Id = "_TestId",
-                    Name = "Test",
-                    nodeX = 200.0f,
-                    nodeY = -5000f,
-                    height = 72f,
-                    width = 250f
-                };
-                newnode.references.Add(new ResourceTreeNode
+                    return AccessTools.Method(typeof(ResourceLoader<ResourceTreeNode>), "Load", new Type[] { typeof(TextAsset) });
+                    return typeof(ResourceTreeLoader<>).GetMethod("Load", new Type[] { typeof(TextAsset) });
+                }
+                public static bool Prefix(Techs __instance, List<List<Tuple<string, float>>> ___TECH_TIERS)
                 {
-                    Id = "AtmoSuit",
-                    Name = "Test",
-                    nodeX = 200.0f,
-                    nodeY = 45f,
-                    height = 72f,
-                    width = 250f
-                });
-                resourceTreeLoader.resources.Add(newnode);
-                foreach (ResourceTreeNode node in (ResourceLoader<ResourceTreeNode>)resourceTreeLoader)
-                {
-                    //Debug.Log(GetLogFor(node));
-                    int count = 0;
-                    foreach (ResourceTreeNode refNode in node.references)
+                    TextAsset tree_file = Db.Get().researchTreeFileExpansion1;
+                    ResourceTreeLoader<ResourceTreeNode> resourceTreeLoader = new ResourceTreeLoader<ResourceTreeNode>(tree_file);
+                    List<TechTreeTitle> techTreeTitleList = new List<TechTreeTitle>();
+                    for (int idx = 0; idx < Db.Get().TechTreeTitles.Count; ++idx)
+                        techTreeTitleList.Add(Db.Get().TechTreeTitles[idx]);
+                    techTreeTitleList.Sort((Comparison<TechTreeTitle>)((a, b) => a.center.y.CompareTo(b.center.y)));
+
+                    ResourceTreeNode newnode = new ResourceTreeNode
                     {
-                        count++;
-                        //Debug.Log($"{node.Id} ref #{count}: {GetLogFor(refNode)}");
-                    }
-                    count = 0;
-                    foreach (ResourceTreeNode.Edge edge in node.edges)
+                        Id = "_TestId",
+                        Name = "Test",
+                        nodeX = 200.0f,
+                        nodeY = -5000f,
+                        height = 72f,
+                        width = 250f
+                    };
+                    newnode.references.Add(new ResourceTreeNode
                     {
-                        count++;
-                        //Debug.Log($"{node.Id} edge #{count}: {GetLogFor(edge)}");
-                    }
-                    //Debug.Log(GetLogFor(node.edges));
-                    if (!string.Equals(node.Id.Substring(0, 1), "_"))
+                        Id = "AtmoSuit",
+                        Name = "Test",
+                        nodeX = 200.0f,
+                        nodeY = 45f,
+                        height = 72f,
+                        width = 250f
+                    });
+                    resourceTreeLoader.resources.Add(newnode);
+                    foreach (ResourceTreeNode node in (ResourceLoader<ResourceTreeNode>)resourceTreeLoader)
                     {
-                        Tech tech1 = __instance.TryGet(node.Id);
-                        if (tech1 != null)
+                        //Debug.Log(GetLogFor(node));
+                        int count = 0;
+                        foreach (ResourceTreeNode refNode in node.references)
                         {
-                            string categoryID1 = "";
-                            for (int index = 0; index < techTreeTitleList.Count; ++index)
+                            count++;
+                            //Debug.Log($"{node.Id} ref #{count}: {GetLogFor(refNode)}");
+                        }
+                        count = 0;
+                        foreach (ResourceTreeNode.Edge edge in node.edges)
+                        {
+                            count++;
+                            //Debug.Log($"{node.Id} edge #{count}: {GetLogFor(edge)}");
+                        }
+                        //Debug.Log(GetLogFor(node.edges));
+                        if (!string.Equals(node.Id.Substring(0, 1), "_"))
+                        {
+                            Tech tech1 = __instance.TryGet(node.Id);
+                            if (tech1 != null)
                             {
-                                if ((double)techTreeTitleList[index].center.y >= (double)node.center.y)
+                                string categoryID1 = "";
+                                for (int index = 0; index < techTreeTitleList.Count; ++index)
                                 {
-                                    categoryID1 = techTreeTitleList[index].Id;
-                                    break;
-                                }
-                            }
-                            tech1.SetNode(node, categoryID1);
-                            foreach (ResourceTreeNode reference in node.references)
-                            {
-                                Tech tech2 = __instance.TryGet(reference.Id);
-                                if (tech2 != null)
-                                {
-                                    string categoryID2 = "";
-                                    for (int index = 0; index < techTreeTitleList.Count; ++index)
+                                    if ((double)techTreeTitleList[index].center.y >= (double)node.center.y)
                                     {
-                                        if ((double)techTreeTitleList[index].center.y >= (double)node.center.y)
-                                        {
-                                            categoryID2 = techTreeTitleList[index].Id;
-                                            break;
-                                        }
+                                        categoryID1 = techTreeTitleList[index].Id;
+                                        break;
                                     }
-                                    tech2.SetNode(reference, categoryID2);
-                                    tech2.requiredTech.Add(tech1);
-                                    tech1.unlockedTech.Add(tech2);
+                                }
+                                tech1.SetNode(node, categoryID1);
+                                foreach (ResourceTreeNode reference in node.references)
+                                {
+                                    Tech tech2 = __instance.TryGet(reference.Id);
+                                    if (tech2 != null)
+                                    {
+                                        string categoryID2 = "";
+                                        for (int index = 0; index < techTreeTitleList.Count; ++index)
+                                        {
+                                            if ((double)techTreeTitleList[index].center.y >= (double)node.center.y)
+                                            {
+                                                categoryID2 = techTreeTitleList[index].Id;
+                                                break;
+                                            }
+                                        }
+                                        tech2.SetNode(reference, categoryID2);
+                                        tech2.requiredTech.Add(tech1);
+                                        tech1.unlockedTech.Add(tech2);
+                                    }
                                 }
                             }
                         }
                     }
-                }
-                foreach (Tech resource in __instance.resources)
-                {
-                    resource.tier = Techs.GetTier(resource);
-                    foreach (Tuple<string, float> tuple in ___TECH_TIERS[resource.tier])
+                    foreach (Tech resource in __instance.resources)
                     {
-                        if (!resource.costsByResearchTypeID.ContainsKey(tuple.first))
-                            resource.costsByResearchTypeID.Add(tuple.first, tuple.second);
+                        resource.tier = Techs.GetTier(resource);
+                        foreach (Tuple<string, float> tuple in ___TECH_TIERS[resource.tier])
+                        {
+                            if (!resource.costsByResearchTypeID.ContainsKey(tuple.first))
+                                resource.costsByResearchTypeID.Add(tuple.first, tuple.second);
+                        }
                     }
+                    for (int idx = __instance.Count - 1; idx >= 0; --idx)
+                    {
+                        if (!((Tech)__instance.GetResource(idx)).FoundNode)
+                            __instance.Remove(__instance.GetResource(idx));
+                    }
+                    return false;
                 }
-                for (int idx = __instance.Count - 1; idx >= 0; --idx)
                 {
-                    if (!((Tech)__instance.GetResource(idx)).FoundNode)
-                        __instance.Remove(__instance.GetResource(idx));
+                    //Debug.Log("Found update method");
+                    //Debug.Log(___def.PrefabID);
+                    //if (!CheckItemList(___def.PrefabID))
+                    //requirementsState = PlanScreen.RequirementsState.Invalid;
+
+                    ResourceTreeNode node = new ResourceTreeNode
+                    {
+                        Id = "TestId",
+                        Name = "Test",
+                        nodeX = 200.0f,
+                        nodeY = 4500f,
+                        height = 72f,
+                        width = 250f
+                    };
+                    ___resources.Add(node);
+                    Debug.Log("Code is ran");
                 }
-                return false;
-            }
-            {
-                //Debug.Log("Found update method");
-                //Debug.Log(___def.PrefabID);
-                //if (!CheckItemList(___def.PrefabID))
-                //requirementsState = PlanScreen.RequirementsState.Invalid;
-                
-                ResourceTreeNode node = new ResourceTreeNode
-                {
-                    Id = "TestId",
-                    Name = "Test",
-                    nodeX = 200.0f,
-                    nodeY = 4500f,
-                    height = 72f,
-                    width = 250f
-                };
-                ___resources.Add(node);
-                Debug.Log("Code is ran");
-            }
-        }*/
-        public static string GetLogFor(object objectToGetStateOf)
+            }*/
+            public static string GetLogFor(object objectToGetStateOf)
         {
             if (objectToGetStateOf == null)
             {
