@@ -111,7 +111,7 @@ namespace ArchipelagoNotIncluded
                         Password = Password,
                         ItemsHandling = Flags,
                         RequestSlotData = true,
-                        Tags = new string[] { "APNetworkMonitor" },
+                        Tags = new string[] { },
                         Version = new NetworkVersion { Major = 0, Minor = 5, Build = 1 }
                     });
                     break;
@@ -334,26 +334,63 @@ namespace ArchipelagoNotIncluded
                 if (!ArchipelagoNotIncluded.allTechList.ContainsKey(itemId))
                     itemTech = Db.Get().Techs.TryGetTechForTechItem(itemId);
             }
+            if (itemTech != null)
+            {
+                Game.Instance.Trigger(11390976, (object)itemTech);
+                //PlanScreen.Instance.RefreshBuildableStates(true);
+                //PlanScreen.Instance.ForceRefreshAllBuildingToggles();
+            }
             BuildingDef buildingDef = Assets.GetBuildingDef(itemId);
             if (buildingDef != null)
             {
                 PlanScreen.Instance.AddResearchedBuildingCategory(buildingDef);
-
-                HashSet<HashedString> hashSet = new HashSet<HashedString>();
+                PlanScreen.Instance.RefreshBuildableStates(true);
+                /*PlanScreen.Instance.BuildButtonList();
+                PlanScreen.Instance.ForceUpdateAllCategoryToggles();
+                PlanScreen.Instance.SetCategoryButtonState();*/
+                UpdateBuildMenu(buildingDef);
+                /*HashSet<HashedString> hashSet = new HashSet<HashedString>();
                 if (BuildMenu.Instance != null)
                 {
                     HashedString hashedString = BuildMenu.Instance.tagCategoryMap[(buildingDef as BuildingDef).Tag];
                     hashSet.Add(hashedString);
                     BuildMenu.Instance.AddParentCategories(hashedString, hashSet);
                 }
+                else
+                {
+                    GameScheduler.Instance.Schedule("RetryBuildMenu", 30f, (object data) =>
+                    {
+                        foreach (string item in APSaveData.Instance.LocalItemList)
+                            UpdateTechItem(item);
+                    });
+                }*/
             }
             else
                 Debug.Log($"Error: BuildingDef not found for: {itemId}");
-            if (itemTech != null)
+        }
+
+        private void UpdateBuildMenu(BuildingDef buildingDef)
+        {
+            if (BuildMenu.Instance == null)
             {
-                Game.Instance.Trigger(11390976, (object)itemTech);
-                //PlanScreen.Instance.RefreshBuildableStates(true);
-                //PlanScreen.Instance.ForceRefreshAllBuildingToggles();
+                GameScheduler.Instance.Schedule("RetryBuildMenu", 5f, (object data) =>
+                {
+                    UpdateBuildMenu(buildingDef);
+                });
+                return;
+            }
+            HashedString hashedString = BuildMenu.Instance.tagCategoryMap[buildingDef.Tag];
+            HashSet<HashedString> hashSet = new HashSet<HashedString>();
+            hashSet.Add(hashedString);
+            BuildMenu.Instance.AddParentCategories(hashedString, hashSet);
+            BuildMenuCategoriesScreen categoriesScreen = BuildMenu.Instance.GetComponent<BuildMenuCategoriesScreen>();
+            if (categoriesScreen != null)
+            {
+                categoriesScreen.UpdateButtonStates();
+            }
+            else
+            {
+                Debug.Log("BuildMenuCategoriesScreen not found, retrying in 5 seconds");
             }
         }
 

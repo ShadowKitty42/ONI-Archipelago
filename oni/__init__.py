@@ -407,7 +407,7 @@ class ONIWorld(World):
         if self.options.resource_checks:
             planet = self.options.cluster.current_key
             if self.base_only:
-                planet = self.options.cluster_base.current_key
+                planet = f"{self.options.cluster_base.current_key}_base"
             if planet in resource_locations:
                 for resource in resource_locations[planet]["basic"]:
                     basic_locations.append(f"Discover Resource: {resource}")

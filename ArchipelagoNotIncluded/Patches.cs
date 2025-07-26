@@ -31,6 +31,7 @@ using UnityEngine.Device;
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net;
 using Newtonsoft.Json.Converters;
+using Klei.AI;
 
 namespace ArchipelagoNotIncluded
 {
@@ -234,10 +235,9 @@ namespace ArchipelagoNotIncluded
         [HarmonyPatch(nameof(DiscoveredResources.Discover), new[] { typeof(Tag), typeof(Tag) })]
         public static class Discover_Patch
         {
-            public static bool Prefix(DiscoveredResources __instance, out int __state)
+            public static void Prefix(DiscoveredResources __instance, out int __state)
             {
                 __state = __instance.newDiscoveries.Count;
-                return true;
             }
 
             public static void Postfix(DiscoveredResources __instance, Tag tag, int __state)
@@ -439,6 +439,32 @@ namespace ArchipelagoNotIncluded
                 return matcher.InstructionEnumeration();
             }
         }
+
+        /*[HarmonyPatch(typeof(GameplaySeasonInstance), nameof(GameplaySeasonInstance.StartEvent))]
+        public static class GameplaySeasonInstance_StartEvent_Patch
+        {
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                CodeMatcher matcher = new CodeMatcher(instructions);
+                MethodInfo mathMin = AccessTools.Method(typeof(Mathf), nameof(Mathf.Min), new[] { typeof(Int32), typeof(Int32) } );
+                MethodInfo getMaxExclusive = AccessTools.Method(typeof(GameplaySeasonInstance_StartEvent_Patch), nameof(GameplaySeasonInstance_StartEvent_Patch.GetMaxExclusive));
+
+                matcher.MatchStartForward(
+                        new CodeMatch(OpCodes.Ldc_I4_5),
+                        new CodeMatch(OpCodes.Call, mathMin))
+                    .RemoveInstructions(2)
+                    .Insert(
+                        new CodeInstruction(OpCodes.Call, getMaxExclusive)
+                    );
+                return matcher.InstructionEnumeration();
+            }
+
+            static int GetMaxExclusive(int count)
+            {
+                bool isSingleCluster = CustomGameSettings.Instance.GetCurrentClusterLayout()?.clusterTags.Contains("Omnificia_SinglePlanetoid") ?? false;
+                return isSingleCluster ? 10 : Mathf.Min(count, 5);
+            }
+        }*/
 
         [HarmonyPatch(typeof(Research))]
         [HarmonyPatch(nameof(Research.CheckBuyResearch))]
@@ -709,6 +735,21 @@ namespace ArchipelagoNotIncluded
             }
         }
 
+        /*[HarmonyPriority(Priority.First)]
+        [HarmonyPatch(typeof(ArtifactAnalysisStationWorkable), nameof(ArtifactAnalysisStationWorkable.YieldPayload))]
+        public static class ArtifactAnalysisStationWorkable_YieldPayload_Patch
+        {
+            public static bool Prefix(ArtifactAnalysisStationWorkable __instance, SpaceArtifact artifact)
+            {
+                GameUtil.KInstantiate(Assets.GetPrefab("GeneShufflerRecharge"), __instance.statesInstance.master.transform.position + __instance.finishedArtifactDropOffset, Grid.SceneLayer.Ore, null, 0).SetActive(true);
+                int num = Mathf.FloorToInt(artifact.GetArtifactTier().payloadDropChance * 20f);
+                for (int i = 0; i < num; i++)
+                {
+                    GameUtil.KInstantiate(Assets.GetPrefab("OrbitalResearchDatabank"), __instance.statesInstance.master.transform.position + __instance.finishedArtifactDropOffset, Grid.SceneLayer.Ore, null, 0).SetActive(true);
+                }
+                return false;
+            }
+        }*/
         //[HarmonyPatch(typeof(SaveLoader), nameof(SaveLoader.Load), new[] {typeof(IReader)})]
         [HarmonyPatch(typeof(Game), nameof(Game.OnSpawn))]
         public static class SaveLoader_Load_Patch
@@ -888,6 +929,18 @@ namespace ArchipelagoNotIncluded
                 if (apItems == ArchipelagoNotIncluded.lastItem)
                     return;*/
 
+                //ArchipelagoNotIncluded.netmon.ProcessItemQueue();
+            }
+        }
+
+        [HarmonyPatch(typeof(PlanScreen))]
+        [HarmonyPatch(nameof(PlanScreen.OnSpawn))]
+        public static class PlanScreen_OnSpawn_Patch
+        {
+            public static void Postfix()
+            {
+                if (ArchipelagoNotIncluded.info == null)
+                    return;
                 ArchipelagoNotIncluded.netmon.ProcessItemQueue();
             }
         }
@@ -1006,25 +1059,123 @@ namespace ArchipelagoNotIncluded
             public static bool Prefix(PlanScreen __instance, BuildingDef def, ref PlanScreen.RequirementsState __result)
             {
                 if (ArchipelagoNotIncluded.info == null)
+                {
+                    //Debug.Log("ArchipelagoNotIncluded.info is null in GetBuildableState_Patch");
                     return true;
+                }
                 if ((UnityEngine.Object)def == (UnityEngine.Object)null)
+                {
+                    //Debug.Log("GetBuildableState called with null def");
                     return true;
+                }
                 if (__instance._buildableStatesByID.ContainsKey(def.PrefabID) && __instance._buildableStatesByID[def.PrefabID] == PlanScreen.RequirementsState.Complete)
                 {
+                    //Debug.Log("GetBuildableState found existing Complete state for " + def.PrefabID);
                     __result = PlanScreen.RequirementsState.Complete;
                     return false;
                 }
                 if (CheckItemList(def.PrefabID))
                 {
+                    //Debug.Log("GetBuildableState found Complete state for " + def.PrefabID);
                     if (__instance._buildableStatesByID.ContainsKey(def.PrefabID))
                         __instance._buildableStatesByID[def.PrefabID] = PlanScreen.RequirementsState.Complete;
                     else
                         __instance._buildableStatesByID.Add(def.PrefabID, PlanScreen.RequirementsState.Complete);
+                    __result = PlanScreen.RequirementsState.Complete;
+                    return false;
                 }
                 return true;
             }
         }
 
+        /*[HarmonyPatch(typeof(BuildingConfigManager))]
+        [HarmonyPatch(nameof(BuildingConfigManager.RegisterBuilding))]
+        public static class RegisterBuilding_Patch
+        {
+            public static void Postfix(Dictionary<IBuildingConfig, BuildingDef> ___configTable, IBuildingConfig config)
+            {
+                if (ArchipelagoNotIncluded.info == null)
+                    return;
+
+                ___configTable[config].PrefabID;
+                config.GetType().Assembly;
+            }
+        }*/
+
+        [HarmonyPatch(typeof(TechItems))]
+        [HarmonyPatch(nameof(TechItems.IsTechItemComplete))]
+        public static class IsTechItemComplete_Patch
+        {
+            /*public static bool Prefix(TechItems __instance, string id, ref bool __result)
+            {
+                if (ArchipelagoNotIncluded.info == null)
+                    return true;
+                if (isModItem(id))
+                    return true;
+                //Debug.Log($"IsTechItemComplete {__result} for {id}");
+                //__result = CheckItemList(techItemId);
+                return true;
+            }*/
+        }
+
+        [HarmonyPatch(typeof(PlanScreen))]
+        [HarmonyPatch(nameof(PlanScreen.GetBuildableStateForDef))]
+        public static class GetBuildableStateForDef_Patch
+        {
+            /*public static void Postfix(PlanScreen __instance, BuildingDef def, ref PlanScreen.RequirementsState __result)
+            {
+                if (ArchipelagoNotIncluded.info == null)
+                {
+                    Debug.Log("ArchipelagoNotIncluded.info is null in GetBuildableStateForDef_Patch");
+                    return;
+                }
+                if (def == null)
+                {
+                    Debug.Log("GetBuildableStateForDef called with null def");
+                    return;
+                }
+                if (__result.ToString() != "Invalid")
+                    Debug.Log($"GetBuildableStateForDef {__result.ToString()} for {def.PrefabID} - {def.Name}");
+                //__result = CheckItemList(def.PrefabID);
+                //return;
+            }*/
+        }
+
+        [HarmonyPatch(typeof(PlanScreen), nameof(PlanScreen.SetCategoryButtonState))]
+        public class PlanScreen_SetCategoryButtonState_Patch
+        {
+            /*public static void Postfix(PlanScreen __instance)
+            {
+                foreach (var toggleEntry in __instance.toggleEntries)
+                {
+                    if (toggleEntry.toggleInfo.toggle.gameObject.activeInHierarchy)
+                    {
+                        toggleEntry.toggleInfo.toggle.fgImage.transform.Find("ResearchIcon").gameObject.SetActive(false);
+                        ImageToggleState.State newState = __instance.activeCategoryInfo == null || toggleEntry.toggleInfo.userData != __instance.activeCategoryInfo.userData ? ImageToggleState.State.Inactive : ImageToggleState.State.Active;
+                        foreach (ImageToggleState toggleImage in toggleEntry.toggleImages)
+                        {
+                            toggleImage.SetState(newState);
+                        }
+                        __instance.CategoryInteractive[toggleEntry.toggleInfo] = true;
+                    }
+                }
+            }*/
+        }
+
+        [HarmonyPatch(typeof(PlanScreen.ToggleEntry))]
+        [HarmonyPatch(nameof(PlanScreen.ToggleEntry.AreAnyRequiredTechItemsAvailable))]
+        public static class AreAnyRequiredTechItemsAvailable_Patch
+        {
+            public static bool Prefix(PlanScreen.ToggleEntry __instance, ref bool __result)
+            {
+                if (ArchipelagoNotIncluded.info == null)
+                    return true;
+                
+                __result = true;
+                return false;
+            }
+        }
+        
         [HarmonyPatch(typeof(ComplexRecipe))]
         [HarmonyPatch(nameof(ComplexRecipe.IsRequiredTechUnlocked))]
         public static class IsRequiredTechUnlocked_Patch
@@ -1051,6 +1202,8 @@ namespace ArchipelagoNotIncluded
                         case string x when x.Contains("Oxygen"):
                             search = "OxygenMask";
                             break;
+                        default:
+                            return true;
                     }
                 }
                 if (!String.IsNullOrEmpty(search) && CheckItemList(search))

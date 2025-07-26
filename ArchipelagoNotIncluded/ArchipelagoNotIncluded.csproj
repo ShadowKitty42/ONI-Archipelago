@@ -3,7 +3,7 @@
   <!-- General Package Properties -->
   <PropertyGroup>
     <PackageId>ArchipelagoNotIncluded</PackageId>
-    <Version>0.9.3</Version>
+    <Version>0.9.4</Version>
     <Authors>ShadowKitty42</Authors>
     <Copyright>$(AssemblyCopyright)</Copyright>
     <RepositoryUrl>https://github.com/ShadowKitty42/ONI-Archipelago</RepositoryUrl>
@@ -144,12 +144,6 @@
   </ItemGroup>
 
 
-  <ItemGroup>
-    <PackageReference Update="ILRepack.Lib.MSBuild.Task" Version="2.0.34.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
   <PropertyGroup>
     <LangVersion>preview</LangVersion>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>

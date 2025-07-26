@@ -41,7 +41,8 @@ namespace ArchipelagoNotIncluded
         public static ArchipelagoNotIncluded Instance { get; private set; } = null;
 
         //public KaitoKid.ArchipelagoUtilities.Net.Interfaces.ILogger logger;
-        public static bool cheatmode = true;
+        public static bool cheatmode = false;
+        public static bool devmode = false;
         public static bool skipUnlockedItems = false;
         public static bool AllowResourceChecks = false;
 
@@ -53,6 +54,20 @@ namespace ArchipelagoNotIncluded
 
         public static DirectoryInfo modDirectory = null;
         internal static ANIOptions Options {  get; private set; }
+        /*public static ANIOptions Options
+        {
+            get
+            {
+                if (Options == null)
+                    Options = POptions.ReadSettings<ANIOptions>() ?? new ANIOptions();
+                return Options;
+            }
+            protected set
+            {
+                if (Options != null)
+                    Options = value;
+            }
+        }*/
         public static APSeedInfo info = null;
         public static List<KeyValuePair<string, string>> apItems = new List<KeyValuePair<string, string>>();
         public static List<DefaultItem> AllDefaultItems = new List<DefaultItem>();
@@ -215,7 +230,7 @@ namespace ArchipelagoNotIncluded
                     continue;
                 }
             }
-            modDirectory = new DirectoryInfo(modItemsPath);
+            /*modDirectory = new DirectoryInfo(modItemsPath);
             foreach (FileInfo jsonFile in modDirectory.EnumerateFiles("*.json"))
             {
                 try
@@ -234,7 +249,7 @@ namespace ArchipelagoNotIncluded
                     Debug.LogWarning($"Failed to parse JSON file {jsonFile.FullName}");
                     continue;
                 }
-            }
+            }*/
 
             base.OnLoad(harmony);
 
@@ -244,10 +259,58 @@ namespace ArchipelagoNotIncluded
                 Debug.Log($"Scene: {scene.name}");
                 if (scene.name == "backend")
                 {
+                    List<TechItem> newTechs = new List<TechItem>();
+                    foreach (KeyValuePair<IBuildingConfig, BuildingDef> kvp in BuildingConfigManager.Instance.configTable)
+                    {
+                        TechItem techItem = Db.Get().TechItems.TryGet(kvp.Value.PrefabID);
+                        string assembly = kvp.Key.GetType().Assembly.GetName().Name;
+                        if (techItem != null)
+                        {
+                            if (assembly == "Assembly-CSharp")
+                            {
+                                DefaultItem defItem = AllDefaultItems.Find(i => i.internal_name == techItem.Id);
+                                if (defItem == null && !PreUnlockedTech.Contains(techItem.Id))
+                                {
+                                    Debug.LogWarning($"Klei Building Not in List: {CleanName(techItem.Name)} ({techItem.Id}) Assembly: {assembly}");
+                                    if (devmode)
+                                    {
+                                        newTechs.Add(techItem);
+                                        //Debug.Log($"Added Default Item: {techItem.Name} ({techItem.Id}) Assembly: {assembly}");
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                AllModItems.Add(new ModItem(techItem));
+                                //Debug.Log($"Added Mod Item: {techItem.Name} ({techItem.Id}) Assembly: {assembly}");
+                            }
+                        }
+                    }
+                    if (devmode && newTechs.Count > 0)
+                    {
+                        Debug.LogWarning($"New Building(s) Added. Make sure all fields are correct.");
+                        foreach (TechItem techItem in newTechs)
+                            AllDefaultItems.Add(new DefaultItem(techItem));
+                        using (FileStream fs = File.Open(Path.Combine(modDirectory.FullName, "DefaultItemList.json"), FileMode.Create))
+                        {
+                            using (StreamWriter sw = new StreamWriter(fs))
+                            {
+                                using (JsonTextWriter jw = new JsonTextWriter(sw))
+                                {
+                                    jw.Formatting = Formatting.Indented;
+                                    jw.IndentChar = ' ';
+                                    jw.Indentation = 4;
+
+                                    JsonSerializer serializer = new JsonSerializer();
+                                    serializer.Serialize(jw, AllDefaultItems);
+                                }
+                            }
+                        }
+                    }
 
                     if (Options.CreateModList)
                     {
-                        List<ModItem> modItems = new List<ModItem>();
+                        /*List<ModItem> modItems = new List<ModItem>();
                         foreach (Tech tech in Db.Get().Techs.resources)
                         {
                             foreach (TechItem techitem in tech.unlockedItems)
@@ -256,10 +319,10 @@ namespace ArchipelagoNotIncluded
                                 if (defItem == null && !PreUnlockedTech.Contains(techitem.Id))
                                     modItems.Add(new ModItem(techitem));
                             }
-                        }
+                        }*/
                         //Debug.Log("Directory: " + modDirectory.ToString());
                         //File.WriteAllText(modDirectory.ToString() + "\\ModItems.json", JsonConvert.SerializeObject(modItems, Formatting.Indented));
-                        if (modItems.Count > 0)
+                        if (AllModItems.Count > 0)
                         {
                             using (FileStream fs = File.Open(Path.Combine(modItemsPath, $"{Options.SlotName}_ModItems.json"), FileMode.Create))
                             {
@@ -272,7 +335,7 @@ namespace ArchipelagoNotIncluded
                                         jw.Indentation = 4;
 
                                         JsonSerializer serializer = new JsonSerializer();
-                                        serializer.Serialize(jw, modItems);
+                                        serializer.Serialize(jw, AllModItems);
                                     }
                                 }
                             }
