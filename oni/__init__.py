@@ -76,7 +76,7 @@ class ONIWorld(World):
     web = ONIWeb()
     base_id = 0x257514000  # 0xYGEN___, clever! Thanks, Medic
     data_version = 0
-    ap_version = "0.9.0.0"
+    ap_version = "0.9.5.0"
 
     default_item_list = {}
     mod_item_list = {}
@@ -125,6 +125,7 @@ class ONIWorld(World):
     spaced_out = False
     frosty = False
     bionic = False
+    prehistoric = False
 
     
     for item in default_item_list:
@@ -233,6 +234,8 @@ class ONIWorld(World):
         if self.options.bionic:
             self.bionic = True
             self.local_items.append("Crafting Station")
+        if self.options.prehistoric:
+            self.prehistoric = True
             
         self.filler_item_names = care_packages_base.copy()
         if self.options.frosty:
@@ -260,6 +263,8 @@ class ONIWorld(World):
             if self.frosty == False and item.version == "Frosty":
                 continue;
             if self.bionic == False and item.version == "Bionic":
+                continue;
+            if self.prehistoric == False and item.version == "Prehistoric":
                 continue;
             if self.bionic == True and self.base_only == True and item.tech_base == "None":
                 continue;

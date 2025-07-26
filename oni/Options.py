@@ -36,6 +36,12 @@ class Bionic(Toggle):
     """
     display_name = "Enable Bionic DLC"
 
+class Prehistoric(Toggle):
+    """
+    Enable Bionic DLC
+    """
+    display_name = "Enable Prehistoric DLC"
+
 class ResourceChecks(DefaultOnToggle):
     """
     Add location checks to newly collected resources
@@ -143,6 +149,7 @@ class ONIOptions(PerGameCommonOptions):
     spaced_out: SpacedOut
     frosty: Frosty
     bionic: Bionic
+    prehistoric: Prehistoric
     resource_checks: ResourceChecks
     cluster_base: ClusterBase
     cluster: Cluster

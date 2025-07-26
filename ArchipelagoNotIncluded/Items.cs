@@ -36,7 +36,7 @@ namespace ArchipelagoNotIncluded
             techitem.GetRequiredDlcIds()?.ToList().ForEach(id =>
             {
                 if (id == DlcManager.DLC4_ID)
-                    version = "Dino";
+                    version = "Prehistoric";
                 else if (id == DlcManager.DLC3_ID)
                     version = "Bionic";
                 else if (id == DlcManager.DLC2_ID)
