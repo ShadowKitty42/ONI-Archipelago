@@ -343,7 +343,7 @@ class ONIWorld(World):
             # Populate Science Dict (to be used in generate_output)
             if internal_tech not in self.science_dicts:
                 self.science_dicts[internal_tech] = []
-
+                
         
 
         if (self.mod_item_list.__contains__(current_player_name)):
