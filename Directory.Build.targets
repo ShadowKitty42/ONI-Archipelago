@@ -24,7 +24,6 @@
 			<InputAssemblies
 				  Include="$(LibFolder)\Archipelago.MultiClient.Net.dll;
 						   $(LibFolder)\PLib.dll;
-						   $(LibFolder)\KaitoKid.ArchipelagoUtilities.Net.dll;
 						   $(LibFolder)\UtilLibs.dll;
 				  "/>
 		</ItemGroup>
