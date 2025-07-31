@@ -53,11 +53,6 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\UtilLibs\UtilLibs.csproj" />
-  </ItemGroup>
-
-
-  <ItemGroup>
     <Reference Include="Assembly-CSharp">
       <!--Publicized version, run "Clean" on the 1_CycleComma project once to generate this-->
       <HintPath>$(AssemblyPublicized)</HintPath>
