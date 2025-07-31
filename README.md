@@ -3,7 +3,7 @@
 ## What is this?
 
 As of right now, the bare minimum has been completed to enable Multiworld functionality. The goal is to add it to the large list of games for [Archipelago Multiworld Randomizer](https://archipelago.gg)<br/>
-It is currently up-to-date with all DLC except for Prehistoric Planet Pack (which came out recently) and any combination of DLC can be enabled/disabled.<br/>
+It is currently up-to-date with all DLC except for Prehistoric Planet Pack (nearly done making it compatible) and any combination of DLC can be enabled/disabled.<br/>
 There are some known visual bugs that haven't been fixed yet, but nothing should affect gameplay. (See [Known Bugs](#known-bugs) below)
 
 ## Usage
@@ -57,9 +57,9 @@ If you want to randomize buildings added by mods, perform the following steps. I
 3. Enable any mods you want to play with.
 4. Click the `Settings` button next to `ArchipelagoNotIncluded`
 5. Change the `Player Name` and remember this for later. This is the name other Multiworld players will see and will be needed in `Seed Generation`
-6. Click the `Create Mod List` checkbox. The game will need to restart.
+6. Click the `Create Mod List` checkbox.
 NOTE: The next step is required for the game to load enough information needed to create the Mod List
-7. After the game restarts, load any existing save file OR start a new game (at a minimum, click through the menus until you get the 3 starting Duplicants).
+7. Load any existing save file OR start a new game (at a minimum, click through the menus until you get the 3 starting Duplicants).
 8. Either close the game or return to the main menu.
 9. Navigate to the ONI Mods Folder. On Windows, this is either<br/>`C:/Users/[YOUR NAME]/Documents/Klei/OxygenNotIncluded/mods/config/ArchipelagoNotIncluded` OR<br/>`C:/Users/[YOUR NAME]/OneDrive/Documents/Klei/OxygenNotIncluded/mods/config/ArchipelagoNotIncluded`
 10. You should see a file called `[Player Name]_ModItems.json`.
@@ -80,20 +80,21 @@ Required files can be found on the [Releases](https://github.com/ShadowKitty42/O
 
 1. After installing the mod via one of the methods detailed above, it should have restarted with the mod enabled. If not, open `Oxygen Not Included`.
 2. Open the `Mods` menu.
-3. (Optional) Enable any mods you want to use. None of them will be randomized and will function as normal.
+3. (Optional) Enable any mods you want to use. None of them will be randomized and will function as normal. Any newly enabled mods will require a restart to apply.
 4. Click the `Settings` button next to `ArchipelagoNotIncluded`
 5. Change the settings listed to match your setup. NOTE: Player name MUST match what you put in the YAML file in step #3 of Seed Generation. (in URL, change it to `localhost` if running locally)
-6. The game will need to restart to apply changes.
-7. You're ready to play! Start a new game and enjoy!
+6. You're ready to play! Start a new game and enjoy!
 
 ## Things to do
 
 ### Planned Features
 
 - [x] ~~Add in-game options menu for changing Multiworld settings (URL and Port)~~
-- [ ] Add additional locations to the game other than Research Tree
+- [x] ~~Add additional locations to the game other than Research Tree~~
 - [ ] Add Death Link Options. Current ideas for this are Random (Kill a random dupe when someone dies), Oldest (Kill oldest dupe), and Character Linked (Each dupe is linked to someone participating in Death Link)
 - [x] ~~Maybe add support for mods that add new technologies~~
+- [ ] Add location checks and logic for achievements
+- [ ] Possibly add resource randomization via 1:1 mapping (for example, every dirt spot will drop algae).
 
 ### Known Bugs
 
