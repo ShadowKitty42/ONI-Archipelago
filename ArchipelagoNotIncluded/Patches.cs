@@ -47,10 +47,10 @@ namespace ArchipelagoNotIncluded
                 if (ArchipelagoNotIncluded.Options.CreateModList)
                     return true;
 
+                string cluster = string.Empty;
                 if (ArchipelagoNotIncluded.info != null)
                 {
                     string planet = ArchipelagoNotIncluded.info.planet;
-                    string cluster = string.Empty;
                     if (DlcManager.IsExpansion1Active())
                     {
                         if (ArchipelagoNotIncluded.ClassicPlanets.ContainsKey(planet))
@@ -95,7 +95,7 @@ namespace ArchipelagoNotIncluded
                 ArchipelagoNotIncluded.lastIndexSaved = 0;
                 ArchipelagoNotIncluded.runCount = 0;
                 ArchipelagoNotIncluded.planetText = string.Empty;
-                return false;
+                return cluster.IsNullOrWhiteSpace();
             }
         }
 
