@@ -409,7 +409,7 @@ class ONIWorld(World):
                     self.location_name_to_internal[location_name] = internal_tech
 
         self.resource_checks = []
-        if self.options.resource_checks:
+        if self.options.resource_checks.value:
             planet = self.options.cluster.current_key
             if self.base_only:
                 planet = f"{self.options.cluster_base.current_key}_base"
