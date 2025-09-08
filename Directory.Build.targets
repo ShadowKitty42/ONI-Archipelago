@@ -23,6 +23,7 @@
 			<InputAssemblies Include="$(TargetPath)" />
 			<InputAssemblies
 				  Include="$(LibFolder)\Archipelago.MultiClient.Net.dll;
+				           $(LibFolder)\Newtonsoft.Json.dll;
 						   $(LibFolder)\PLib.dll;
 						   $(LibFolder)\UtilLibs.dll;
 				  "/>

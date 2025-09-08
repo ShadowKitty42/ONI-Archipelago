@@ -18,6 +18,7 @@ namespace ArchipelagoNotIncluded
         [Serialize] public bool AllowResourceChecks = false;
         [Serialize] public bool HadBionicDupe = false;
         [Serialize] public int LastItemIndex = 0;
+        [Serialize] public bool ResearchPortalUnlocked = false;
         [Serialize] public List<string> LocalItemList = new List<string>();
         [Serialize] public ConcurrentQueue<string> LocationQueue = new ConcurrentQueue<string>();
         [Serialize] public APSeedInfo APSeedInfo = null;

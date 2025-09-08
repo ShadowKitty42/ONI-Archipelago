@@ -226,21 +226,21 @@ class ONIWorld(World):
         self.ap_mod_items = []
         self.local_items = []
 
-        if self.options.spaced_out:
+        if self.options.spaced_out.value:
             self.base_only = False
             self.spaced_out = True
-        if self.options.frosty:
+        if self.options.frosty.value:
             self.frosty = True
-        if self.options.bionic:
+        if self.options.bionic.value:
             self.bionic = True
             self.local_items.append("Crafting Station")
-        if self.options.prehistoric:
+        if self.options.prehistoric.value:
             self.prehistoric = True
             
         self.filler_item_names = care_packages_base.copy()
-        if self.options.frosty:
+        if self.frosty:
             self.filler_item_names += care_packages_frosty.copy()
-        if self.options.bionic:
+        if self.bionic:
             self.filler_item_names += care_packages_bionic.copy()
 
         #if self.options.cluster.current_key != "custom" and self.base_only and self.options.cluster.has_basegame_equivalent == False:
@@ -473,22 +473,30 @@ class ONIWorld(World):
                 region.locations.append(location)
             self.multiworld.regions.append(region)
             
+        logic_options = {
+            "planet": self.options.cluster.current_key,
+            "spaced_out": self.spaced_out,
+            "frosty": self.frosty,
+            "bionic": self.bionic,
+            "prehistoric": self.prehistoric
+        }
         if self.base_only == True:
+            logic_options["planet"] = f"{self.options.cluster_base.current_key}_base"
             regions_by_name["Menu"].connect(
                 regions_by_name[RegionNames.Basic], None, None)
             regions_by_name[RegionNames.Basic].connect(
-                regions_by_name[RegionNames.Advanced], None, lambda state: can_advanced_research(self.player, self.internal_item_to_name, state, self.options))
+                regions_by_name[RegionNames.Advanced], None, lambda state: can_advanced_research(self.player, self.internal_item_to_name, state, logic_options))
             regions_by_name[RegionNames.Advanced].connect(
-                regions_by_name[RegionNames.Space_Base], None, lambda state: can_space_research_base(self.player, self.internal_item_to_name, state, self.options))
+                regions_by_name[RegionNames.Space_Base], None, lambda state: can_space_research_base(self.player, self.internal_item_to_name, state, logic_options))
         else:
             regions_by_name["Menu"].connect(
                 regions_by_name[RegionNames.Basic], None, None)
             regions_by_name[RegionNames.Basic].connect(
-                regions_by_name[RegionNames.Advanced], None, lambda state: can_advanced_research(self.player, self.internal_item_to_name, state, self.options))
+                regions_by_name[RegionNames.Advanced], None, lambda state: can_advanced_research(self.player, self.internal_item_to_name, state, logic_options))
             regions_by_name[RegionNames.Advanced].connect(
-                regions_by_name[RegionNames.Nuclear], None, lambda state: can_nuclear_research(self.player, self.internal_item_to_name, state, self.options))
+                regions_by_name[RegionNames.Nuclear], None, lambda state: can_nuclear_research(self.player, self.internal_item_to_name, state, logic_options))
             regions_by_name[RegionNames.Nuclear].connect(
-                regions_by_name[RegionNames.Space_DLC], None, lambda state: can_space_research(self.player, self.internal_item_to_name, state, self.options))
+                regions_by_name[RegionNames.Space_DLC], None, lambda state: can_space_research(self.player, self.internal_item_to_name, state, logic_options))
         print("\n+++++ post-create +++++")
         print(gc.get_referrers(self.multiworld))
         print("+++++++++++++++++++++")
