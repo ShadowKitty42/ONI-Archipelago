@@ -226,21 +226,21 @@ class ONIWorld(World):
         self.ap_mod_items = []
         self.local_items = []
 
-        if self.options.spaced_out:
+        if self.options.spaced_out.value:
             self.base_only = False
             self.spaced_out = True
-        if self.options.frosty:
+        if self.options.frosty.value:
             self.frosty = True
-        if self.options.bionic:
+        if self.options.bionic.value:
             self.bionic = True
             self.local_items.append("Crafting Station")
-        if self.options.prehistoric:
+        if self.options.prehistoric.value:
             self.prehistoric = True
             
         self.filler_item_names = care_packages_base.copy()
-        if self.options.frosty:
+        if self.options.frosty.value:
             self.filler_item_names += care_packages_frosty.copy()
-        if self.options.bionic:
+        if self.options.bionic.value:
             self.filler_item_names += care_packages_bionic.copy()
 
         #if self.options.cluster.current_key != "custom" and self.base_only and self.options.cluster.has_basegame_equivalent == False:
@@ -421,7 +421,7 @@ class ONIWorld(World):
                     advanced_locations.append(f"Discover Resource: {resource}")
                     self.resource_checks.append(f"Discover Resource: {resource}")
 
-                if self.options.teleporter and self.spaced_out:
+                if self.options.teleporter.value and self.spaced_out:
                     for resource in resource_locations[planet]["advanced2"]:
                         advanced_locations.append(f"Discover Resource: {resource}")
                         self.resource_checks.append(f"Discover Resource: {resource}")
