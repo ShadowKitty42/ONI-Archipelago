@@ -473,22 +473,30 @@ class ONIWorld(World):
                 region.locations.append(location)
             self.multiworld.regions.append(region)
             
+        logic_options = {
+            "planet": self.options.cluster.current_key,
+            "spaced_out": self.spaced_out,
+            "frosty": self.frosty,
+            "bionic": self.bionic,
+            "prehistoric": self.prehistoric
+        }
         if self.base_only == True:
+            logic_options["planet"] = f"{self.options.cluster_base.current_key}_base"
             regions_by_name["Menu"].connect(
                 regions_by_name[RegionNames.Basic], None, None)
             regions_by_name[RegionNames.Basic].connect(
-                regions_by_name[RegionNames.Advanced], None, lambda state: can_advanced_research(self.player, self.internal_item_to_name, state, self.options))
+                regions_by_name[RegionNames.Advanced], None, lambda state: can_advanced_research(self.player, self.internal_item_to_name, state, logic_options))
             regions_by_name[RegionNames.Advanced].connect(
-                regions_by_name[RegionNames.Space_Base], None, lambda state: can_space_research_base(self.player, self.internal_item_to_name, state, self.options))
+                regions_by_name[RegionNames.Space_Base], None, lambda state: can_space_research_base(self.player, self.internal_item_to_name, state, logic_options))
         else:
             regions_by_name["Menu"].connect(
                 regions_by_name[RegionNames.Basic], None, None)
             regions_by_name[RegionNames.Basic].connect(
-                regions_by_name[RegionNames.Advanced], None, lambda state: can_advanced_research(self.player, self.internal_item_to_name, state, self.options))
+                regions_by_name[RegionNames.Advanced], None, lambda state: can_advanced_research(self.player, self.internal_item_to_name, state, logic_options))
             regions_by_name[RegionNames.Advanced].connect(
-                regions_by_name[RegionNames.Nuclear], None, lambda state: can_nuclear_research(self.player, self.internal_item_to_name, state, self.options))
+                regions_by_name[RegionNames.Nuclear], None, lambda state: can_nuclear_research(self.player, self.internal_item_to_name, state, logic_options))
             regions_by_name[RegionNames.Nuclear].connect(
-                regions_by_name[RegionNames.Space_DLC], None, lambda state: can_space_research(self.player, self.internal_item_to_name, state, self.options))
+                regions_by_name[RegionNames.Space_DLC], None, lambda state: can_space_research(self.player, self.internal_item_to_name, state, logic_options))
         print("\n+++++ post-create +++++")
         print(gc.get_referrers(self.multiworld))
         print("+++++++++++++++++++++")

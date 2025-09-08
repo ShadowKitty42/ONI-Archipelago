@@ -86,8 +86,12 @@ namespace ArchipelagoNotIncluded
                         __instance.rightArrowButton.gameObject.SetActive(false);
                     }
                 }
-                //foreach (string cluster in __instance.clusterKeys)
-                //    Debug.Log($"Cluster name: {cluster}");
+                foreach (string clusterKey in SettingsCache.clusterLayouts.clusterCache.Keys)
+                    Debug.Log($"Cluster name: {clusterKey}, {Strings.Get(SettingsCache.clusterLayouts.clusterCache[clusterKey].name)}");
+                /*foreach (string clusterName in SettingsCache.GetClusterNames())
+                    Debug.Log($"Cluster name: {clusterName}");
+                foreach (string world in SettingsCache.GetWorldNames())
+                    Debug.Log($"World name: {world}");*/
 
                 ArchipelagoNotIncluded.ItemList.Clear();
                 ArchipelagoNotIncluded.ItemListDetailed.Clear();
@@ -547,6 +551,64 @@ namespace ArchipelagoNotIncluded
                 if (isModItem(__instance.Id))
                     return true;
                 __result = CheckItemList(__instance);
+                return false;
+            }
+        }
+
+        [HarmonyPatch(typeof(POITechItemUnlocks.Instance))]
+        [HarmonyPatch(nameof(POITechItemUnlocks.Instance.UnlockTechItems))]
+        public static class POITechItemUnlocks_unlockTechItems_Patch
+        {
+            public static bool Prefix(POITechItemUnlocks.Instance __instance)
+            {
+                if (ArchipelagoNotIncluded.info == null)
+                    return true;
+
+                int count = 0;
+
+                List<string> techIDs = __instance.def.POITechUnlockIDs;
+                switch (techIDs)
+                {
+                    case List<string> x when x.Contains("Campfire"):
+                        count = 3;
+                        break;
+                    case List<string> x when x.Contains("MissileFabricator"):
+                        count = 2;
+                        break;
+                    default:
+                        return true;
+                }
+                string[] locationNames = new string[count];
+                for (int i = 0; i < count; i++)
+                {
+                    string fullLocationName = $"Research Portal - {i + 1}";
+                    Debug.Log($"Location: {fullLocationName} - {i + 1}");
+                    locationNames[i] = fullLocationName;
+                }
+                ArchipelagoNotIncluded.AddLocationChecks(locationNames);
+                APSaveData.Instance.ResearchPortalUnlocked = true;
+
+                MusicManager.instance.PlaySong("Stinger_ResearchComplete", false);
+                __instance.UpdateUnlocked();
+
+                return false;
+            }
+        }
+
+        [HarmonyPatch(typeof(POITechItemUnlocks.Instance))]
+        [HarmonyPatch(nameof(POITechItemUnlocks.Instance.UpdateUnlocked))]
+        public static class POITechItemUnlocks_UpdateUnlocked_Patch
+        {
+            public static bool Prefix(POITechItemUnlocks.Instance __instance)
+            {
+                if (ArchipelagoNotIncluded.info == null)
+                    return true;
+
+                bool value = false;
+                if (APSaveData.Instance.ResearchPortalUnlocked)
+                    value = true;
+                __instance.sm.isUnlocked.Set(value, __instance.smi, false);
+
                 return false;
             }
         }

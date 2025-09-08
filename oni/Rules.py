@@ -1,10 +1,9 @@
-from ast import Dict
+from ast import Dict, List
 from BaseClasses import CollectionState
-from .Options import ONIOptions
 from .Names import ItemNames
 
 
-def can_advanced_research(player, item_list: Dict, state: CollectionState, player_options: ONIOptions) -> bool:
+def can_advanced_research(player, item_list: Dict, state: CollectionState, player_options: Dict) -> bool:
     # Need to be able to actually do the research, and handle liquids and gas
     running_state = state.has(item_list["AdvancedResearchCenter"], player) 
     running_state = running_state and can_manage_liquid(player, item_list, state) and can_manage_gas(player, item_list, state)
@@ -13,25 +12,27 @@ def can_advanced_research(player, item_list: Dict, state: CollectionState, playe
     return running_state
 
 
-def can_nuclear_research(player, item_list: Dict, state: CollectionState, player_options: ONIOptions) -> bool:
+def can_nuclear_research(player, item_list: Dict, state: CollectionState, player_options: Dict) -> bool:
     # Need the material science terminal, and also be able to make refined metal
     return state.has(item_list["NuclearResearchCenter"], player) and \
            state.has_any([item_list["ManualHighEnergyParticleSpawner"], item_list["HighEnergyParticleSpawner"]],
                          player) and can_refine_metal(player, item_list, state)
 
 
-def can_space_research(player, item_list: Dict, state: CollectionState, player_options: ONIOptions) -> bool:
+def can_space_research(player, item_list: Dict, state: CollectionState, player_options: Dict) -> bool:
     return state.has(item_list["DLC1CosmicResearchCenter"], player) and can_make_databanks(player, item_list, state, player_options)
 
-def can_space_research_base(player, item_list: Dict, state: CollectionState, player_options: ONIOptions) -> bool:
+def can_space_research_base(player, item_list: Dict, state: CollectionState, player_options: Dict) -> bool:
     return state.has_all([item_list["CosmicResearchCenter"], item_list["ResearchModule"],
                           item_list["Telescope"]], player) and can_reach_space_base(player, item_list, state)
 
-def can_survive_basic(player, item_list: Dict, state: CollectionState, player_options: ONIOptions) -> bool:
+def can_survive_basic(player, item_list: Dict, state: CollectionState, player_options: Dict) -> bool:
     running_state = state.has_any([item_list["PlanterBox"], item_list["FarmTile"]], player)
     if on_frosty_planet(player_options):
         running_state = running_state and state.has_all([item_list["IceKettle"], item_list["WoodTile"]], player)
-    if player_options.bionic:
+    if on_prehistoric_planet(player_options):
+        running_state = running_state and state.has_all([item_list["InsulationTile"]], player)
+    if player_options["bionic"]:
         running_state = running_state and state.has_all([item_list["Apothecary"], item_list["LubricationStick"]], player)
     return running_state
 
@@ -79,9 +80,9 @@ def can_make_plastic(player, item_list: Dict, state: CollectionState) -> bool:
         running_state = running_state or state.has(item_list["Polymerizer"], player)
     return running_state
 
-def can_make_databanks(player, item_list: Dict, state: CollectionState, player_options: ONIOptions) -> bool:
+def can_make_databanks(player, item_list: Dict, state: CollectionState, player_options: Dict) -> bool:
     running_state = can_reach_space(player, item_list, state) and state.has(item_list["OrbitalResearchCenter"], player)
-    if player_options.bionic:
+    if player_options["bionic"]:
         running_state = running_state or state.has(item_list["DataMiner"], player)
     running_state = running_state and can_make_plastic(player, item_list, state)
     return running_state
@@ -117,7 +118,12 @@ def can_manage_gas(player, item_list: Dict, state: CollectionState) -> bool:
                      can_make_plastic(player, item_list, state) and can_refine_metal(player, item_list, state)))
     return running_state
 
-def on_frosty_planet(options: ONIOptions) -> bool:
-    if options.cluster == "ceres" or options.cluster == "ceres_minor" or options.cluster == "ceres_mantle":
+def on_frosty_planet(options: Dict) -> bool:
+    if options["planet"].startswith("ceres"):
+        return True
+    return False
+
+def on_prehistoric_planet(options: Dict) -> bool:
+    if options["planet"].startswith("relica"):
         return True
     return False

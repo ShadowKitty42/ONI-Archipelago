@@ -112,6 +112,7 @@ namespace ArchipelagoNotIncluded
         public static Dictionary<string, string> ClassicPlanets = new Dictionary<string, string>()
         {
             {"terra", "expansion1::clusters/VanillaSandstoneCluster" },
+            {"relica", "dlc4::clusters/PrehistoricClassicCluster" },
             {"ceres", "dlc2::clusters/CeresClassicCluster" },
             {"oceania", "expansion1::clusters/VanillaOceaniaCluster" },
             {"squelchy", "expansion1::clusters/VanillaSwampCluster" },
@@ -127,6 +128,7 @@ namespace ArchipelagoNotIncluded
         public static Dictionary<string, string> SpacedOutPlanets = new Dictionary<string, string>()
         {
             {"terrania", "expansion1::clusters/SandstoneStartCluster" },
+            {"relica_minor", "dlc4::clusters/PrehistoricSpacedOutCluster" },
             {"ceres_minor", "dlc2::clusters/CeresSpacedOutCluster" },
             {"folia", "expansion1::clusters/ForestStartCluster" },
             {"quagmiris", "expansion1::clusters/SwampStartCluster" },
@@ -141,6 +143,7 @@ namespace ArchipelagoNotIncluded
         public static Dictionary<string, string> ClassicLabPlanets = new Dictionary<string, string>()
         {
             {"skewed", "expansion1::clusters/KleiFest2023Cluster" },
+            {"relicargh", "dlc2::clusters/CeresClassicShatteredCluster" },
             {"blasted", "dlc2::clusters/CeresClassicShatteredCluster" }
         };
 

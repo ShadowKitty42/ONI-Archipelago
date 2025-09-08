@@ -19,6 +19,7 @@ using HarmonyLib;
 using System.Threading;
 using static MathUtil;
 using PeterHan.PLib.Core;
+using System.Net.Sockets;
 
 namespace ArchipelagoNotIncluded
 {
@@ -52,6 +53,7 @@ namespace ArchipelagoNotIncluded
             this.SlotName = name;
             this.Password = password;
             session = ArchipelagoSessionFactory.CreateSession(URL, Port);
+            session.Socket.SocketOpened += OnSocketOpened;
             session.Socket.PacketReceived += OnPacketReceived;
             session.Socket.SocketClosed += OnSocketClosed;
             session.Socket.ErrorReceived += OnErrorReceived;
@@ -88,6 +90,15 @@ namespace ArchipelagoNotIncluded
                 if (APSaveData.Instance != null)
                     TryReconnectArchipelago();
             }*/
+        }
+
+        private void OnSocketOpened()
+        {
+            if (session.ConnectionInfo.Slot != -1)
+            {
+                Debug.Log("Socket re-opened, processing Location Queue");
+                ProcessLocationQueue();
+            }
         }
         
         private void OnPacketReceived(ArchipelagoPacketBase packet)
@@ -135,7 +146,7 @@ namespace ArchipelagoNotIncluded
             if (reason.Contains("closed the WebSocket connection"))
             {
                 //session.Socket.DisconnectAsync();
-                //session = null;
+                session = null;
                 TryReconnectArchipelago();
             }
         }
@@ -143,7 +154,7 @@ namespace ArchipelagoNotIncluded
         private void OnSocketClosed(string reason)
         {
             Debug.Log($"OnSocketClosed: {reason}");
-            //session = null;
+            session = null;
             TryReconnectArchipelago();
             //TryConnectArchipelago();
         }
