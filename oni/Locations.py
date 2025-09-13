@@ -487,6 +487,48 @@ resource_locations: typing.Dict[str, typing.Dict[str, typing.List[str]]] = {
 			"Grubfruit Seed", "Bliss Burst Seed", "Balm Lily Seed", "Thimble Reed Seed", "Fungal Spore", "Clay", "Buddy Bud Seed", 
 		]
 	},
+    "relicargh": {
+		"basic": [
+			"Water", "Polluted Water", "Nickel Ore", "Dirt", "Shale", "Algae", "Snac Fruit", "Peat", "Sweatcorn Seed", "Rosebush Seed", "Fertilizer", "Ovagro Node Seed", "Mimillet", "Igneous Rock", 
+		],
+		"advanced": [
+			"Sporechid Seed", "Joya Seed", "Tranquil Toe Seed", "Seakomb Seed", "Lura Seed", "Dasha Saltvine Seed", "Wort Seed", "Dew Seed", "Waterweed Seed", "Megafrond Spore", "Obsidian", "Abyssalite", "Lead", "Granite", "Sand", "Diamond", "Iron Ore", "Ice", "Sulfur", "Uranium Ore", "Rust", "Bleach Stone", "Mafic Rock", "Wolframite", "Gold Amalgam", "Polluted Dirt", "Salt", "Phosphorite", "Sedimentary Rock", "Fossil", "Regolith", "Saturn Critter Trap Seed", "Nosh Bean", "Pincha Pepper Seed", "Coal", "Refined Carbon", "Ovagro Fig", "Polluted Ice", "Sandstone", "Solid Nuclear Waste", "Slime", "Cobalt", 
+		],
+		"advanced2": [
+			"Mud", "Polluted Mud", "Mallow Seed", "Bog Bucket Seed", "Swamp Chard Heart", "Cobalt Ore", 
+		],
+		"radbolt": [
+			"Bliss Burst Seed", "Grubfruit Seed", "Sleet Wheat Grain", "Balm Lily Seed", "Mirth Leaf Seed", "Fungal Spore", "Thimble Reed Seed", "Buddy Bud Seed", "Iron", "Copper Ore", "Sucrose", "Clay", "Glass", "Iridium", 
+		]
+	},
+    "relica": {
+		"basic": [
+			"Water", "Polluted Water", "Mimillet", "Sweatcorn Seed", "Rosebush Seed", "Snac Fruit", "Ovagro Node Seed", "Shale", "Nickel Ore", "Dirt", "Peat", "Algae", "Fertilizer", 
+		],
+		"advanced": [
+			"Sporechid Seed", "Joya Seed", "Pincha Pepper Seed", "Tranquil Toe Seed", "Dew Seed", "Wort Seed", "Megafrond Spore", "Lura Seed", "Dasha Saltvine Seed", "Seakomb Seed", "Saturn Critter Trap Seed", "Nosh Bean", "Waterweed Seed", "Obsidian", "Abyssalite", "Igneous Rock", "Iron Ore", "Diamond", "Sand", "Lead", "Granite", "Slime", "Coal", "Fossil", "Uranium Ore", "Ice", "Bleach Stone", "Sulfur", "Rust", "Phosphorite", "Gold Amalgam", "Polluted Dirt", "Mafic Rock", "Wolframite", "Salt", "Sandstone", "Sedimentary Rock", "Regolith", 
+		],
+		"advanced2": [
+			"Bog Bucket Seed", "Swamp Chard Heart", "Mallow Seed", "Polluted Mud", "Mud", "Cobalt Ore", 
+		],
+		"radbolt": [
+			"Bliss Burst Seed", "Grubfruit Seed", "Balm Lily Seed", "Mirth Leaf Seed", "Sleet Wheat Grain", "Thimble Reed Seed", "Fungal Spore", "Buddy Bud Seed", "Copper Ore", "Iron", "Polluted Ice", "Clay", 
+		]
+	},
+    "relica_minor": {
+		"basic": [
+			"Water", "Polluted Water", "Mimillet", "Snac Fruit", "Rosebush Seed", "Sweatcorn Seed", "Ovagro Node Seed", "Peat", "Shale", "Dirt", "Nickel Ore", "Algae", "Fertilizer", "Abyssalite", 
+		],
+		"advanced": [
+			"Tranquil Toe Seed", "Saturn Critter Trap Seed", "Pincha Pepper Seed", "Sporechid Seed", "Waterweed Seed", "Seakomb Seed", "Lura Seed", "Dasha Saltvine Seed", "Megafrond Spore", "Wort Seed", "Dew Seed", "Obsidian", "Uranium Ore", "Bleach Stone", "Sulfur", "Ice", "Rust", "Wolframite", "Sandstone", "Granite", "Sand", "Fossil", "Diamond", "Slime", "Gold Amalgam", "Igneous Rock", "Polluted Dirt", "Sedimentary Rock", "Mafic Rock", "Salt", "Coal", "Iron Ore", "Phosphorite", "Regolith", "Nosh Bean", 
+		],
+		"advanced2": [
+			"Bog Bucket Seed", "Swamp Chard Heart", "Mallow Seed", "Polluted Mud", "Mud", "Cobalt Ore", "Copper Ore", 
+		],
+		"radbolt": [
+			"Joya Seed", "Bliss Burst Seed", "Sleet Wheat Grain", "Grubfruit Seed", "Iron", "Lead", "Polluted Ice", 
+		]
+	},
 }
 
 # Basic Research

@@ -564,10 +564,10 @@ class ONIWorld(World):
             self.options.local_items.value.add(item.name)
 
     def fill_hook(self,
-                  progitempool: List["Item"],
-                  usefulitempool: List["Item"],
-                  filleritempool: List["Item"],
-                  fill_locations: List["Location"]) -> None:
+                  progitempool: typing.List["Item"],
+                  usefulitempool: typing.List["Item"],
+                  filleritempool: typing.List["Item"],
+                  fill_locations: typing.List["Location"]) -> None:
         """Special method that gets called as part of distribute_items_restrictive (main fill)."""
         pass
 

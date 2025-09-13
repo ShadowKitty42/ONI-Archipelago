@@ -31,7 +31,7 @@ def can_survive_basic(player, item_list: Dict, state: CollectionState, player_op
     if on_frosty_planet(player_options):
         running_state = running_state and state.has_all([item_list["IceKettle"], item_list["WoodTile"]], player)
     if on_prehistoric_planet(player_options):
-        running_state = running_state and state.has_all([item_list["InsulationTile"]], player)
+        running_state = running_state and state.has(item_list["InsulationTile"], player)
     if player_options["bionic"]:
         running_state = running_state and state.has_all([item_list["Apothecary"], item_list["LubricationStick"]], player)
     return running_state

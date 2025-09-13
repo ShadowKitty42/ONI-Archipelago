@@ -80,30 +80,33 @@ class Cluster(Choice):
     """
     display_name = "Starting Planet"
     option_terrania = 0
-    option_ceres_minor = 1
-    option_folia = 2
-    option_quagmiris = 3
-    option_metallic_swampy = 4
-    option_desolands = 5
-    option_frozen_forest = 6
-    option_flipped = 7
-    option_radioactive_ocean = 8
-    option_ceres_mantle = 9
+    option_relica_minor = 9
+    option_ceres_minor = 10
+    option_folia = 1
+    option_quagmiris = 2
+    option_metallic_swampy = 3
+    option_desolands = 4
+    option_frozen_forest = 5
+    option_flipped = 6
+    option_radioactive_ocean = 7
+    option_ceres_mantle = 8
 
-    option_terra = 10
-    option_ceres = 11
-    option_oceania = 12
-    option_rime = 13
-    option_verdante = 14
-    option_arboria = 15
-    option_volcanea = 16
-    option_badlands = 17
-    option_aridio = 18
-    option_oasisse = 19
-    option_squelchy = 20
+    option_terra = 20
+    option_relica = 30
+    option_ceres = 31
+    option_oceania = 21
+    option_rime = 22
+    option_verdante = 23
+    option_arboria = 24
+    option_volcanea = 25
+    option_badlands = 26
+    option_aridio = 27
+    option_oasisse = 28
+    option_squelchy = 29
 
-    option_skewed = 21
-    option_blasted = 22
+    option_skewed = 40
+    option_blasted = 41
+    option_relicargh = 42
 
     option_custom = 50
     option_random_classic = 51
@@ -118,11 +121,11 @@ class Cluster(Choice):
 
     @classmethod
     def planet_type(cls, value: int) -> str:
-        if value >= 0 and value < 10:
+        if value >= 0 and value < 20:
             return "spaced_out"
-        if value >= 10 and value < 21:
+        if value >= 20 and value < 40:
             return "classic"
-        if value >= 21 and value < 23:
+        if value >= 40 and value < 50:
             return "the_lab"
 
     @classmethod
