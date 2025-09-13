@@ -143,7 +143,7 @@ namespace ArchipelagoNotIncluded
         public static Dictionary<string, string> ClassicLabPlanets = new Dictionary<string, string>()
         {
             {"skewed", "expansion1::clusters/KleiFest2023Cluster" },
-            {"relicargh", "dlc2::clusters/CeresClassicShatteredCluster" },
+            {"relicargh", "dlc4::clusters/PrehistoricShatteredClassicCluster" },
             {"blasted", "dlc2::clusters/CeresClassicShatteredCluster" }
         };
 
