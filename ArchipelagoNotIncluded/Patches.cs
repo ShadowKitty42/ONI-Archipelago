@@ -898,6 +898,11 @@ namespace ArchipelagoNotIncluded
                 Dictionary<string, int> idCounts = new Dictionary<string, int>();
                 foreach (KeyValuePair<string, List<string>> pair in ArchipelagoNotIncluded.info.technologies)
                 {
+                    if (pair.Key.ToLower() == "none" || String.IsNullOrEmpty(pair.Key))
+                    {
+                        Debug.LogWarningFormat("Skipping technology with key '{0}'", pair.Key);
+                        continue;
+                    }
                     Debug.Log($"Generating research for {pair.Key}, ({pair.Value.Join(s => s, ",")})");
                     Tech tech = instance.TryGet(pair.Key);
                     Dictionary<string, float> researchCost = null;
