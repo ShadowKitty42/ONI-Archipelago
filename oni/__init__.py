@@ -420,6 +420,10 @@ class ONIWorld(World):
                 for resource in resource_locations[planet]["advanced"]:
                     advanced_locations.append(f"Discover Resource: {resource}")
                     self.resource_checks.append(f"Discover Resource: {resource}")
+                if planet == "relicargh_base":
+                    for resource in resource_locations[planet]["advanced2"]:
+                        advanced_locations.append(f"Discover Resource: {resource}")
+                        self.resource_checks.append(f"Discover Resource: {resource}")
 
                 if self.options.teleporter.value and self.spaced_out:
                     for resource in resource_locations[planet]["advanced2"]:

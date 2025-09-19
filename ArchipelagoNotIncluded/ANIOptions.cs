@@ -1,11 +1,13 @@
-﻿using Archipelago.MultiClient.Net.Enums;
-using Archipelago.MultiClient.Net;
+﻿using Archipelago.MultiClient.Net;
+using Archipelago.MultiClient.Net.Enums;
 using Epic.OnlineServices.Platform;
+using KMod;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using PeterHan.PLib.Options;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,9 +20,8 @@ namespace ArchipelagoNotIncluded
     [ConfigFile(SharedConfigLocation: true)]
     public sealed class ANIOptions : IOptions
     {
-        [Option("Create Mod List", "Disables Research Tree changes to create a list of buildings added by Mods." +
-            "\nAutomatically turns itself off after creating the list." +
-            "\nRestart is required afterward in order for Research Tree changes to take effect")]
+        [Option("Create Mod List", "Creates list of mod items for Archipelago to randomize." +
+            "\nAutomatically turns itself off after creating the list.")]
         [JsonProperty]
         public bool CreateModList { get; set; }
 
@@ -40,6 +41,7 @@ namespace ArchipelagoNotIncluded
         [JsonProperty]
         public string Password { get; set; }
 
+        public static string modPath = Path.Combine(Path.Combine(Manager.GetDirectory(), "config"), "ArchipelagoNotIncluded");
 
         public ANIOptions()
         {
@@ -52,9 +54,51 @@ namespace ArchipelagoNotIncluded
 
         public void OnOptionsChanged()
         {
+            string text = "";
+            if (CreateModList)
+            {
+                
+                /*List<ModItem> modItems = new List<ModItem>();
+                foreach (Tech tech in Db.Get().Techs.resources)
+                {
+                    foreach (TechItem techitem in tech.unlockedItems)
+                    {
+                        DefaultItem defItem = AllDefaultItems.Find(i => i.internal_name == techitem.Id);
+                        if (defItem == null && !PreUnlockedTech.Contains(techitem.Id))
+                            modItems.Add(new ModItem(techitem));
+                    }
+                }*/
+                string modItemsPath = Path.Combine(Path.Combine(Manager.GetDirectory(), "config"), "ArchipelagoNotIncluded");
+                if (!System.IO.Directory.Exists(modItemsPath))
+                    System.IO.Directory.CreateDirectory(modItemsPath);
+                Debug.Log($"Items: {ArchipelagoNotIncluded.AllModItems.Count}, Directory: {modItemsPath}");
+                //File.WriteAllText(modDirectory.ToString() + "\\ModItems.json", JsonConvert.SerializeObject(modItems, Formatting.Indented));
+                if (ArchipelagoNotIncluded.AllModItems.Count > 0)
+                {
+                    text = $"Mod List created at {modItemsPath} \n\n";
+                    using (FileStream fs = File.Open(Path.Combine(modItemsPath, $"{SlotName}_ModItems.json"), FileMode.Create))
+                    {
+                        using (StreamWriter sw = new StreamWriter(fs))
+                        {
+                            using (JsonTextWriter jw = new JsonTextWriter(sw))
+                            {
+                                jw.Formatting = Formatting.Indented;
+                                jw.IndentChar = ' ';
+                                jw.Indentation = 4;
+
+                                JsonSerializer serializer = new JsonSerializer();
+                                serializer.Serialize(jw, ArchipelagoNotIncluded.AllModItems);
+                            }
+                        }
+                    }
+                }
+                CreateModList = false;
+                POptions.WriteSettings(this);
+            }
+
             APNetworkMonitor netmon = new APNetworkMonitor(URL, Port, SlotName, Password);
             var dialogue = ((ConfirmDialogScreen)KScreenManager.Instance.StartScreen(ScreenPrefabs.Instance.ConfirmDialogScreen.gameObject, Global.Instance.globalCanvas));
-            string text = "Connection to Archipelago failed.\nPlease check your connection settings and try again.";
+            text += "Connection to Archipelago failed.\nPlease check your connection settings and try again.";
             string title = "Archipelago";
             System.Action confirm = null;
             LoginResult result = netmon.session.TryConnectAndLogin("Oxygen Not Included", SlotName, ItemsHandlingFlags.NoItems, password: Password);

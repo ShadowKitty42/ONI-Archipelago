@@ -492,7 +492,9 @@ resource_locations: typing.Dict[str, typing.Dict[str, typing.List[str]]] = {
 			"Water", "Polluted Water", "Nickel Ore", "Dirt", "Shale", "Algae", "Snac Fruit", "Peat", "Sweatcorn Seed", "Rosebush Seed", "Fertilizer", "Ovagro Node Seed", "Mimillet", "Igneous Rock", 
 		],
 		"advanced": [
-			"Sporechid Seed", "Joya Seed", "Tranquil Toe Seed", "Seakomb Seed", "Lura Seed", "Dasha Saltvine Seed", "Wort Seed", "Dew Seed", "Waterweed Seed", "Megafrond Spore", "Obsidian", "Abyssalite", "Lead", "Granite", "Sand", "Diamond", "Iron Ore", "Ice", "Sulfur", "Uranium Ore", "Rust", "Bleach Stone", "Mafic Rock", "Wolframite", "Gold Amalgam", "Polluted Dirt", "Salt", "Phosphorite", "Sedimentary Rock", "Fossil", "Regolith", "Saturn Critter Trap Seed", "Nosh Bean", "Pincha Pepper Seed", "Coal", "Refined Carbon", "Ovagro Fig", "Polluted Ice", "Sandstone", "Solid Nuclear Waste", "Slime", "Cobalt", 
+			"Sporechid Seed", "Joya Seed", "Tranquil Toe Seed", "Seakomb Seed", "Lura Seed", "Dasha Saltvine Seed", "Wort Seed", "Dew Seed", "Waterweed Seed", "Megafrond Spore", "Obsidian", "Abyssalite", "Lead", "Granite", "Sand",
+            "Diamond", "Iron Ore", "Ice", "Sulfur", "Uranium Ore", "Rust", "Bleach Stone", "Mafic Rock", "Wolframite", "Gold Amalgam", "Polluted Dirt", "Salt", "Phosphorite", "Sedimentary Rock", "Fossil", "Regolith",
+            "Saturn Critter Trap Seed", "Nosh Bean", "Pincha Pepper Seed", "Coal", "Refined Carbon", "Ovagro Fig", "Polluted Ice", "Sandstone", "Solid Nuclear Waste", "Slime", "Cobalt", 
 		],
 		"advanced2": [
 			"Mud", "Polluted Mud", "Mallow Seed", "Bog Bucket Seed", "Swamp Chard Heart", "Cobalt Ore", 
@@ -506,7 +508,9 @@ resource_locations: typing.Dict[str, typing.Dict[str, typing.List[str]]] = {
 			"Water", "Polluted Water", "Mimillet", "Sweatcorn Seed", "Rosebush Seed", "Snac Fruit", "Ovagro Node Seed", "Shale", "Nickel Ore", "Dirt", "Peat", "Algae", "Fertilizer", 
 		],
 		"advanced": [
-			"Sporechid Seed", "Joya Seed", "Pincha Pepper Seed", "Tranquil Toe Seed", "Dew Seed", "Wort Seed", "Megafrond Spore", "Lura Seed", "Dasha Saltvine Seed", "Seakomb Seed", "Saturn Critter Trap Seed", "Nosh Bean", "Waterweed Seed", "Obsidian", "Abyssalite", "Igneous Rock", "Iron Ore", "Diamond", "Sand", "Lead", "Granite", "Slime", "Coal", "Fossil", "Uranium Ore", "Ice", "Bleach Stone", "Sulfur", "Rust", "Phosphorite", "Gold Amalgam", "Polluted Dirt", "Mafic Rock", "Wolframite", "Salt", "Sandstone", "Sedimentary Rock", "Regolith", 
+			"Sporechid Seed", "Joya Seed", "Pincha Pepper Seed", "Tranquil Toe Seed", "Dew Seed", "Wort Seed", "Megafrond Spore", "Lura Seed", "Dasha Saltvine Seed", "Seakomb Seed", "Saturn Critter Trap Seed", "Nosh Bean",
+            "Waterweed Seed", "Obsidian", "Abyssalite", "Igneous Rock", "Iron Ore", "Diamond", "Sand", "Lead", "Granite", "Slime", "Coal", "Fossil", "Uranium Ore", "Ice", "Bleach Stone", "Sulfur", "Rust", "Phosphorite",
+            "Gold Amalgam", "Polluted Dirt", "Mafic Rock", "Wolframite", "Salt", "Sandstone", "Sedimentary Rock", "Regolith", 
 		],
 		"advanced2": [
 			"Bog Bucket Seed", "Swamp Chard Heart", "Mallow Seed", "Polluted Mud", "Mud", "Cobalt Ore", 
@@ -520,13 +524,39 @@ resource_locations: typing.Dict[str, typing.Dict[str, typing.List[str]]] = {
 			"Water", "Polluted Water", "Mimillet", "Snac Fruit", "Rosebush Seed", "Sweatcorn Seed", "Ovagro Node Seed", "Peat", "Shale", "Dirt", "Nickel Ore", "Algae", "Fertilizer", "Abyssalite", 
 		],
 		"advanced": [
-			"Tranquil Toe Seed", "Saturn Critter Trap Seed", "Pincha Pepper Seed", "Sporechid Seed", "Waterweed Seed", "Seakomb Seed", "Lura Seed", "Dasha Saltvine Seed", "Megafrond Spore", "Wort Seed", "Dew Seed", "Obsidian", "Uranium Ore", "Bleach Stone", "Sulfur", "Ice", "Rust", "Wolframite", "Sandstone", "Granite", "Sand", "Fossil", "Diamond", "Slime", "Gold Amalgam", "Igneous Rock", "Polluted Dirt", "Sedimentary Rock", "Mafic Rock", "Salt", "Coal", "Iron Ore", "Phosphorite", "Regolith", "Nosh Bean", 
+			"Tranquil Toe Seed", "Saturn Critter Trap Seed", "Pincha Pepper Seed", "Sporechid Seed", "Waterweed Seed", "Seakomb Seed", "Lura Seed", "Dasha Saltvine Seed", "Megafrond Spore", "Wort Seed", "Dew Seed", "Obsidian",
+            "Uranium Ore", "Bleach Stone", "Sulfur", "Ice", "Rust", "Wolframite", "Sandstone", "Granite", "Sand", "Fossil", "Diamond", "Slime", "Gold Amalgam", "Igneous Rock", "Polluted Dirt", "Sedimentary Rock", "Mafic Rock",
+            "Salt", "Coal", "Iron Ore", "Phosphorite", "Regolith", "Nosh Bean", 
 		],
 		"advanced2": [
 			"Bog Bucket Seed", "Swamp Chard Heart", "Mallow Seed", "Polluted Mud", "Mud", "Cobalt Ore", "Copper Ore", 
 		],
 		"radbolt": [
 			"Joya Seed", "Bliss Burst Seed", "Sleet Wheat Grain", "Grubfruit Seed", "Iron", "Lead", "Polluted Ice", 
+		]
+	},
+    "relicargh_base": {
+		"basic": [
+			"Water", "Polluted Water", "Peat", "Shale", "Dirt", "Nickel Ore", "Algae", "Sand", "Coal", "Snac Fruit", "Rosebush Seed", "Sweatcorn Seed", "Ovagro Fig", "Ovagro Node Seed", "Fertilizer", "Refined Carbon", "Mimillet",
+            "Obsidian", "Granite", "Iron", "Igneous Rock", 
+		],
+		"advanced": [
+			"Waterweed Seed", "Pincha Pepper Seed", "Wort Seed", "Megafrond Spore", "Dew Seed", "Salt", "Sedimentary Rock", "Fossil", "Abyssalite", "Phosphorite", "Iron Ore", "Bleach Stone", "Seakomb Seed", "Lura Seed",
+            "Gold Amalgam", "Polluted Dirt", "Mafic Rock", "Regolith", "Ice", "Pokeshell", "Joya Seed", "Sporechid Seed", "Dasha Saltvine Seed", "Nosh Bean", "Lead", "Diamond", "Rust", "Sulfur", "Sandstone", "Pacu", "Gnit",
+            "Slime", "Wolframite", "Rhex", 
+		],
+		"advanced2": [
+			"Iridium", "Glass",
+		]
+	},
+    "relica_base": {
+		"basic": [
+			"Water", "Polluted Water", "Snac Fruit", "Rosebush Seed", "Mimillet", "Sweatcorn Seed", "Ovagro Node Seed", "Shale", "Dirt", "Peat", "Nickel Ore", "Algae", "Fertilizer", 
+		],
+		"advanced": [
+			"Sporechid Seed", "Joya Seed", "Pincha Pepper Seed", "Wort Seed", "Seakomb Seed", "Dasha Saltvine Seed", "Megafrond Spore", "Dew Seed", "Lura Seed", "Waterweed Seed", "Nosh Bean", "Obsidian", "Abyssalite",
+            "Igneous Rock", "Diamond", "Granite", "Lead", "Iron Ore", "Sand", "Coal", "Iron", "Phosphorite", "Bleach Stone", "Fossil", "Gold Amalgam", "Rust", "Polluted Dirt", "Mafic Rock", "Salt", "Sulfur", "Ice",
+            "Wolframite", "Sedimentary Rock", "Slime", "Copper Ore", "Sandstone", "Regolith", "Gnit", "Pacu", "Pokeshell", "Lumb", 
 		]
 	},
 }

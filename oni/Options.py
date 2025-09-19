@@ -56,6 +56,7 @@ class ClusterBase(Choice):
     """
     display_name = "Starting Planet (Base Game)"
     option_terra = 0
+    option_relica = 12
     option_ceres = 1
     option_oceania = 2
     option_rime = 3
@@ -67,6 +68,7 @@ class ClusterBase(Choice):
     option_oasisse = 9
 
     option_skewed = 10
+    option_relicargh = 13
     option_blasted = 11
 
     option_custom = 50
@@ -80,8 +82,8 @@ class Cluster(Choice):
     """
     display_name = "Starting Planet"
     option_terrania = 0
-    option_relica_minor = 9
-    option_ceres_minor = 10
+    option_relica_minor = 10
+    option_ceres_minor = 9
     option_folia = 1
     option_quagmiris = 2
     option_metallic_swampy = 3
@@ -92,8 +94,8 @@ class Cluster(Choice):
     option_ceres_mantle = 8
 
     option_terra = 20
-    option_relica = 30
-    option_ceres = 31
+    option_relica = 31
+    option_ceres = 30
     option_oceania = 21
     option_rime = 22
     option_verdante = 23
@@ -105,8 +107,8 @@ class Cluster(Choice):
     option_squelchy = 29
 
     option_skewed = 40
-    option_blasted = 41
     option_relicargh = 42
+    option_blasted = 41
 
     option_custom = 50
     option_random_classic = 51

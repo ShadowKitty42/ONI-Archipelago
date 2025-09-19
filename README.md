@@ -57,13 +57,10 @@ If you want to randomize buildings added by mods, perform the following steps. I
 3. Enable any mods you want to play with.
 4. Click the `Settings` button next to `ArchipelagoNotIncluded`
 5. Change the `Player Name` and remember this for later. This is the name other Multiworld players will see and will be needed in `Seed Generation`
-6. Click the `Create Mod List` checkbox.
-NOTE: The next step is required for the game to load enough information needed to create the Mod List
-7. Load any existing save file OR start a new game (at a minimum, click through the menus until you get the 3 starting Duplicants).
-8. Either close the game or return to the main menu.
-9. Navigate to the ONI Mods Folder. On Windows, this is either<br/>`C:/Users/[YOUR NAME]/Documents/Klei/OxygenNotIncluded/mods/config/ArchipelagoNotIncluded` OR<br/>`C:/Users/[YOUR NAME]/OneDrive/Documents/Klei/OxygenNotIncluded/mods/config/ArchipelagoNotIncluded`
-10. You should see a file called `[Player Name]_ModItems.json`.
-11. Copy this file somewhere easily accessed, it will be needed in `Seed Generation`
+6. Click the `Create Mod List` checkbox and click `Ok`.
+7. Navigate to the ONI Mods Folder. On Windows, this is either<br/>`C:/Users/[YOUR NAME]/Documents/Klei/OxygenNotIncluded/mods/config/ArchipelagoNotIncluded` OR<br/>`C:/Users/[YOUR NAME]/OneDrive/Documents/Klei/OxygenNotIncluded/mods/config/ArchipelagoNotIncluded`
+8. You should see a file called `[Player Name]_ModItems.json`.
+9. Copy this file somewhere easily accessed, it will be needed in `Seed Generation`
 
 ## Seed Generation
 

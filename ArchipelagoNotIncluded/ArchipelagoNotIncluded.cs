@@ -92,6 +92,7 @@ namespace ArchipelagoNotIncluded
         public static Dictionary<string, string> BasePlanets = new Dictionary<string, string>()
         {
             {"terra", "clusters/SandstoneDefault" },
+            {"relica", "dlc2::clusters/PrehistoricBaseGameCluster" },
             {"ceres", "dlc2::clusters/CeresBaseGameCluster" },
             {"oceania", "clusters/Oceania" },
             {"rime", "clusters/SandstoneFrozen" },
@@ -106,6 +107,7 @@ namespace ArchipelagoNotIncluded
         public static Dictionary<string, string> BaseLabPlanets = new Dictionary<string, string>()
         {
             {"skewed", "clusters/KleiFest2023" },
+            {"relicargh", "dlc4::clusters/PrehistoricShatteredBaseGameCluster" },
             {"blasted", "dlc2::clusters/CeresBaseGameShatteredCluster" }
         };
 
@@ -197,13 +199,9 @@ namespace ArchipelagoNotIncluded
             Instance = this;
 
             PUtil.InitLibrary();
-            cheatmode = false;
             string configPath = Path.Combine(Manager.GetDirectory(), "config");
             if (!System.IO.Directory.Exists(configPath))
                 System.IO.Directory.CreateDirectory(configPath);
-            string modItemsPath = Path.Combine(configPath, "ArchipelagoNotIncluded");
-            if (!System.IO.Directory.Exists(modItemsPath))
-                System.IO.Directory.CreateDirectory(modItemsPath);
 
             Options = POptions.ReadSettings<ANIOptions>() ?? new ANIOptions();
             new POptions().RegisterOptions(this, typeof(ANIOptions));
@@ -260,7 +258,7 @@ namespace ArchipelagoNotIncluded
             netmon.TryConnectArchipelago();
             SceneManager.sceneLoaded += (scene, loadScene) => {
                 Debug.Log($"Scene: {scene.name}");
-                if (scene.name == "backend")
+                if (scene.name == "frontend")
                 {
                     List<TechItem> newTechs = new List<TechItem>();
                     foreach (KeyValuePair<IBuildingConfig, BuildingDef> kvp in BuildingConfigManager.Instance.configTable)
@@ -309,42 +307,6 @@ namespace ArchipelagoNotIncluded
                                 }
                             }
                         }
-                    }
-
-                    if (Options.CreateModList)
-                    {
-                        /*List<ModItem> modItems = new List<ModItem>();
-                        foreach (Tech tech in Db.Get().Techs.resources)
-                        {
-                            foreach (TechItem techitem in tech.unlockedItems)
-                            {
-                                DefaultItem defItem = AllDefaultItems.Find(i => i.internal_name == techitem.Id);
-                                if (defItem == null && !PreUnlockedTech.Contains(techitem.Id))
-                                    modItems.Add(new ModItem(techitem));
-                            }
-                        }*/
-                        //Debug.Log("Directory: " + modDirectory.ToString());
-                        //File.WriteAllText(modDirectory.ToString() + "\\ModItems.json", JsonConvert.SerializeObject(modItems, Formatting.Indented));
-                        if (AllModItems.Count > 0)
-                        {
-                            using (FileStream fs = File.Open(Path.Combine(modItemsPath, $"{Options.SlotName}_ModItems.json"), FileMode.Create))
-                            {
-                                using (StreamWriter sw = new StreamWriter(fs))
-                                {
-                                    using (JsonTextWriter jw = new JsonTextWriter(sw))
-                                    {
-                                        jw.Formatting = Formatting.Indented;
-                                        jw.IndentChar = ' ';
-                                        jw.Indentation = 4;
-
-                                        JsonSerializer serializer = new JsonSerializer();
-                                        serializer.Serialize(jw, AllModItems);
-                                    }
-                                }
-                            }
-                        }
-                        Options.CreateModList = false;
-                        POptions.WriteSettings(Options);
                     }
                 }
             };
