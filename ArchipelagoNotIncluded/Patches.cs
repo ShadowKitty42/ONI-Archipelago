@@ -861,6 +861,8 @@ namespace ArchipelagoNotIncluded
                                 break;
                             goto default;
                         default:
+                            if (ArchipelagoNotIncluded.allTechList.ContainsKey(item.internal_name))
+                                break;
                             ArchipelagoNotIncluded.allTechList.Add(item.internal_name, "uncategorized");
                             break;
                     }
@@ -888,6 +890,8 @@ namespace ArchipelagoNotIncluded
                         if (ArchipelagoNotIncluded.info?.apModItems.Contains(item.internal_name) == true)
                         {
                             item.randomized = true;
+                            if (ArchipelagoNotIncluded.allTechList.ContainsKey(item.internal_name))
+                                continue;
                             ArchipelagoNotIncluded.allTechList.Add(item.internal_name, "uncategorized");
                         }
                     }
