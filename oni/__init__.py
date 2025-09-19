@@ -76,7 +76,7 @@ class ONIWorld(World):
     web = ONIWeb()
     base_id = 0x257514000  # 0xYGEN___, clever! Thanks, Medic
     data_version = 0
-    ap_version = "0.9.5.0"
+    ap_version = "0.9.6.0"
 
     default_item_list = {}
     mod_item_list = {}
@@ -275,6 +275,10 @@ class ONIWorld(World):
             item_class = item.ap_classification
             if "ceres" in self.options.cluster.current_key:
                 if item.internal_name == "WoodTile" or item.internal_name == "IceKettle":
+                    self.items_by_name[item.name] = ItemData(item.name, ItemClassification.progression)
+                    item_class = "Progression"
+            if "relicargh" in self.options.cluster.current_key:
+                if item.internal_name == "InsulationTile":
                     self.items_by_name[item.name] = ItemData(item.name, ItemClassification.progression)
                     item_class = "Progression"
             
