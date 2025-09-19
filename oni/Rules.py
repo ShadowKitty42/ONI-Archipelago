@@ -124,6 +124,6 @@ def on_frosty_planet(options: Dict) -> bool:
     return False
 
 def on_prehistoric_planet(options: Dict) -> bool:
-    if options["planet"].startswith("relica"):
+    if options["planet"].startswith("relicargh"):
         return True
     return False
