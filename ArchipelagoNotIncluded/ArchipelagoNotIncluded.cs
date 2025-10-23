@@ -19,7 +19,7 @@ using System.IO;
 using System.Reflection;
 using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.Models;
-using static ArchipelagoNotIncluded.Patches;
+using ArchipelagoNotIncluded.Patches;
 using PeterHan.PLib.Options;
 using PeterHan.PLib.PatchManager;
 using UtilLibs;
@@ -180,7 +180,9 @@ namespace ArchipelagoNotIncluded
         public static int runCount = 0;
         public static string planetText = string.Empty;
 
-        public static StatusItemCategory ArchipelagoConnected = null;
+        public static StatusItemCategory ArchipelagoConnection = null;
+        public static StatusItem ArchipelagoConnected = null;
+        public static StatusItem ArchipelagoDisconnected = null;
 
         public static int getLastIndex()
         {
@@ -282,7 +284,8 @@ namespace ArchipelagoNotIncluded
                             }
                             else
                             {
-                                AllModItems.Add(new ModItem(techItem));
+                                if (!AllModItems.Exists(i => i.internal_name == techItem.Id))
+                                    AllModItems.Add(new ModItem(techItem));
                                 //Debug.Log($"Added Mod Item: {techItem.Name} ({techItem.Id}) Assembly: {assembly}");
                             }
                         }

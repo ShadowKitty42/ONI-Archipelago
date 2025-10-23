@@ -13,8 +13,18 @@ namespace ArchipelagoNotIncluded
     {
         public static APSaveData Instance;
 
-        [Serialize] public string seed;
-        [Serialize] public bool GoalComplete = false;
+        [Serialize] private bool _goalComplete = false;
+        [Serialize]
+        public bool GoalComplete
+        {
+            get => _goalComplete;
+            set
+            {
+                _goalComplete = value;
+                if (_goalComplete)
+                    ArchipelagoNotIncluded.netmon.session?.SetGoalAchieved();
+            }
+        }
         [Serialize] public bool AllowResourceChecks = false;
         [Serialize] public bool HadBionicDupe = false;
         [Serialize] public int LastItemIndex = 0;

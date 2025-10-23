@@ -76,7 +76,7 @@ class ONIWorld(World):
     web = ONIWeb()
     base_id = 0x257514000  # 0xYGEN___, clever! Thanks, Medic
     data_version = 0
-    ap_version = "0.9.6.0"
+    ap_version = "0.9.8.0"
 
     default_item_list = {}
     mod_item_list = {}
@@ -117,6 +117,8 @@ class ONIWorld(World):
     name_to_internal_name = {}
     complete_item_list = []
     complete_location_list = []
+    research_portal = "Research Portal"
+    max_research_portal = 3 # prehistoric DLC has 3
     #local_items = ["Atmo Suit", "Jet Suit Pattern", "Lead Suit", "Oxygen Mask Pattern"]
 
     slot_data_ready = threading.Event()
@@ -127,6 +129,8 @@ class ONIWorld(World):
     bionic = False
     prehistoric = False
 
+    while len(complete_location_list) < max_research_portal:
+        complete_location_list.append(f"{research_portal} - {len(complete_location_list) + 1}")
     
     for item in default_item_list:
 
@@ -254,7 +258,7 @@ class ONIWorld(World):
                 self.options.cluster.value = 10         # set to default for spaced out
             else:
                 self.options.cluster_base.value = 0         # set to default for base game
-        
+
         for item in self.default_item_list:
             if self.base_only == False and item.version == "BaseOnly":
                 continue;
@@ -412,11 +416,27 @@ class ONIWorld(World):
                 if location_name not in self.location_name_to_internal:
                     self.location_name_to_internal[location_name] = internal_tech
 
+                # Populate Science Dict (to be used in generate_output)
+                if internal_tech not in self.science_dicts:
+                    self.science_dicts[internal_tech] = []
+
         self.resource_checks = []
         if self.options.resource_checks.value:
             planet = self.options.cluster.current_key
             if self.base_only:
                 planet = f"{self.options.cluster_base.current_key}_base"
+
+            match planet:
+                case msg if "ceres" in msg:
+                    self.max_research_portal = 2
+                case msg if "relica" in msg:
+                    self.max_research_portal = 3
+                case _:
+                    self.max_research_portal = 0
+            if self.max_research_portal > 0:
+                for i in range(self.max_research_portal):
+                    basic_locations.append(f"{self.research_portal} - {i + 1}")
+
             if planet in resource_locations:
                 for resource in resource_locations[planet]["basic"]:
                     basic_locations.append(f"Discover Resource: {resource}")
@@ -594,7 +614,7 @@ class ONIWorld(World):
         for location in location_list:     # location_name = tech + location number\
             #location = self.multiworld.get_location(location_name, self.player)
             #print(location.name)
-            if location.name.startswith("Discover Resource"):
+            if location.name.startswith("Discover Resource") or location.name.startswith(self.research_portal):
                 continue
             tech_name = self.location_name_to_internal[location.name]
             ap_item = location.item

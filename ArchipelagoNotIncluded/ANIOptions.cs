@@ -41,6 +41,14 @@ namespace ArchipelagoNotIncluded
         [JsonProperty]
         public string Password { get; set; }
 
+        [Option("Automatic Reconnect", "Automatically reconnects to Archipelago if connection is lost.")]
+        [JsonProperty]
+        public bool AutoReconnect { get; set; }
+
+        [Option("Reconnect Interval", "Time (in seconds) between reconnection attempts.")]
+        [JsonProperty]
+        public int ReconnectInterval { get; set; }
+
         public static string modPath = Path.Combine(Path.Combine(Manager.GetDirectory(), "config"), "ArchipelagoNotIncluded");
 
         public ANIOptions()
@@ -49,7 +57,9 @@ namespace ArchipelagoNotIncluded
             URL = "Archipelago.gg";
             Port = 38281;
             SlotName = "PlayerName";
-            SlotName = "";
+            Password = "";
+            AutoReconnect = true;
+            ReconnectInterval = 30;
         }
 
         public void OnOptionsChanged()
@@ -96,14 +106,22 @@ namespace ArchipelagoNotIncluded
                 POptions.WriteSettings(this);
             }
 
+            ArchipelagoNotIncluded.netmon.session.Socket.DisconnectAsync();
             APNetworkMonitor netmon = new APNetworkMonitor(URL, Port, SlotName, Password);
+            netmon.StartSession();
             var dialogue = ((ConfirmDialogScreen)KScreenManager.Instance.StartScreen(ScreenPrefabs.Instance.ConfirmDialogScreen.gameObject, Global.Instance.globalCanvas));
             text += "Connection to Archipelago failed.\nPlease check your connection settings and try again.";
             string title = "Archipelago";
             System.Action confirm = null;
-            LoginResult result = netmon.session.TryConnectAndLogin("Oxygen Not Included", SlotName, ItemsHandlingFlags.NoItems, password: Password);
+            LoginResult result = netmon.session.TryConnectAndLogin("Oxygen Not Included", SlotName, ItemsHandlingFlags.AllItems, APNetworkMonitor.APVersion, password: Password);
             if (result.Successful)
             {
+                if (ArchipelagoNotIncluded.netmon.session != null)
+                {
+                    ArchipelagoNotIncluded.lastItem = 0;
+                }
+
+                ArchipelagoNotIncluded.netmon = netmon;
                 LoginSuccessful success = (LoginSuccessful)result;
                 ArchipelagoNotIncluded.info = JsonConvert.DeserializeObject<APSeedInfo>(JsonConvert.SerializeObject(success.SlotData), [new VersionConverter()]);
                 Debug.Log($"SlotData Received - AP World Version: {ArchipelagoNotIncluded.info.APWorld_Version}");

@@ -32,6 +32,27 @@ namespace ArchipelagoNotIncluded
             apModItems = new List<string>();
             resourceChecks = new List<string>();
         }
+
+        public string GetGoal()
+        {
+            switch (goal)
+            {
+                case "launch_rocket":
+                    return STRINGS.UI.GOALS.LAUNCH_ROCKET;
+                case "monument":
+                    return STRINGS.UI.GOALS.MONUMENT;
+                case "research_all":
+                    return STRINGS.UI.GOALS.RESEARCH_ALL;
+                case "home_sweet_home":
+                    return STRINGS.UI.GOALS.HOME_SWEET_HOME;
+                case "great_escape":
+                    return STRINGS.UI.GOALS.GREAT_ESCAPE;
+                case "cosmic_archaeology":
+                    return STRINGS.UI.GOALS.COSMIC_ARCHAEOLOGY;
+                default:
+                    return STRINGS.UI.GOALS.UNKNOWN;
+            }
+        }
     }
 
 }

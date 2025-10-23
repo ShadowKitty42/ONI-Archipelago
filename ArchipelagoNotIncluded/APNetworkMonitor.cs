@@ -26,6 +26,7 @@ namespace ArchipelagoNotIncluded
     public class APNetworkMonitor
     {
         public ArchipelagoSession session = null;
+        public static Version APVersion = new Version(0, 5, 1);
 
         private readonly string game = "Oxygen Not Included";
         private string URL = "localhost";
@@ -52,18 +53,28 @@ namespace ArchipelagoNotIncluded
             this.Port = port;
             this.SlotName = name;
             this.Password = password;
-            session = ArchipelagoSessionFactory.CreateSession(URL, Port);
-            session.Socket.SocketOpened += OnSocketOpened;
-            session.Socket.PacketReceived += OnPacketReceived;
-            session.Socket.SocketClosed += OnSocketClosed;
-            session.Socket.ErrorReceived += OnErrorReceived;
             //this.PopulateCarePackages();
+        }
+
+        public void StartSession()
+        {
+            if (session == null)
+            {
+                session = ArchipelagoSessionFactory.CreateSession(URL, Port);
+                session.Socket.SocketOpened += OnSocketOpened;
+                session.Socket.PacketReceived += OnPacketReceived;
+                session.Socket.SocketClosed += OnSocketClosed;
+                session.Socket.ErrorReceived += OnErrorReceived;
+            }
         }
 
         public void TryConnectArchipelago(ItemsHandlingFlags flags = ItemsHandlingFlags.AllItems)
         {
+            if (attemptingConnection)
+                return;
             attemptingConnection = true;
             Flags = flags;
+            StartSession();
             session.ConnectAsync().ContinueWith(t =>
             {
                 Debug.Log("Connection failed");
@@ -123,12 +134,14 @@ namespace ArchipelagoNotIncluded
                         ItemsHandling = Flags,
                         RequestSlotData = true,
                         Tags = new string[] { },
-                        Version = new NetworkVersion { Major = 0, Minor = 5, Build = 1 }
+                        Version = new NetworkVersion(APVersion)
                     });
                     break;
                 case ConnectedPacket packetReceived:
+                    attemptingConnection = false;
                     ArchipelagoNotIncluded.HandleSlotData(packetReceived.SlotData);
                     Debug.Log("Connection successful");
+                    ArchipelagoNotIncluded.lastItem = 0;
                     session.Items.ItemReceived += OnItemReceived;
                     if (APSaveData.Instance != null)
                         ProcessLocationQueue();
@@ -159,9 +172,11 @@ namespace ArchipelagoNotIncluded
             //TryConnectArchipelago();
         }
 
-        private void TryReconnectArchipelago()
+        public void TryReconnectArchipelago()
         {
-            Thread.Sleep(30000);
+            if (!ArchipelagoNotIncluded.Options.AutoReconnect)
+                return;
+            Thread.Sleep(ArchipelagoNotIncluded.Options.ReconnectInterval * 1000);
             TryConnectArchipelago();
         }
 
@@ -169,32 +184,42 @@ namespace ArchipelagoNotIncluded
         {
             ReadyForItems = true;
             ArchipelagoNotIncluded.lastItem = 0;
+            Debug.Log(ArchipelagoNotIncluded.ArchipelagoConnected.tooltipText);
+            if (!ArchipelagoNotIncluded.ArchipelagoConnected.tooltipText.Contains("Goal"))
+            {
+                ArchipelagoNotIncluded.ArchipelagoConnected.tooltipText += string.Format(STRINGS.UI.GOALS.TITLE, ArchipelagoNotIncluded.info?.GetGoal());
+                //ArchipelagoNotIncluded.ArchipelagoConnected.tooltipText += STRINGS.UI.GOALS.TITLE;
+                Debug.Log("Updated tooltip text with goal");
+            }
             if (CarePackages.Count == 0)
                 PopulateCarePackages();
-            if (APSaveData.Instance.LocalItemList.Count > 0)
+            /*if (APSaveData.Instance.LocalItemList.Count > 0)
             {
                 GameScheduler.Instance.Schedule("UpdateLocalItems", 3f, (object data) =>
                 {
                     foreach (string item in APSaveData.Instance.LocalItemList)
                         UpdateTechItem(item);
                 });
-            }
+            }*/
 
             if (ItemQueue.IsEmpty)
                 return;
 
-            foreach (var item in ItemQueue)
+            while (ItemQueue.TryDequeue(out ItemInfo item))
+            {
                 AddItem(item);
+            }
         }
 
-        private void ProcessLocationQueue()
+        public void ProcessLocationQueue()
         {
+            if (APSaveData.Instance.GoalComplete)
+                session.SetGoalAchieved();
+
             if (APSaveData.Instance.LocationQueue.IsEmpty)
                 return;
 
             SendLocationChecks(APSaveData.Instance.LocationQueue.ToArray());
-            if (APSaveData.Instance.GoalComplete)
-                session.SetGoalAchieved();
         }
 
         private void OnItemReceived(ReceivedItemsHelper helper)
@@ -207,6 +232,11 @@ namespace ArchipelagoNotIncluded
             //ItemInfo item = session.Items.PeekItem();
 
             ItemInfo item = session.Items.PeekItem();
+            if (item == null)
+            {
+                session.Items.DequeueItem();
+                return;
+            }
             //if (item.Player.Name == SlotName)
             if (ReadyForItems)
                 AddItem(item);
@@ -304,36 +334,53 @@ namespace ArchipelagoNotIncluded
 
         private void AddItem(ItemInfo item)
         {
-            bool newitem = !APSaveData.Instance.LocalItemList.Contains(item.ItemName);
-            APSaveData.Instance.LocalItemList.Add(item.ItemDisplayName);
             //string name = item.LocationName.Split('-')[0].Trim();
-            Debug.Log($"AddItem: {item.ItemName} MostRecentCount: {APSaveData.Instance.LastItemIndex} lastItem: {ArchipelagoNotIncluded.lastItem}");
-            if (APSaveData.Instance.LastItemIndex <= session.Items.AllItemsReceived.Count)
+            Debug.Log($"AddItem: {item.ItemName} MostRecentCount: {APSaveData.Instance.LastItemIndex} lastItem: {ArchipelagoNotIncluded.lastItem} Count: {session.Items.AllItemsReceived.Count}");
+            if (ArchipelagoNotIncluded.lastItem == session.Items.AllItemsReceived.Count)
+                return;
+            ArchipelagoNotIncluded.lastItem++;
+            bool newitem = ArchipelagoNotIncluded.lastItem > APSaveData.Instance.LastItemIndex;
+            if (newitem)
             {
-                ArchipelagoNotIncluded.lastItem++;
+                APSaveData.Instance.LocalItemList.Add(item.ItemDisplayName);
+                APSaveData.Instance.LastItemIndex = APSaveData.Instance.LocalItemList.Count;
                 if (item.ItemName.StartsWith("Care Package"))
                 {
                     Debug.Log($"Sending Care Package: {item.ItemName}");
                     SendCarePackage(item);
-                    APSaveData.Instance.LastItemIndex++;
                     return;
                 }
-            }
-            APSaveData.Instance.LastItemIndex++;
-            //DefaultItem defItem = ArchipelagoNotIncluded.info.spaced_out ? ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.tech == name) : ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.tech_base == name);
-            
-            if (newitem)
                 UpdateTechItem(item.ItemName);
+            }
+            //DefaultItem defItem = ArchipelagoNotIncluded.info.spaced_out ? ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.tech == name) : ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.tech_base == name);
         }
 
         private void UpdateTechItem(string ItemName)
         {
+            while (ItemQueue.TryDequeue(out ItemInfo item))
+            {
+                AddItem(item);
+            }
+
             Debug.Log($"Update Techitem: {ItemName}");
-            DefaultItem defItem = ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.name == ItemName);
-            ModItem modItem = ArchipelagoNotIncluded.AllModItems.Find(i => i.name == ItemName);
-            Tech itemTech = null;
-            string itemId = null;
-            if (defItem != null)
+            //DefaultItem defItem = ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.name == ItemName);
+            //ModItem modItem = ArchipelagoNotIncluded.AllModItems.Find(i => i.name == ItemName);
+            string itemId = string.Empty;
+            /*foreach (KeyValuePair<string, string> item in ArchipelagoNotIncluded.allTechList)
+            {
+
+            }*/
+            try
+            {
+                itemId = ArchipelagoNotIncluded.allTechList.Single(i => i.Value == ItemName).Key;
+            }
+            catch (InvalidOperationException)
+            {
+                Debug.Log($"Error: Item not found in allTechList: {ItemName}");
+                return;
+            }
+            Tech itemTech = Db.Get().Techs.TryGetTechForTechItem(itemId);
+            /*if (defItem != null)
             {
                 itemId = defItem.internal_name;
                 if (!ArchipelagoNotIncluded.allTechList.ContainsKey(itemId))
@@ -344,7 +391,7 @@ namespace ArchipelagoNotIncluded
                 itemId = modItem.internal_name;
                 if (!ArchipelagoNotIncluded.allTechList.ContainsKey(itemId))
                     itemTech = Db.Get().Techs.TryGetTechForTechItem(itemId);
-            }
+            }*/
             if (itemTech != null)
             {
                 Game.Instance.Trigger(11390976, (object)itemTech);
@@ -355,11 +402,11 @@ namespace ArchipelagoNotIncluded
             if (buildingDef != null)
             {
                 PlanScreen.Instance.AddResearchedBuildingCategory(buildingDef);
-                PlanScreen.Instance.RefreshBuildableStates(true);
+                //PlanScreen.Instance.RefreshBuildableStates(true);
                 /*PlanScreen.Instance.BuildButtonList();
                 PlanScreen.Instance.ForceUpdateAllCategoryToggles();
                 PlanScreen.Instance.SetCategoryButtonState();*/
-                UpdateBuildMenu(buildingDef);
+                //UpdateBuildMenu(buildingDef);
                 /*HashSet<HashedString> hashSet = new HashSet<HashedString>();
                 if (BuildMenu.Instance != null)
                 {
