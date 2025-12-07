@@ -18,7 +18,7 @@ from .Locations import ONILocation, resource_locations
 from .ArchipelagoItem import APItem
 from .ModJson import ModJson, APJson, APLocationJson
 from .Names import LocationNames, ItemNames, RegionNames
-from .Options import ONIOptions
+from .Options import ONIOptions, Teleporter
 from .Regions import RegionInfo
 from .Rules import *
 from .DefaultItem import DefaultItem
@@ -76,7 +76,7 @@ class ONIWorld(World):
     web = ONIWeb()
     base_id = 0x257514000  # 0xYGEN___, clever! Thanks, Medic
     data_version = 0
-    ap_version = "0.9.8.0"
+    ap_version = "0.9.9.0"
 
     default_item_list = {}
     mod_item_list = {}
@@ -128,6 +128,7 @@ class ONIWorld(World):
     frosty = False
     bionic = False
     prehistoric = False
+    teleporter_enabled = False
 
     while len(complete_location_list) < max_research_portal:
         complete_location_list.append(f"{research_portal} - {len(complete_location_list) + 1}")
@@ -246,6 +247,8 @@ class ONIWorld(World):
             self.filler_item_names += care_packages_frosty.copy()
         if self.bionic:
             self.filler_item_names += care_packages_bionic.copy()
+
+        self.teleporter_enabled = self.options.teleporter.value
 
         #if self.options.cluster.current_key != "custom" and self.base_only and self.options.cluster.has_basegame_equivalent == False:
         #    logging.warning(f"Base Game doesn't have starting planet called \"{self.options.cluster.current_key}\". Changing option to default planet.")
@@ -449,7 +452,7 @@ class ONIWorld(World):
                         advanced_locations.append(f"Discover Resource: {resource}")
                         self.resource_checks.append(f"Discover Resource: {resource}")
 
-                if self.options.teleporter and self.spaced_out:
+                if self.teleporter_enabled and self.spaced_out:
                     for resource in resource_locations[planet]["advanced2"]:
                         advanced_locations.append(f"Discover Resource: {resource}")
                         self.resource_checks.append(f"Discover Resource: {resource}")
