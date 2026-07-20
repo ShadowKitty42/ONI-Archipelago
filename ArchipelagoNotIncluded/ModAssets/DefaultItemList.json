@@ -4390,8 +4390,6 @@
         "internal_tech_base": "DataScienceBaseGame",
         "ap_classification": "Useful",
         "version": "Bionic"
-<<<<<<< Updated upstream
-=======
     },
     {
         "name": "Hanging Fossil Block",
@@ -4536,6 +4534,5 @@
         "internal_tech_base": "TemperatureModulation",
         "ap_classification": "Useful",
         "version": "Base"
->>>>>>> Stashed changes
     }
 ]

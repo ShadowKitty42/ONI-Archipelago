@@ -428,7 +428,6 @@ namespace ArchipelagoNotIncluded.Patches
             MethodInfo getInstance = AccessTools.PropertyGetter(typeof(Game), nameof(Game.Instance));
             FieldInfo activeResearch = AccessTools.Field(typeof(Research), nameof(Research.activeResearch));
             MethodInfo sendCheck = AccessTools.Method(typeof(Research_CheckBuyResearch_Patch), nameof(Research_CheckBuyResearch_Patch.SendArchipelagoCheck));
-            MethodInfo kmonoTrigger = AccessTools.Method(typeof(KMonoBehaviour), nameof(KMonoBehaviour.Trigger));
 
             matcher.MatchStartForward(new CodeMatch(OpCodes.Call, getInstance))
                 .RemoveInstructions(6)
