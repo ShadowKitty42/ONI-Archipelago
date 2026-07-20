@@ -202,12 +202,25 @@ namespace ArchipelagoNotIncluded
                 });
             }*/
 
-            if (ItemQueue.IsEmpty)
+            while (ItemQueue.TryDequeue(out ItemInfo item))
+                AddItem(item);
+
+            // Colony load can happen before PlanScreen exists; replay unlocks from save.
+            ReplayUnlockedBuildings();
+        }
+
+        // Re-applies building unlocks from save (Unity APIs require main thread).
+        private void ReplayUnlockedBuildings()
+        {
+            if (APSaveData.Instance?.LocalItemList == null || ArchipelagoNotIncluded.allTechList == null)
                 return;
 
-            while (ItemQueue.TryDequeue(out ItemInfo item))
+            foreach (string receivedName in APSaveData.Instance.LocalItemList)
             {
-                AddItem(item);
+                if (!ArchipelagoNotIncluded.allTechList.ContainsValue(receivedName))
+                    continue;
+
+                UpdateTechItem(receivedName);
             }
         }
 
@@ -401,7 +414,9 @@ namespace ArchipelagoNotIncluded
             BuildingDef buildingDef = Assets.GetBuildingDef(itemId);
             if (buildingDef != null)
             {
-                PlanScreen.Instance.AddResearchedBuildingCategory(buildingDef);
+                // PlanScreen may not exist yet during early load/replay.
+                if (PlanScreen.Instance != null)
+                    PlanScreen.Instance.AddResearchedBuildingCategory(buildingDef);
                 //PlanScreen.Instance.RefreshBuildableStates(true);
                 /*PlanScreen.Instance.BuildButtonList();
                 PlanScreen.Instance.ForceUpdateAllCategoryToggles();
