@@ -106,7 +106,8 @@ namespace ArchipelagoNotIncluded
                 POptions.WriteSettings(this);
             }
 
-            ArchipelagoNotIncluded.netmon.session.Socket.DisconnectAsync();
+            if (ArchipelagoNotIncluded.netmon?.session?.Socket != null)
+                ArchipelagoNotIncluded.netmon.session.Socket.DisconnectAsync();
             APNetworkMonitor netmon = new APNetworkMonitor(URL, Port, SlotName, Password);
             netmon.StartSession();
             var dialogue = ((ConfirmDialogScreen)KScreenManager.Instance.StartScreen(ScreenPrefabs.Instance.ConfirmDialogScreen.gameObject, Global.Instance.globalCanvas));
