@@ -15,6 +15,7 @@ namespace ArchipelagoNotIncluded
         public bool frosty { get; set; }
         public bool bionic { get; set; }
         public bool teleporter { get; set; }
+        public bool replace_print_cycle { get; set; }
 
         public Dictionary<string, List<string>> technologies { get; set; }
         public List<string> apModItems { get; set; }

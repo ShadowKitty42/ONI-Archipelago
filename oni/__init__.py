@@ -676,6 +676,7 @@ class ONIWorld(World):
             "frosty": self.frosty,
             "bionic": self.bionic,
             "teleporter": self.options.teleporter.value,
+            "replace_print_cycle": self.options.replace_print_cycle.value,
             "technologies": self.mod_json.technologies,
             "apModItems": self.ap_mod_items,
             "goal": self.options.goal.current_key,

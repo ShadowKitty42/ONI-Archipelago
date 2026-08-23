@@ -49,6 +49,11 @@ namespace ArchipelagoNotIncluded
         [JsonProperty]
         public int ReconnectInterval { get; set; }
 
+        [Option("Replace Print Cycle Override", "Force AP-controlled printing pod (local testing). "
+            + "Normally controlled by AP slot_data replace_print_cycle.")]
+        [JsonProperty]
+        public bool ReplacePrintCycleOverride { get; set; }
+
         public static string modPath = Path.Combine(Path.Combine(Manager.GetDirectory(), "config"), "ArchipelagoNotIncluded");
 
         public ANIOptions()
@@ -60,6 +65,7 @@ namespace ArchipelagoNotIncluded
             Password = "";
             AutoReconnect = true;
             ReconnectInterval = 30;
+            ReplacePrintCycleOverride = false;
         }
 
         public void OnOptionsChanged()

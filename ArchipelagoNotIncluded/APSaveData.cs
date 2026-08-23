@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Archipelago.MultiClient.Net.Models;
+using ArchipelagoNotIncluded.Patches;
 using KSerialization;
 
 namespace ArchipelagoNotIncluded
@@ -31,7 +27,12 @@ namespace ArchipelagoNotIncluded
         [Serialize] public bool ResearchPortalUnlocked = false;
         [Serialize] public List<string> LocalItemList = new List<string>();
         [Serialize] public ConcurrentQueue<string> LocationQueue = new ConcurrentQueue<string>();
+        [Serialize] public List<string> PendingCarePackages = new List<string>();
+        [Serialize] public List<string> DeliveredCarePackages = new List<string>();
+        [Serialize] public List<string> ForfeitedCarePackages = new List<string>();
+        [Serialize] public List<string> ReceivedCarePackages = new List<string>();
         [Serialize] public APSeedInfo APSeedInfo = null;
+
         public override void OnPrefabInit()
         {
             base.OnPrefabInit();
@@ -39,6 +40,22 @@ namespace ArchipelagoNotIncluded
             AllowResourceChecks = ArchipelagoNotIncluded.AllowResourceChecks;
             if (ArchipelagoNotIncluded.info == null && APSeedInfo != null)
                 ArchipelagoNotIncluded.info = APSeedInfo;
+
+            SaveLoader_Load_Patch.TryInitializeFromSave();
+        }
+
+        public override void OnSpawn()
+        {
+            base.OnSpawn();
+            CarePackageQueue.ReconcileCarePackages();
+            CarePackageQueue.RebuildFromSave();
+            if (PendingCarePackages.Count > 0 && APSeedInfo != null)
+            {
+                APSeedInfo.replace_print_cycle = true;
+                if (ArchipelagoNotIncluded.info != null)
+                    ArchipelagoNotIncluded.info.replace_print_cycle = true;
+            }
+            TelepadApCarePackagePatches.RefreshUi();
         }
     }
 }

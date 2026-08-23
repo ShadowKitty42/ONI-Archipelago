@@ -148,6 +148,13 @@ class Teleporter(Toggle):
     """
     display_name = "Enable Resource checks on Teleporter planet"
 
+class ReplacePrintCycle(Toggle):
+    """
+    Deliver Archipelago care packages through the Printing Pod immigration
+    screen (3 dupes + 1 care package) instead of instant delivery.
+    """
+    display_name = "Replace Print Cycle for Care Packages"
+
 @dataclass
 class ONIOptions(PerGameCommonOptions):
     goal: Goal
@@ -159,4 +166,4 @@ class ONIOptions(PerGameCommonOptions):
     cluster_base: ClusterBase
     cluster: Cluster
     teleporter: Teleporter
-    
+    replace_print_cycle: ReplacePrintCycle
