@@ -69,6 +69,12 @@ namespace ArchipelagoNotIncluded
             }
         }*/
         public static APSeedInfo info = null;
+
+        public static bool ReplacePrintCycle =>
+            info?.replace_print_cycle == true
+            || APSaveData.Instance?.APSeedInfo?.replace_print_cycle == true
+            || CarePackageQueue.Count > 0
+            || (APSaveData.Instance?.PendingCarePackages?.Count ?? 0) > 0;
         public static List<KeyValuePair<string, string>> apItems = new List<KeyValuePair<string, string>>();
         public static List<DefaultItem> AllDefaultItems = new List<DefaultItem>();
         public static List<ModItem> AllModItems = new List<ModItem>();
@@ -324,7 +330,31 @@ namespace ArchipelagoNotIncluded
         public static void HandleSlotData(Dictionary<string, object> data)
         {
             info = JsonConvert.DeserializeObject<APSeedInfo>(JsonConvert.SerializeObject(data), [new VersionConverter()]);
-            Debug.Log($"SlotData Received - AP World Version: {info.APWorld_Version}");
+            if (data.TryGetValue("replace_print_cycle", out object replacePrintCycle))
+                info.replace_print_cycle = ParseSlotBool(replacePrintCycle);
+
+            Debug.Log($"SlotData Received - AP World Version: {info.APWorld_Version}, replace_print_cycle={info.replace_print_cycle}");
+
+            if (APSaveData.Instance != null)
+                APSaveData.Instance.APSeedInfo = info;
+            TelepadApCarePackagePatches.RefreshUi();
+        }
+
+        private static bool ParseSlotBool(object value)
+        {
+            switch (value)
+            {
+                case bool b:
+                    return b;
+                case string s when bool.TryParse(s, out bool parsed):
+                    return parsed;
+                case long l:
+                    return l != 0;
+                case int i:
+                    return i != 0;
+                default:
+                    return false;
+            }
         }
 
         public static string CleanName(string name)

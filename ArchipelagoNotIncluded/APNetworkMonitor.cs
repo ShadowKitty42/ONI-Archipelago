@@ -1,4 +1,5 @@
-﻿using Archipelago.MultiClient.Net;
+﻿using ArchipelagoNotIncluded.Patches;
+using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.Models;
@@ -40,7 +41,6 @@ namespace ArchipelagoNotIncluded
         public bool ReadyForItems = false;
 
         public static ConcurrentQueue<ItemInfo> ItemQueue = new ConcurrentQueue<ItemInfo>();
-        public static ConcurrentQueue<string> packageQueue = new ConcurrentQueue<string>();
 
         public static int HighestCount = 0;
         public static string seed = string.Empty;
@@ -141,10 +141,21 @@ namespace ArchipelagoNotIncluded
                     attemptingConnection = false;
                     ArchipelagoNotIncluded.HandleSlotData(packetReceived.SlotData);
                     Debug.Log("Connection successful");
-                    ArchipelagoNotIncluded.lastItem = 0;
+                    // Reconnect can run ConnectedPacket more than once; ensure a single handler.
+                    session.Items.ItemReceived -= OnItemReceived;
                     session.Items.ItemReceived += OnItemReceived;
                     if (APSaveData.Instance != null)
+                    {
                         ProcessLocationQueue();
+                        // Apply items and care packages queued while disconnected.
+                        TryDrainPendingItemQueue();
+                        if (ArchipelagoNotIncluded.ReplacePrintCycle)
+                        {
+                            CarePackageQueue.ReconcileCarePackages();
+                            CarePackageQueue.RebuildFromSave();
+                            TelepadApCarePackagePatches.RefreshUi();
+                        }
+                    }
                     break;
                 case ConnectionRefusedPacket packetReceived:
                     Debug.Log($"Connection Refused: {packetReceived.Errors.Join(s => s.ToString(), ", ")}");
@@ -183,7 +194,6 @@ namespace ArchipelagoNotIncluded
         public void ProcessItemQueue()
         {
             ReadyForItems = true;
-            ArchipelagoNotIncluded.lastItem = 0;
             Debug.Log(ArchipelagoNotIncluded.ArchipelagoConnected.tooltipText);
             if (!ArchipelagoNotIncluded.ArchipelagoConnected.tooltipText.Contains("Goal"))
             {
@@ -202,26 +212,23 @@ namespace ArchipelagoNotIncluded
                 });
             }*/
 
-            while (ItemQueue.TryDequeue(out ItemInfo item))
-                AddItem(item);
-
-            // Colony load can happen before PlanScreen exists; replay unlocks from save.
-            ReplayUnlockedBuildings();
+            DrainItemQueue();
         }
 
-        // Re-applies building unlocks from save (Unity APIs require main thread).
-        private void ReplayUnlockedBuildings()
+        // Processes items enqueued from OnItemReceived on the main thread.
+        private void DrainItemQueue()
         {
-            if (APSaveData.Instance?.LocalItemList == null || ArchipelagoNotIncluded.allTechList == null)
+            while (ItemQueue.TryDequeue(out ItemInfo item))
+                AddItem(item);
+        }
+
+        // After load and on reconnect; no-op until ReadyForItems is set.
+        public void TryDrainPendingItemQueue()
+        {
+            if (!ReadyForItems || ItemQueue.IsEmpty)
                 return;
 
-            foreach (string receivedName in APSaveData.Instance.LocalItemList)
-            {
-                if (!ArchipelagoNotIncluded.allTechList.ContainsValue(receivedName))
-                    continue;
-
-                UpdateTechItem(receivedName);
-            }
+            DrainItemQueue();
         }
 
         public void ProcessLocationQueue()
@@ -251,10 +258,9 @@ namespace ArchipelagoNotIncluded
                 return;
             }
             //if (item.Player.Name == SlotName)
-            if (ReadyForItems)
-                AddItem(item);
-            else
-                ItemQueue.Enqueue(item);
+            // AP callback runs off the main thread; enqueue for DrainItemQueue/TryDrainPendingItemQueue.
+            // DequeueItem must happen here so the AP client can deliver the next item in the batch.
+            ItemQueue.Enqueue(item);
             //Debug.Log($"Current Player: {SlotName} - Found {item.ItemName} for {item.Player.Name}");
 
             /*Debug.Log(item.ItemName);
@@ -348,23 +354,32 @@ namespace ArchipelagoNotIncluded
         private void AddItem(ItemInfo item)
         {
             //string name = item.LocationName.Split('-')[0].Trim();
-            Debug.Log($"AddItem: {item.ItemName} MostRecentCount: {APSaveData.Instance.LastItemIndex} lastItem: {ArchipelagoNotIncluded.lastItem} Count: {session.Items.AllItemsReceived.Count}");
-            if (ArchipelagoNotIncluded.lastItem == session.Items.AllItemsReceived.Count)
+            if (item == null || APSaveData.Instance == null)
                 return;
-            ArchipelagoNotIncluded.lastItem++;
-            bool newitem = ArchipelagoNotIncluded.lastItem > APSaveData.Instance.LastItemIndex;
-            if (newitem)
+
+            string unlockName = string.IsNullOrEmpty(item.ItemDisplayName) ? item.ItemName : item.ItemDisplayName;
+            Debug.Log($"AddItem: {item.ItemName} display={unlockName} saved={APSaveData.Instance.LastItemIndex} "
+                + $"count={session?.Items?.AllItemsReceived?.Count ?? 0}");
+
+            // Dedupe by display name so AP resync after reconnect does not re-apply items.
+            if (APSaveData.Instance.LocalItemList.Contains(unlockName))
             {
-                APSaveData.Instance.LocalItemList.Add(item.ItemDisplayName);
-                APSaveData.Instance.LastItemIndex = APSaveData.Instance.LocalItemList.Count;
-                if (item.ItemName.StartsWith("Care Package"))
-                {
-                    Debug.Log($"Sending Care Package: {item.ItemName}");
-                    SendCarePackage(item);
-                    return;
-                }
-                UpdateTechItem(item.ItemName);
+                Debug.Log($"AddItem: already received {unlockName}, skipping");
+                return;
             }
+
+            APSaveData.Instance.LocalItemList.Add(unlockName);
+            APSaveData.Instance.LastItemIndex = APSaveData.Instance.LocalItemList.Count;
+            ArchipelagoNotIncluded.lastItem = APSaveData.Instance.LastItemIndex;
+
+            if (item.ItemName.StartsWith("Care Package"))
+            {
+                Debug.Log($"Sending Care Package: {item.ItemName}");
+                SendCarePackage(item);
+                return;
+            }
+
+            UpdateTechItem(unlockName);
             //DefaultItem defItem = ArchipelagoNotIncluded.info.spaced_out ? ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.tech == name) : ArchipelagoNotIncluded.AllDefaultItems.Find(i => i.tech_base == name);
         }
 
@@ -414,9 +429,7 @@ namespace ArchipelagoNotIncluded
             BuildingDef buildingDef = Assets.GetBuildingDef(itemId);
             if (buildingDef != null)
             {
-                // PlanScreen may not exist yet during early load/replay.
-                if (PlanScreen.Instance != null)
-                    PlanScreen.Instance.AddResearchedBuildingCategory(buildingDef);
+                PlanScreen.Instance.AddResearchedBuildingCategory(buildingDef);
                 //PlanScreen.Instance.RefreshBuildableStates(true);
                 /*PlanScreen.Instance.BuildButtonList();
                 PlanScreen.Instance.ForceUpdateAllCategoryToggles();
@@ -555,28 +568,47 @@ namespace ArchipelagoNotIncluded
 
         public void SendCarePackage(ItemInfo item)
         {
-            string packageName = item.ItemName.Split(new string[] { ": " }, StringSplitOptions.RemoveEmptyEntries)[1];
-            if (!CarePackages.ContainsKey(packageName))
+            string packageName = ParsePackageName(item);
+            if (string.IsNullOrEmpty(packageName) || !CarePackages.ContainsKey(packageName))
             {
-                Debug.Log($"Unknown Care Package: {packageName}");
+                Debug.Log($"Unknown Care Package: {packageName ?? item?.ItemName}");
                 return;
             }
-            
-            packageQueue.Enqueue(packageName);
 
+            if (ArchipelagoNotIncluded.ReplacePrintCycle)
+                EnqueueCarePackage(packageName);
+            else
+                DeliverCarePackageInstant(packageName);
+        }
+
+        public static string ParsePackageName(ItemInfo item) =>
+            CarePackageQueue.ParseShortName(item.ItemName);
+
+        private void EnqueueCarePackage(string packageName)
+        {
+            if (APSaveData.Instance == null)
+                return;
+
+            CarePackageQueue.Enqueue(packageName);
+            APSaveData.Instance.ReceivedCarePackages.Add(packageName);
+            TelepadApCarePackagePatches.RefreshUi();
+        }
+
+        private void DeliverCarePackageInstant(string packageName)
+        {
             GameScheduler.Instance.Schedule("SendCarePackage", 3f, (object data) =>
             {
-                if (packageQueue.IsEmpty)
+                if (Components.Telepads == null || Components.Telepads.Count == 0)
+                {
+                    Debug.Log("No Telepad found for instant care package delivery");
                     return;
+                }
 
-                //CarePackageInfo package = new CarePackageInfo(ElementLoader.FindElementByHash(SimHashes.Dirt).tag.ToString(), 500f, (Func<bool>)null);
                 Telepad telepad = Components.Telepads[0];
                 telepad.smi.sm.openPortal.Trigger(telepad.smi);
-                //package.Deliver(telepad.transform.GetPosition());
-                while (packageQueue.TryDequeue(out string package))
-                {
-                    CarePackages[package].Deliver(telepad.transform.GetPosition());
-                }
+                CarePackages[packageName].Deliver(telepad.transform.GetPosition());
+                if (APSaveData.Instance != null)
+                    APSaveData.Instance.DeliveredCarePackages.Add(packageName);
                 telepad.smi.sm.closePortal.Trigger(telepad.smi);
             });
         }
