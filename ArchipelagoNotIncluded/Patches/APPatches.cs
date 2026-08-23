@@ -102,12 +102,31 @@ namespace ArchipelagoNotIncluded.Patches
     [HarmonyPatch(typeof(Game), nameof(Game.OnSpawn))]
     public static class SaveLoader_Load_Patch
     {
-        public static void Postfix()
+        private static bool saveInitialized;
+
+        public static void ResetSaveInitialization() => saveInitialized = false;
+
+        public static void Postfix() => TryInitializeFromSave();
+
+        public static void TryInitializeFromSave()
         {
-            if (ArchipelagoNotIncluded.Options.CreateModList)
+            if (saveInitialized)
                 return;
+            if (ArchipelagoNotIncluded.Options?.CreateModList == true)
+                return;
+            if (APSaveData.Instance == null)
+                return;
+
             if (APSaveData.Instance.APSeedInfo != null)
                 ArchipelagoNotIncluded.info = APSaveData.Instance.APSeedInfo;
+
+            if (!APSaveData.Instance.AllowResourceChecks)
+                return;
+
+            if (ArchipelagoNotIncluded.info == null)
+                return;
+
+            saveInitialized = true;
 
             List<PlanScreen.PlanInfo> storage = new List<PlanScreen.PlanInfo>();
             /*foreach (PlanScreen.PlanInfo info in TUNING.BUILDINGS.PLANORDER)
@@ -120,9 +139,6 @@ namespace ArchipelagoNotIncluded.Patches
             }*/
             //foreach (PlanScreen.PlanInfo key in TUNING.BUILDINGS.PLANORDER)
             //storage.Add(new PlanScreen.PlanInfo(key.category, key.hideIfNotResearched, key.data, ));
-            if (!APSaveData.Instance.AllowResourceChecks)
-                return;
-
             foreach (DefaultItem item in ArchipelagoNotIncluded.AllDefaultItems)
             {
                 //Debug.Log(info.spaced_out);
@@ -428,6 +444,7 @@ namespace ArchipelagoNotIncluded.Patches
             MethodInfo getInstance = AccessTools.PropertyGetter(typeof(Game), nameof(Game.Instance));
             FieldInfo activeResearch = AccessTools.Field(typeof(Research), nameof(Research.activeResearch));
             MethodInfo sendCheck = AccessTools.Method(typeof(Research_CheckBuyResearch_Patch), nameof(Research_CheckBuyResearch_Patch.SendArchipelagoCheck));
+            MethodInfo kmonoTrigger = AccessTools.Method(typeof(KMonoBehaviour), nameof(KMonoBehaviour.Trigger));
 
             matcher.MatchStartForward(new CodeMatch(OpCodes.Call, getInstance))
                 .RemoveInstructions(6)
@@ -442,14 +459,22 @@ namespace ArchipelagoNotIncluded.Patches
 
         static void SendArchipelagoCheck(TechInstance instance)
         {
+            if (instance?.tech == null)
+                return;
+
             if (!APSaveData.Instance.AllowResourceChecks)
             {
                 Game.Instance.Trigger(-107300940, instance.tech);
                 return;
             }
 
-            char[] delimiters = { '<', '>' };
-            string name = instance.tech.Name.Split(delimiters)[2];
+            if (ArchipelagoNotIncluded.info == null)
+            {
+                Debug.Log("Skipping Archipelago research check: slot data not loaded yet");
+                return;
+            }
+
+            string name = ArchipelagoNotIncluded.CleanName(instance.tech.Name);
             Debug.Log($"Name: {name}");
             if (name == "Cryofuel Propulsion")
                 name = "CryoFuel Propulsion";

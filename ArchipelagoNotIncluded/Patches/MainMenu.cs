@@ -165,7 +165,9 @@ namespace ArchipelagoNotIncluded.Patches
     {
         public static void Postfix()
         {
-            ArchipelagoNotIncluded.netmon.ReadyForItems = false;
+            SaveLoader_Load_Patch.ResetSaveInitialization();
+            if (ArchipelagoNotIncluded.netmon != null)
+                ArchipelagoNotIncluded.netmon.ReadyForItems = false;
             ArchipelagoNotIncluded.lastItem = 0;
         }
     }
